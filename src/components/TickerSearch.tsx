@@ -134,9 +134,9 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <div className="flex gap-2">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="flex flex-col sm:flex-row gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
             ref={inputRef}
             type="text"
@@ -144,22 +144,22 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="pl-10"
+            className="pl-10 h-11 touch-manipulation"
           />
         </div>
-        <Button onClick={() => addTicker()} className="gap-2">
+        <Button onClick={() => addTicker()} className="gap-2 h-11 touch-manipulation whitespace-nowrap">
           <Plus className="h-4 w-4" />
           Add Ticker
         </Button>
       </div>
 
       {showDropdown && searchResults.length > 0 && (
-        <div className="absolute top-full mt-1 w-full max-w-md bg-popover border rounded-md shadow-lg z-50">
+        <div className="absolute top-full mt-1 w-full bg-popover border rounded-md shadow-lg z-50 max-h-80 overflow-y-auto">
           {searchResults.map((result, index) => (
             <button
               key={result.symbol}
               onClick={() => addTicker(result.symbol)}
-              className={`w-full px-4 py-2 text-left hover:bg-accent transition-colors ${
+              className={`w-full px-4 py-3 text-left hover:bg-accent transition-colors touch-manipulation ${
                 index === selectedIndex ? 'bg-accent' : ''
               }`}
             >

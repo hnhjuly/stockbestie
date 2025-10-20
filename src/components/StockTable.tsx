@@ -58,12 +58,12 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
   };
 
   return (
-    <div className="rounded-lg border bg-card">
+    <div className="rounded-lg border bg-card overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Ticker</TableHead>
-            <TableHead>
+            <TableHead className="min-w-[80px]">Ticker</TableHead>
+            <TableHead className="min-w-[150px]">
               <Button
                 variant="ghost"
                 onClick={() => handleSort('companyName')}
@@ -73,7 +73,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 <SortIcon field="companyName" />
               </Button>
             </TableHead>
-            <TableHead>
+            <TableHead className="min-w-[100px]">
               <Button
                 variant="ghost"
                 onClick={() => handleSort('currentPrice')}
@@ -83,7 +83,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 <SortIcon field="currentPrice" />
               </Button>
             </TableHead>
-            <TableHead>
+            <TableHead className="min-w-[120px]">
               <Button
                 variant="ghost"
                 onClick={() => handleSort('priceChangePercent')}
@@ -93,7 +93,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 <SortIcon field="priceChangePercent" />
               </Button>
             </TableHead>
-            <TableHead>
+            <TableHead className="min-w-[120px]">
               <Button
                 variant="ghost"
                 onClick={() => handleSort('marketCapRaw')}
@@ -103,8 +103,8 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 <SortIcon field="marketCapRaw" />
               </Button>
             </TableHead>
-            <TableHead>Volume</TableHead>
-            <TableHead className="text-right">P/E</TableHead>
+            <TableHead className="min-w-[100px]">Volume</TableHead>
+            <TableHead className="text-right min-w-[80px]">P/E</TableHead>
             <TableHead className="min-w-[300px]">Analyst Prediction</TableHead>
           </TableRow>
         </TableHeader>

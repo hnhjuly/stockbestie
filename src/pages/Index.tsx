@@ -119,34 +119,35 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2">
-                <img src={stockBestieLogo} alt="Stock Bestie Logo" className="h-12 w-12 object-contain" />
+        <div className="container mx-auto px-4 py-3 md:py-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
+              <div className="p-1 md:p-2 flex-shrink-0">
+                <img src={stockBestieLogo} alt="Stock Bestie Logo" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold">Stock Bestie</h1>
-                <p className="text-sm text-muted-foreground">Real-time stock market buddy by Hanah July</p>
+              <div className="min-w-0">
+                <h1 className="text-lg md:text-2xl font-bold truncate">Stock Bestie</h1>
+                <p className="text-xs md:text-sm text-muted-foreground truncate">Real-time stock market buddy by Hanah July</p>
               </div>
             </div>
             <Button
               onClick={() => loadStocks(true)}
               disabled={isRefreshing}
               variant="outline"
-              className="gap-2"
+              className="gap-2 flex-shrink-0"
+              size="sm"
             >
               <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
+              <span className="hidden sm:inline">Refresh</span>
             </Button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-4 md:py-8">
         {/* Ticker Management */}
-        <div className="mb-6 space-y-4">
+        <div className="mb-4 md:mb-6 space-y-4">
           <TickerSearch 
             existingTickers={tickers}
             onTickerAdded={handleTickerAdded}
@@ -157,12 +158,13 @@ const Index = () => {
               {tickers.map((ticker) => (
                 <div
                   key={ticker}
-                  className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium touch-manipulation"
                 >
                   {ticker}
                   <button
                     onClick={() => removeTicker(ticker)}
-                    className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                    className="hover:bg-primary/20 rounded-full p-1 transition-colors"
+                    aria-label={`Remove ${ticker}`}
                   >
                     <X className="h-3 w-3" />
                   </button>
