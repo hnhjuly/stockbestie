@@ -198,6 +198,20 @@ const Index = () => {
             <StockTable stocks={stocks} onStockClick={setSelectedStock} />
           </div>
         )}
+
+        {/* Footer */}
+        <footer className="mt-12 pt-8 pb-6 border-t">
+          <div className="max-w-3xl mx-auto text-center space-y-4">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              <strong>Disclaimer:</strong> Information displayed on Stock Bestie is for educational and informational purposes only and should not be considered financial or investment advice.
+              Market data and analyst ratings are sourced from Yahoo Finance and other public APIs and may be delayed or inaccurate.
+              Always do your own research or consult a licensed financial advisor before making investment decisions.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              © 2025 Stock Bestie. All rights reserved.
+            </p>
+          </div>
+        </footer>
       </main>
 
       {/* Detail Dialog */}
