@@ -10,12 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 interface StockTableProps {
   stocks: Stock[];
@@ -38,12 +32,6 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
   const sortedStocks = [...stocks].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    // Handle null values - push to end
-    if (aValue === null && bValue === null) return 0;
-    if (aValue === null) return 1;
-    if (bValue === null) return -1;
-    
     const modifier = sortDirection === 'asc' ? 1 : -1;
     return (aValue - bValue) * modifier;
   });
@@ -63,9 +51,8 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
   };
 
   return (
-    <TooltipProvider>
-      <div className="rounded-lg border bg-card">
-        <Table>
+    <div className="rounded-lg border bg-card">
+      <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Ticker</TableHead>
@@ -128,19 +115,10 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                   </span>
                 </div>
               </TableCell>
-              <TableCell>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="cursor-help">{stock.marketCapDisplay}</span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>As of {stock.asOfTime}, USD, Yahoo Finance</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TableCell>
+              <TableCell>{stock.marketCapDisplay}</TableCell>
               <TableCell className="text-muted-foreground">{stock.volumeDisplay}</TableCell>
               <TableCell className="text-right font-mono">
-                {stock.peRatioDisplay}
+                {stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'}
               </TableCell>
               <TableCell className="text-sm">
                 <span className={`font-semibold ${
@@ -157,8 +135,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
             </TableRow>
           ))}
         </TableBody>
-        </Table>
-      </div>
-    </TooltipProvider>
+      </Table>
+    </div>
   );
 };
