@@ -32,19 +32,26 @@ Deno.serve(async (req) => {
 
     const data = await response.json();
     
-    // Filter for US common stocks only (XNYS or XNAS, quoteType = EQUITY)
+    console.log(`Raw search results count: ${data.quotes?.length || 0}`);
+    console.log('Sample quotes:', JSON.stringify(data.quotes?.slice(0, 3), null, 2));
+    
+    // Filter for US common stocks only (NASDAQ or NYSE, quoteType = EQUITY)
     const validResults = (data.quotes || [])
-      .filter((quote: any) => 
-        quote.quoteType === 'EQUITY' && 
-        (quote.exchange === 'NMS' || quote.exchange === 'NYQ') &&
-        quote.symbol &&
-        !quote.symbol.includes('.')
-      )
+      .filter((quote: any) => {
+        const isEquity = quote.quoteType === 'EQUITY';
+        const isUSExchange = quote.exchange === 'NMS' || quote.exchange === 'NYQ' || 
+                            quote.exchDisp === 'NASDAQ' || quote.exchDisp === 'NYSE';
+        const hasSymbol = quote.symbol && !quote.symbol.includes('.');
+        
+        console.log(`Checking ${quote.symbol}: isEquity=${isEquity}, isUSExchange=${isUSExchange}, exchange=${quote.exchange}, exchDisp=${quote.exchDisp}`);
+        
+        return isEquity && isUSExchange && hasSymbol;
+      })
       .slice(0, 5)
       .map((quote: any) => ({
         symbol: quote.symbol,
         shortname: quote.shortname || quote.longname || '',
-        exchange: quote.exchange === 'NMS' ? 'NASDAQ' : 'NYSE'
+        exchange: quote.exchDisp || (quote.exchange === 'NMS' ? 'NASDAQ' : 'NYSE')
       }));
 
     console.log(`Found ${validResults.length} valid US stocks`);
