@@ -9,6 +9,56 @@ const corsHeaders = {
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 60 * 1000; // 60 seconds in milliseconds
 
+// Cache for Yahoo Finance cookie and crumb
+let yahooCookie: string | null = null;
+let yahooCrumb: string | null = null;
+let authTimestamp = 0;
+const AUTH_CACHE_DURATION = 3600 * 1000; // 1 hour
+
+async function getYahooAuth(): Promise<{ cookie: string; crumb: string }> {
+  // Return cached auth if still valid
+  if (yahooCookie && yahooCrumb && Date.now() - authTimestamp < AUTH_CACHE_DURATION) {
+    return { cookie: yahooCookie, crumb: yahooCrumb };
+  }
+
+  console.log('Fetching new Yahoo Finance cookie and crumb...');
+  
+  try {
+    // Step 1: Get cookie from Yahoo
+    const cookieResponse = await fetch('https://fc.yahoo.com', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+      }
+    });
+    
+    const cookieHeader = cookieResponse.headers.get('set-cookie');
+    if (!cookieHeader) {
+      throw new Error('Failed to get cookie from Yahoo Finance');
+    }
+    
+    yahooCookie = cookieHeader.split(';')[0];
+    console.log('Cookie obtained successfully');
+
+    // Step 2: Get crumb using the cookie
+    const crumbResponse = await fetch('https://query2.finance.yahoo.com/v1/test/getcrumb', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+        'Cookie': yahooCookie,
+      }
+    });
+
+    yahooCrumb = await crumbResponse.text();
+    console.log('Crumb obtained successfully');
+    
+    authTimestamp = Date.now();
+    
+    return { cookie: yahooCookie, crumb: yahooCrumb };
+  } catch (error) {
+    console.error('Error getting Yahoo auth:', error);
+    throw error;
+  }
+}
+
 interface YahooFinanceQuote {
   regularMarketPrice: number;
   regularMarketChangePercent: number;
@@ -28,17 +78,49 @@ async function fetchYahooFinanceData(tickers: string[]): Promise<any[]> {
   console.log(`Fetching fresh data for ${tickerString}`);
   
   try {
-    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${tickerString}`;
+    // Get Yahoo auth (cookie and crumb)
+    const { cookie, crumb } = await getYahooAuth();
+    
+    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${tickerString}&crumb=${encodeURIComponent(crumb)}`;
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (StockBestie)',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
         'Accept': 'application/json',
+        'Cookie': cookie,
         'Referer': 'https://finance.yahoo.com',
-        'Cache-Control': 'no-store'
       }
     });
     
     if (!response.ok) {
+      console.error(`Yahoo Finance API error: ${response.status}`);
+      // If 401, clear cached auth and retry once
+      if (response.status === 401) {
+        console.log('Got 401, clearing auth cache and retrying...');
+        yahooCookie = null;
+        yahooCrumb = null;
+        authTimestamp = 0;
+        
+        // Retry with fresh auth
+        const retryAuth = await getYahooAuth();
+        const retryUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${tickerString}&crumb=${encodeURIComponent(retryAuth.crumb)}`;
+        const retryResponse = await fetch(retryUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36',
+            'Accept': 'application/json',
+            'Cookie': retryAuth.cookie,
+            'Referer': 'https://finance.yahoo.com',
+          }
+        });
+        
+        if (!retryResponse.ok) {
+          throw new Error(`Yahoo Finance API error after retry: ${retryResponse.status}`);
+        }
+        
+        const retryData = await retryResponse.json();
+        const retryResults = retryData.quoteResponse?.result || [];
+        return mapYahooResults(retryResults);
+      }
+      
       throw new Error(`Yahoo Finance API error: ${response.status}`);
     }
 
@@ -49,7 +131,15 @@ async function fetchYahooFinanceData(tickers: string[]): Promise<any[]> {
       throw new Error(`No data found for tickers ${tickerString}`);
     }
 
-    return results.map((quote: any) => {
+    return mapYahooResults(results);
+  } catch (error) {
+    console.error(`Error fetching ${tickerString}:`, error);
+    throw error;
+  }
+}
+
+function mapYahooResults(results: any[]): any[] {
+  return results.map((quote: any) => {
       const stockData = {
         ticker: quote.symbol,
         companyName: quote.shortName || quote.longName || quote.symbol,
@@ -80,10 +170,6 @@ async function fetchYahooFinanceData(tickers: string[]): Promise<any[]> {
 
       return stockData;
     });
-  } catch (error) {
-    console.error(`Error fetching ${tickerString}:`, error);
-    throw error;
-  }
 }
 
 function formatMarketCap(value: number | null): string {
