@@ -1,18 +1,17 @@
 export interface Stock {
   ticker: string;
   companyName: string;
-  marketCapRaw: number | null;
+  marketCapRaw: number;
   volumeRaw: number;
   currentPrice: number;
   priceChangePercent: number;
-  peRatio: number | null;
+  peRatio: number;
   low52Week: number;
   high52Week: number;
   eps: number;
   asOfTime: string;
   marketCapDisplay: string;
   volumeDisplay: string;
-  peRatioDisplay: string;
   analystPrediction: string;
 }
 
