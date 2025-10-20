@@ -17,8 +17,6 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [tickers, setTickers] = useState<string[]>([]);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallButton, setShowInstallButton] = useState(false);
 
   const loadTickersFromDB = async () => {
     try {
@@ -118,45 +116,10 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallButton(true);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // Check if app is already installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setShowInstallButton(false);
-    }
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
-
-  useEffect(() => {
     if (tickers.length > 0) {
       loadStocks();
     }
   }, [tickers]);
-
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) {
-      return;
-    }
-
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === 'accepted') {
-      toast.success('App installed successfully!');
-      setShowInstallButton(false);
-    }
-    
-    setDeferredPrompt(null);
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -191,19 +154,6 @@ const Index = () => {
       <main className="container mx-auto px-4 py-4 md:py-8">
         {/* Ticker Management */}
         <div className="mb-4 md:mb-6 space-y-4">
-          {showInstallButton && (
-            <div className="flex justify-center mb-6">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleInstallClick}
-                className="shadow-md hover:shadow-lg transition-shadow"
-              >
-                Get Stock Bestie App now!
-              </Button>
-            </div>
-          )}
-          
           <TickerSearch 
             existingTickers={tickers}
             onTickerAdded={handleTickerAdded}
