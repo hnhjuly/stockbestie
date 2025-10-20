@@ -22,7 +22,7 @@ const Index = () => {
       const { data, error } = await supabase
         .from('tickers')
         .select('ticker')
-        .order('added_at', { ascending: true });
+        .order('added_at', { ascending: false });
       
       if (error) throw error;
       
@@ -54,7 +54,7 @@ const Index = () => {
   };
 
   const handleTickerAdded = (ticker: string) => {
-    setTickers([...tickers, ticker]);
+    setTickers([ticker, ...tickers]);
   };
 
   const removeTicker = async (ticker: string) => {
