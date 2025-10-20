@@ -37,6 +37,13 @@ const Index = () => {
   };
 
   const loadStocks = async (showToast = false) => {
+    if (tickers.length === 0) {
+      setStocks([]);
+      setIsLoading(false);
+      setIsRefreshing(false);
+      return;
+    }
+
     try {
       setIsRefreshing(true);
       const data = await fetchStockData(tickers);
@@ -67,7 +74,8 @@ const Index = () => {
       
       if (error) throw error;
       
-      setTickers(tickers.filter(t => t !== ticker));
+      // Reload tickers from database to ensure accurate state
+      await loadTickersFromDB();
       toast.success(`${ticker} removed`);
     } catch (error) {
       console.error('Failed to remove ticker:', error);
