@@ -89,6 +89,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
             </TableHead>
             <TableHead>Volume</TableHead>
             <TableHead className="text-right">P/E</TableHead>
+            <TableHead className="min-w-[300px]">Analyst Prediction</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -118,6 +119,18 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
               <TableCell className="text-muted-foreground">{stock.volumeDisplay}</TableCell>
               <TableCell className="text-right font-mono">
                 {stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'}
+              </TableCell>
+              <TableCell className="text-sm">
+                <span className={`font-semibold ${
+                  stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
+                  stock.analystPrediction.startsWith('Sell') ? 'text-destructive' : 
+                  'text-warning'
+                }`}>
+                  {stock.analystPrediction.split(' - ')[0]}
+                </span>
+                <span className="text-muted-foreground">
+                  {' - ' + stock.analystPrediction.split(' - ').slice(1).join(' - ')}
+                </span>
               </TableCell>
             </TableRow>
           ))}

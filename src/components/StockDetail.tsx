@@ -81,6 +81,25 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
             </div>
           </div>
 
+          {/* Analyst Prediction */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Analyst Prediction</h3>
+            <div className="bg-accent/50 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <span className={`font-bold text-lg ${
+                  stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
+                  stock.analystPrediction.startsWith('Sell') ? 'text-destructive' : 
+                  'text-warning'
+                }`}>
+                  {stock.analystPrediction.split(' - ')[0]}
+                </span>
+                <p className="text-sm text-muted-foreground flex-1">
+                  {stock.analystPrediction.split(' - ').slice(1).join(' - ')}
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Data Freshness */}
           <div className="text-sm text-muted-foreground text-center pt-2">
             Data as of: {stock.asOfTime} (Delayed ~15-20 minutes)

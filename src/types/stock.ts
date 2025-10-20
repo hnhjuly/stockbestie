@@ -12,6 +12,7 @@ export interface Stock {
   asOfTime: string;
   marketCapDisplay: string;
   volumeDisplay: string;
+  analystPrediction: string;
 }
 
 export type SortField = 'currentPrice' | 'marketCapRaw' | 'priceChangePercent';

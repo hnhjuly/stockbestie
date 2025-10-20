@@ -19,6 +19,7 @@ export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
         low52Week: 389.52,
         high52Week: 974.21,
         eps: 13.42,
+        analystPrediction: 'Buy - Strong growth in AI chips and data center demand. Analysts expect 40% revenue growth YoY.',
       },
       'NYSE:PLTR': {
         companyName: 'Palantir Technologies Inc.',
@@ -29,6 +30,7 @@ export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
         low52Week: 15.66,
         high52Week: 45.14,
         eps: 0.20,
+        analystPrediction: 'Hold - High valuation concerns, but strong AI platform growth. Government contracts provide stability.',
       },
       'AAPL': {
         companyName: 'Apple Inc.',
@@ -39,6 +41,7 @@ export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
         low52Week: 164.08,
         high52Week: 199.62,
         eps: 6.07,
+        analystPrediction: 'Buy - Strong services growth and iPhone 16 cycle. Solid fundamentals with consistent profit margins.',
       },
       'TSLA': {
         companyName: 'Tesla, Inc.',
@@ -49,6 +52,7 @@ export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
         low52Week: 152.37,
         high52Week: 299.29,
         eps: 3.26,
+        analystPrediction: 'Hold - EV competition intensifying but energy storage growth promising. Autonomous driving potential upside.',
       },
       'MSFT': {
         companyName: 'Microsoft Corporation',
@@ -59,6 +63,7 @@ export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
         low52Week: 309.45,
         high52Week: 468.35,
         eps: 10.68,
+        analystPrediction: 'Buy - Azure cloud and AI integration driving growth. Strong enterprise demand and recurring revenue model.',
       },
       'GOOGL': {
         companyName: 'Alphabet Inc.',
@@ -69,10 +74,21 @@ export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
         low52Week: 101.88,
         high52Week: 153.78,
         eps: 5.61,
+        analystPrediction: 'Buy - Dominant search position and growing cloud business. AI investments showing positive returns.',
       },
     };
 
     const mockStocks: Stock[] = tickers.map(ticker => {
+      const sentiments = ['Buy', 'Hold', 'Sell'];
+      const reasons = [
+        'Strong fundamentals and growth outlook',
+        'Market leader with competitive advantages',
+        'Recent product innovations driving demand',
+        'Concerns about valuation at current levels',
+        'Industry headwinds affecting near-term growth',
+        'Expanding market share in key segments'
+      ];
+      
       const baseData = mockDataMap[ticker] || {
         companyName: `${ticker} Company`,
         currentPrice: Math.random() * 500 + 50,
@@ -82,6 +98,7 @@ export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
         low52Week: Math.random() * 200 + 50,
         high52Week: Math.random() * 300 + 200,
         eps: Math.random() * 15 + 1,
+        analystPrediction: `${sentiments[Math.floor(Math.random() * sentiments.length)]} - ${reasons[Math.floor(Math.random() * reasons.length)]}.`,
       };
 
       const volumeRaw = Math.random() * 100000000 + 1000000;
@@ -112,6 +129,7 @@ export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
           hour: '2-digit', 
           minute: '2-digit' 
         }),
+        analystPrediction: baseData.analystPrediction!,
       };
     });
 
