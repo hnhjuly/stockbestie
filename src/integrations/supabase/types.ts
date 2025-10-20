@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      portfolio_tickers: {
+        Row: {
+          added_at: string
+          id: string
+          last_synced_at: string | null
+          ticker: string
+        }
+        Insert: {
+          added_at?: string
+          id?: string
+          last_synced_at?: string | null
+          ticker: string
+        }
+        Update: {
+          added_at?: string
+          id?: string
+          last_synced_at?: string | null
+          ticker?: string
+        }
+        Relationships: []
+      }
+      sync_status: {
+        Row: {
+          error_message: string | null
+          id: string
+          last_sync_at: string
+          status: string
+        }
+        Insert: {
+          error_message?: string | null
+          id?: string
+          last_sync_at?: string
+          status: string
+        }
+        Update: {
+          error_message?: string | null
+          id?: string
+          last_sync_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
