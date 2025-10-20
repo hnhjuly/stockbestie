@@ -8,19 +8,34 @@ import { Input } from '@/components/ui/input';
 import { RefreshCw, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
-
-const STORAGE_KEY = 'stockBestie_tickers';
+import { supabase } from '@/integrations/supabase/client';
 
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [tickers, setTickers] = useState<string[]>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : ['AAPL', 'GOOGL', 'MSFT'];
-  });
+  const [tickers, setTickers] = useState<string[]>([]);
   const [newTicker, setNewTicker] = useState('');
+
+  const loadTickersFromDB = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tickers')
+        .select('ticker')
+        .order('added_at', { ascending: true });
+      
+      if (error) throw error;
+      
+      const tickerList = data?.map(t => t.ticker) || [];
+      setTickers(tickerList);
+      return tickerList;
+    } catch (error) {
+      console.error('Failed to load tickers:', error);
+      toast.error('Failed to load tickers from database');
+      return [];
+    }
+  };
 
   const loadStocks = async (showToast = false) => {
     try {
@@ -39,7 +54,7 @@ const Index = () => {
     }
   };
 
-  const addTicker = () => {
+  const addTicker = async () => {
     const ticker = newTicker.trim().toUpperCase();
     if (!ticker) {
       toast.error('Please enter a ticker symbol');
@@ -49,19 +64,55 @@ const Index = () => {
       toast.error('Ticker already added');
       return;
     }
-    setTickers([...tickers, ticker]);
-    setNewTicker('');
-    toast.success(`${ticker} added`);
+
+    try {
+      const { error } = await supabase
+        .from('tickers')
+        .insert({ ticker });
+      
+      if (error) throw error;
+      
+      setTickers([...tickers, ticker]);
+      setNewTicker('');
+      toast.success(`${ticker} added`);
+    } catch (error: any) {
+      console.error('Failed to add ticker:', error);
+      toast.error('Failed to add ticker to database');
+    }
   };
 
-  const removeTicker = (ticker: string) => {
-    setTickers(tickers.filter(t => t !== ticker));
-    toast.success(`${ticker} removed`);
+  const removeTicker = async (ticker: string) => {
+    try {
+      const { error } = await supabase
+        .from('tickers')
+        .delete()
+        .eq('ticker', ticker);
+      
+      if (error) throw error;
+      
+      setTickers(tickers.filter(t => t !== ticker));
+      toast.success(`${ticker} removed`);
+    } catch (error) {
+      console.error('Failed to remove ticker:', error);
+      toast.error('Failed to remove ticker from database');
+    }
   };
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tickers));
-    loadStocks();
+    loadTickersFromDB().then((tickerList) => {
+      if (tickerList.length > 0) {
+        // Tickers will be set by loadTickersFromDB
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (tickers.length > 0) {
+      loadStocks();
+    }
   }, [tickers]);
 
   return (
