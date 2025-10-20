@@ -18,40 +18,89 @@ const Index = () => {
   const [tickers, setTickers] = useState<string[]>([]);
   const [newTicker, setNewTicker] = useState('');
 
-  const loadTickersFromDB = async () => {
+  const loadStocksFromDB = async () => {
     try {
       const { data, error } = await supabase
         .from('tickers')
-        .select('ticker')
+        .select('*')
         .order('added_at', { ascending: true });
       
       if (error) throw error;
       
+      const stockList: Stock[] = (data || []).map(row => ({
+        ticker: row.ticker,
+        companyName: row.company || row.ticker,
+        currentPrice: row.price || 0,
+        priceChangePercent: row.change_percent || 0,
+        volumeRaw: row.volume || 0,
+        low52Week: row.low52,
+        high52Week: row.high52,
+        asOfTime: new Date(row.updated_at).toLocaleString('en-US', { 
+          year: 'numeric', 
+          month: '2-digit', 
+          day: '2-digit', 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }),
+        volumeDisplay: formatVolume(row.volume || 0),
+        low52WeekDisplay: row.low52 ? `$${row.low52.toFixed(2)}` : '—',
+        high52WeekDisplay: row.high52 ? `$${row.high52.toFixed(2)}` : '—',
+        analystPrediction: row.analyst_label || 'No data',
+      }));
+      
+      setStocks(stockList);
       const tickerList = data?.map(t => t.ticker) || [];
       setTickers(tickerList);
-      return tickerList;
     } catch (error) {
-      console.error('Failed to load tickers:', error);
-      toast.error('Failed to load tickers from database');
-      return [];
+      console.error('Failed to load stocks:', error);
+      toast.error('Failed to load stocks from database');
     }
   };
 
-  const loadStocks = async (showToast = false) => {
+  const refreshStocks = async () => {
     try {
       setIsRefreshing(true);
-      const data = await fetchStockData(tickers);
-      setStocks(data);
-      if (showToast) {
-        toast.success('Stock data refreshed successfully');
+      
+      // Fetch fresh data from Yahoo
+      const yahooData = await fetchStockData(tickers);
+      
+      // Update each ticker in the database
+      for (const stock of yahooData) {
+        await supabase
+          .from('tickers')
+          .update({
+            price: stock.currentPrice,
+            change_percent: stock.priceChangePercent,
+            volume: stock.volumeRaw,
+            low52: stock.low52Week,
+            high52: stock.high52Week,
+            analyst_label: stock.analystPrediction,
+            company: stock.companyName,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('ticker', stock.ticker);
       }
+      
+      // Reload from database
+      await loadStocksFromDB();
+      toast.success('Stock data refreshed successfully');
     } catch (error) {
-      toast.error('Failed to fetch stock data');
+      toast.error('Failed to refresh stock data');
       console.error(error);
     } finally {
-      setIsLoading(false);
       setIsRefreshing(false);
     }
+  };
+
+  const formatVolume = (value: number): string => {
+    if (value >= 1e9) {
+      return `${(value / 1e9).toFixed(2)} B`;
+    } else if (value >= 1e6) {
+      return `${(value / 1e6).toFixed(2)} M`;
+    } else if (value >= 1e3) {
+      return `${(value / 1e3).toFixed(1)} K`;
+    }
+    return `${value.toFixed(0)}`;
   };
 
   const addTicker = async () => {
@@ -68,13 +117,15 @@ const Index = () => {
     try {
       const { error } = await supabase
         .from('tickers')
-        .insert({ ticker });
+        .insert({ ticker, company: ticker });
       
       if (error) throw error;
       
-      setTickers([...tickers, ticker]);
       setNewTicker('');
       toast.success(`${ticker} added`);
+      
+      // Reload stocks from database
+      await loadStocksFromDB();
     } catch (error: any) {
       console.error('Failed to add ticker:', error);
       toast.error('Failed to add ticker to database');
@@ -90,8 +141,10 @@ const Index = () => {
       
       if (error) throw error;
       
-      setTickers(tickers.filter(t => t !== ticker));
       toast.success(`${ticker} removed`);
+      
+      // Reload stocks from database
+      await loadStocksFromDB();
     } catch (error) {
       console.error('Failed to remove ticker:', error);
       toast.error('Failed to remove ticker from database');
@@ -99,21 +152,10 @@ const Index = () => {
   };
 
   useEffect(() => {
-    loadTickersFromDB().then((tickerList) => {
-      if (tickerList.length > 0) {
-        // Tickers will be set by loadTickersFromDB
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-      }
+    loadStocksFromDB().then(() => {
+      setIsLoading(false);
     });
   }, []);
-
-  useEffect(() => {
-    if (tickers.length > 0) {
-      loadStocks();
-    }
-  }, [tickers]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -131,8 +173,8 @@ const Index = () => {
               </div>
             </div>
             <Button
-              onClick={() => loadStocks(true)}
-              disabled={isRefreshing}
+              onClick={refreshStocks}
+              disabled={isRefreshing || tickers.length === 0}
               variant="outline"
               className="gap-2"
             >
@@ -191,7 +233,7 @@ const Index = () => {
           </div>
         ) : stocks.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-muted-foreground">No stocks found. Add tickers to your Google Sheet.</p>
+            <p className="text-muted-foreground">No stocks yet — add one above.</p>
           </div>
         ) : (
           <div className="space-y-6">

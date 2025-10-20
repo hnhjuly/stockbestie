@@ -36,7 +36,12 @@ async function fetchYahooFinanceData(ticker: string): Promise<any> {
   
   try {
     const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=price,summaryDetail`;
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': 'application/json',
+      },
+    });
     
     if (!response.ok) {
       throw new Error(`Yahoo Finance API error: ${response.status}`);

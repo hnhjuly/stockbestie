@@ -59,10 +59,13 @@ export type Database = {
       tickers: {
         Row: {
           added_at: string
+          analyst_label: string | null
           analyst_rating: string | null
           change_percent: number | null
           company: string | null
+          high52: number | null
           id: string
+          low52: number | null
           market_cap: number | null
           pe_ratio: number | null
           price: number | null
@@ -72,10 +75,13 @@ export type Database = {
         }
         Insert: {
           added_at?: string
+          analyst_label?: string | null
           analyst_rating?: string | null
           change_percent?: number | null
           company?: string | null
+          high52?: number | null
           id?: string
+          low52?: number | null
           market_cap?: number | null
           pe_ratio?: number | null
           price?: number | null
@@ -85,10 +91,13 @@ export type Database = {
         }
         Update: {
           added_at?: string
+          analyst_label?: string | null
           analyst_rating?: string | null
           change_percent?: number | null
           company?: string | null
+          high52?: number | null
           id?: string
+          low52?: number | null
           market_cap?: number | null
           pe_ratio?: number | null
           price?: number | null
