@@ -59,8 +59,8 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
 
   return (
     <>
-      {/* Mobile Card View */}
-      <div className="md:hidden space-y-3">
+      {/* Mobile & Tablet Card View */}
+      <div className="lg:hidden space-y-3">
         {sortedStocks.map((stock) => (
           <div
             key={stock.ticker}
@@ -103,7 +103,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block rounded-lg border bg-card overflow-x-auto">
+      <div className="hidden lg:block rounded-lg border bg-card overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
