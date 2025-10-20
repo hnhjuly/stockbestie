@@ -65,8 +65,8 @@ const Index = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <img src={stockBestieLogo} alt="Stock Bestie Logo" className="h-8 w-8 object-contain" />
+              <div className="p-2">
+                <img src={stockBestieLogo} alt="Stock Bestie Logo" className="h-12 w-12 object-contain" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold">Stock Bestie</h1>
