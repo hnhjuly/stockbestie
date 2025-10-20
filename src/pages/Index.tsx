@@ -99,14 +99,29 @@ const Index = () => {
   };
 
   useEffect(() => {
-    loadTickersFromDB().then((tickerList) => {
-      if (tickerList.length > 0) {
-        // Tickers will be set by loadTickersFromDB
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
+    const initializeApp = async () => {
+      const tickerList = await loadTickersFromDB();
+      
+      if (tickerList.length === 0) {
+        // Insert default tickers if database is empty
+        const defaultTickers = ['NVDA', 'TSLA', 'AAPL'];
+        try {
+          const { error } = await supabase
+            .from('tickers')
+            .insert(defaultTickers.map(ticker => ({ ticker })));
+          
+          if (error) throw error;
+          
+          setTickers(defaultTickers);
+        } catch (error) {
+          console.error('Failed to insert default tickers:', error);
+        }
       }
-    });
+      
+      setIsLoading(false);
+    };
+    
+    initializeApp();
   }, []);
 
   useEffect(() => {
