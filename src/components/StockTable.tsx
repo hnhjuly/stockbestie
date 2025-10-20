@@ -30,8 +30,8 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
   };
 
   const sortedStocks = [...stocks].sort((a, b) => {
-    const aValue = a[sortField];
-    const bValue = b[sortField];
+    const aValue = a[sortField] ?? -Infinity;
+    const bValue = b[sortField] ?? -Infinity;
     const modifier = sortDirection === 'asc' ? 1 : -1;
     return (aValue - bValue) * modifier;
   });
@@ -118,7 +118,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
               <TableCell>{stock.marketCapDisplay}</TableCell>
               <TableCell className="text-muted-foreground">{stock.volumeDisplay}</TableCell>
               <TableCell className="text-right font-mono">
-                {stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'}
+                {stock.peRatio !== null && stock.peRatio !== undefined ? stock.peRatio.toFixed(2) : 'N/A'}
               </TableCell>
               <TableCell className="text-sm">
                 <span className={`font-semibold ${

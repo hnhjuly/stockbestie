@@ -67,8 +67,8 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
             <div className="bg-card rounded-lg border">
               <DetailRow label="Market Cap" value={stock.marketCapDisplay} />
               <DetailRow label="Volume" value={stock.volumeDisplay} />
-              <DetailRow label="P/E Ratio" value={stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'} />
-              <DetailRow label="EPS (TTM)" value={stock.eps ? `$${stock.eps.toFixed(2)}` : 'N/A'} />
+              <DetailRow label="P/E Ratio" value={stock.peRatio !== null && stock.peRatio !== undefined ? stock.peRatio.toFixed(2) : 'N/A'} />
+              <DetailRow label="EPS (TTM)" value={stock.eps !== null && stock.eps !== undefined ? `$${stock.eps.toFixed(2)}` : 'N/A'} />
             </div>
           </div>
 
@@ -76,8 +76,8 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
           <div>
             <h3 className="text-lg font-semibold mb-3">52 Week Range</h3>
             <div className="bg-card rounded-lg border">
-              <DetailRow label="52W Low" value={`$${stock.low52Week.toFixed(2)}`} />
-              <DetailRow label="52W High" value={`$${stock.high52Week.toFixed(2)}`} />
+              <DetailRow label="52W Low" value={stock.low52Week !== null && stock.low52Week !== undefined ? `$${stock.low52Week.toFixed(2)}` : '—'} />
+              <DetailRow label="52W High" value={stock.high52Week !== null && stock.high52Week !== undefined ? `$${stock.high52Week.toFixed(2)}` : '—'} />
             </div>
           </div>
 
