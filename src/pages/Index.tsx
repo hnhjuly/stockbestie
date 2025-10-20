@@ -4,11 +4,11 @@ import { StockTable } from '@/components/StockTable';
 import { StockDetail } from '@/components/StockDetail';
 import { fetchStockData } from '@/lib/googleSheets';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { RefreshCw, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { supabase } from '@/integrations/supabase/client';
-import { TickerSearch } from '@/components/TickerSearch';
 
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -16,6 +16,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [tickers, setTickers] = useState<string[]>([]);
+  const [newTicker, setNewTicker] = useState('');
 
   const loadTickersFromDB = async () => {
     try {
@@ -53,8 +54,31 @@ const Index = () => {
     }
   };
 
-  const handleTickerAdded = (ticker: string) => {
-    setTickers([...tickers, ticker]);
+  const addTicker = async () => {
+    const ticker = newTicker.trim().toUpperCase();
+    if (!ticker) {
+      toast.error('Please enter a ticker symbol');
+      return;
+    }
+    if (tickers.includes(ticker)) {
+      toast.error('Ticker already added');
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('tickers')
+        .insert({ ticker });
+      
+      if (error) throw error;
+      
+      setTickers([...tickers, ticker]);
+      setNewTicker('');
+      toast.success(`${ticker} added`);
+    } catch (error: any) {
+      console.error('Failed to add ticker:', error);
+      toast.error('Failed to add ticker to database');
+    }
   };
 
   const removeTicker = async (ticker: string) => {
@@ -138,10 +162,20 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Ticker Management */}
         <div className="mb-6 space-y-4">
-          <TickerSearch 
-            existingTickers={tickers}
-            onTickerAdded={handleTickerAdded}
-          />
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="Enter ticker (e.g., AAPL, NVDA, NYSE:PLTR)"
+              value={newTicker}
+              onChange={(e) => setNewTicker(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addTicker()}
+              className="max-w-md"
+            />
+            <Button onClick={addTicker} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Ticker
+            </Button>
+          </div>
           
           {tickers.length > 0 && (
             <div className="flex flex-wrap gap-2">
