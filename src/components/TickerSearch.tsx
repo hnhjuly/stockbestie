@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { getDeviceId } from '@/lib/deviceId';
 
 interface SearchResult {
   symbol: string;
@@ -88,9 +89,10 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
     }
 
     try {
+      const deviceId = getDeviceId();
       const { error } = await supabase
         .from('tickers')
-        .insert({ ticker: tickerToAdd });
+        .insert({ ticker: tickerToAdd, user_id: deviceId });
       
       if (error) throw error;
       

@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { TickerSearch } from '@/components/TickerSearch';
+import { getDeviceId } from '@/lib/deviceId';
 
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -19,9 +20,11 @@ const Index = () => {
 
   const loadTickersFromDB = async () => {
     try {
+      const deviceId = getDeviceId();
       const { data, error } = await supabase
         .from('tickers')
         .select('ticker')
+        .eq('user_id', deviceId)
         .order('added_at', { ascending: false });
       
       if (error) throw error;
@@ -67,10 +70,12 @@ const Index = () => {
 
   const removeTicker = async (ticker: string) => {
     try {
+      const deviceId = getDeviceId();
       const { error } = await supabase
         .from('tickers')
         .delete()
-        .eq('ticker', ticker);
+        .eq('ticker', ticker)
+        .eq('user_id', deviceId);
       
       if (error) throw error;
       
@@ -88,12 +93,13 @@ const Index = () => {
       const tickerList = await loadTickersFromDB();
       
       if (tickerList.length === 0) {
-        // Insert default tickers if database is empty
+        // Insert default tickers if database is empty for this device
         const defaultTickers = ['NVDA', 'TSLA', 'AAPL'];
+        const deviceId = getDeviceId();
         try {
           const { error } = await supabase
             .from('tickers')
-            .insert(defaultTickers.map(ticker => ({ ticker })));
+            .insert(defaultTickers.map(ticker => ({ ticker, user_id: deviceId })));
           
           if (error) throw error;
           
