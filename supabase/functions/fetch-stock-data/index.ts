@@ -70,6 +70,7 @@ interface YahooFinanceQuote {
   epsTrailingTwelveMonths?: number;
   shortName: string;
   longName?: string;
+  averageAnalystRating?: string;
 }
 
 async function fetchYahooFinanceData(tickers: string[]): Promise<any[]> {
@@ -138,6 +139,21 @@ async function fetchYahooFinanceData(tickers: string[]): Promise<any[]> {
   }
 }
 
+function convertAnalystRating(rating: string | undefined | null): string {
+  if (!rating) return 'N/A';
+  
+  const numericRating = parseFloat(rating);
+  if (isNaN(numericRating)) return 'N/A';
+  
+  if (numericRating >= 1.0 && numericRating <= 1.5) return 'Strong Buy';
+  if (numericRating >= 1.6 && numericRating <= 2.4) return 'Buy';
+  if (numericRating >= 2.5 && numericRating <= 3.4) return 'Hold';
+  if (numericRating >= 3.5 && numericRating <= 4.4) return 'Sell';
+  if (numericRating >= 4.5 && numericRating <= 5.0) return 'Strong Sell';
+  
+  return 'N/A';
+}
+
 function mapYahooResults(results: any[]): any[] {
   return results.map((quote: any) => {
       const stockData = {
@@ -151,6 +167,7 @@ function mapYahooResults(results: any[]): any[] {
         low52Week: quote.fiftyTwoWeekLow || null,
         high52Week: quote.fiftyTwoWeekHigh || null,
         eps: quote.epsTrailingTwelveMonths || null,
+        analystRating: convertAnalystRating(quote.averageAnalystRating),
         asOfTime: quote.regularMarketTime 
           ? new Date(quote.regularMarketTime * 1000).toLocaleString('en-US', { 
               year: 'numeric', 
@@ -219,7 +236,7 @@ serve(async (req) => {
       ...stock,
       marketCapDisplay: formatMarketCap(stock.marketCapRaw),
       volumeDisplay: formatVolume(stock.volumeRaw),
-      analystPrediction: `Data from Yahoo Finance - ${stock.priceChangePercent && stock.priceChangePercent > 0 ? 'Positive' : 'Negative'} movement today`,
+      analystPrediction: stock.analystRating,
     }));
 
     return new Response(

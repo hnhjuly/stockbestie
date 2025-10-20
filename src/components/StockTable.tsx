@@ -122,14 +122,12 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
               </TableCell>
               <TableCell className="text-sm">
                 <span className={`font-semibold ${
-                  stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
-                  stock.analystPrediction.startsWith('Sell') ? 'text-destructive' : 
-                  'text-warning'
+                  stock.analystPrediction === 'Strong Buy' || stock.analystPrediction === 'Buy' ? 'text-success' : 
+                  stock.analystPrediction === 'Hold' ? 'text-warning' :
+                  stock.analystPrediction === 'Sell' || stock.analystPrediction === 'Strong Sell' ? 'text-destructive' : 
+                  'text-muted-foreground'
                 }`}>
-                  {stock.analystPrediction.split(' - ')[0]}
-                </span>
-                <span className="text-muted-foreground">
-                  {' - ' + stock.analystPrediction.split(' - ').slice(1).join(' - ')}
+                  {stock.analystPrediction}
                 </span>
               </TableCell>
             </TableRow>
