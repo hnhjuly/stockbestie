@@ -1,17 +1,19 @@
 export interface Stock {
   ticker: string;
   companyName: string;
-  volumeRaw: number | null;
-  currentPrice: number | null;
-  priceChangePercent: number | null;
-  low52Week: number | null;
-  high52Week: number | null;
+  marketCapRaw: number;
+  volumeRaw: number;
+  currentPrice: number;
+  priceChangePercent: number;
+  peRatio: number;
+  low52Week: number;
+  high52Week: number;
+  eps: number;
   asOfTime: string;
+  marketCapDisplay: string;
   volumeDisplay: string;
-  low52WeekDisplay: string;
-  high52WeekDisplay: string;
   analystPrediction: string;
 }
 
-export type SortField = 'currentPrice' | 'priceChangePercent' | 'volumeRaw' | 'low52Week' | 'high52Week';
+export type SortField = 'currentPrice' | 'marketCapRaw' | 'priceChangePercent';
 export type SortDirection = 'asc' | 'desc';

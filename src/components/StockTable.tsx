@@ -17,7 +17,7 @@ interface StockTableProps {
 }
 
 export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
-  const [sortField, setSortField] = useState<SortField>('currentPrice');
+  const [sortField, setSortField] = useState<SortField>('marketCapRaw');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const handleSort = (field: SortField) => {
@@ -32,12 +32,6 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
   const sortedStocks = [...stocks].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
-    
-    // Handle null values - push them to the end
-    if (aValue === null && bValue === null) return 0;
-    if (aValue === null) return 1;
-    if (bValue === null) return -1;
-    
     const modifier = sortDirection === 'asc' ? 1 : -1;
     return (aValue - bValue) * modifier;
   });
@@ -86,33 +80,15 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
             <TableHead>
               <Button
                 variant="ghost"
-                onClick={() => handleSort('volumeRaw')}
+                onClick={() => handleSort('marketCapRaw')}
                 className="hover:bg-accent"
               >
-                Volume
-                <SortIcon field="volumeRaw" />
+                Market Cap
+                <SortIcon field="marketCapRaw" />
               </Button>
             </TableHead>
-            <TableHead className="w-[110px]">
-              <Button
-                variant="ghost"
-                onClick={() => handleSort('low52Week')}
-                className="hover:bg-accent"
-              >
-                52W Low
-                <SortIcon field="low52Week" />
-              </Button>
-            </TableHead>
-            <TableHead className="w-[110px]">
-              <Button
-                variant="ghost"
-                onClick={() => handleSort('high52Week')}
-                className="hover:bg-accent"
-              >
-                52W High
-                <SortIcon field="high52Week" />
-              </Button>
-            </TableHead>
+            <TableHead>Volume</TableHead>
+            <TableHead className="text-right">P/E</TableHead>
             <TableHead className="min-w-[300px]">Analyst Prediction</TableHead>
           </TableRow>
         </TableHeader>
@@ -125,29 +101,25 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
             >
               <TableCell className="font-semibold">{stock.ticker}</TableCell>
               <TableCell className="max-w-[200px] truncate">{stock.companyName}</TableCell>
-              <TableCell className="font-mono">${stock.currentPrice !== null ? stock.currentPrice.toFixed(2) : '—'}</TableCell>
+              <TableCell className="font-mono">${stock.currentPrice.toFixed(2)}</TableCell>
               <TableCell>
-                <div className={`flex items-center gap-1 ${stock.priceChangePercent !== null ? getPriceChangeColor(stock.priceChangePercent) : 'text-muted-foreground'}`}>
-                  {stock.priceChangePercent !== null ? (
-                    <>
-                      {stock.priceChangePercent >= 0 ? (
-                        <TrendingUp className="h-4 w-4" />
-                      ) : (
-                        <TrendingDown className="h-4 w-4" />
-                      )}
-                      <span className="font-semibold">
-                        {stock.priceChangePercent >= 0 ? '+' : ''}
-                        {stock.priceChangePercent.toFixed(2)}%
-                      </span>
-                    </>
+                <div className={`flex items-center gap-1 ${getPriceChangeColor(stock.priceChangePercent)}`}>
+                  {stock.priceChangePercent >= 0 ? (
+                    <TrendingUp className="h-4 w-4" />
                   ) : (
-                    <span>—</span>
+                    <TrendingDown className="h-4 w-4" />
                   )}
+                  <span className="font-semibold">
+                    {stock.priceChangePercent >= 0 ? '+' : ''}
+                    {stock.priceChangePercent.toFixed(2)}%
+                  </span>
                 </div>
               </TableCell>
+              <TableCell>{stock.marketCapDisplay}</TableCell>
               <TableCell className="text-muted-foreground">{stock.volumeDisplay}</TableCell>
-              <TableCell className="font-mono w-[110px]">{stock.low52WeekDisplay}</TableCell>
-              <TableCell className="font-mono w-[110px]">{stock.high52WeekDisplay}</TableCell>
+              <TableCell className="text-right font-mono">
+                {stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'}
+              </TableCell>
               <TableCell className="text-sm">
                 <span className={`font-semibold ${
                   stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
