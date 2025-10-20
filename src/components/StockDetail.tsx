@@ -30,7 +30,7 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
             <div className="flex items-center gap-3">
@@ -41,7 +41,7 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6 mt-4">
+        <div className="space-y-6 mt-4 pb-4">
           {/* Price Section */}
           <div className="bg-accent/50 rounded-lg p-6">
             <div className="text-sm text-muted-foreground mb-2">Current Price</div>
