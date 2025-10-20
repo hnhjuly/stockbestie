@@ -1,7 +1,1 @@
 project_id = "wsfdnwxsdmizxuurorpe"
-
-[functions.fetch-stock-data]
-verify_jwt = false
-
-[functions.search-ticker]
-verify_jwt = false
