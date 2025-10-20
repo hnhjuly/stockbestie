@@ -56,6 +56,48 @@ export type Database = {
         }
         Relationships: []
       }
+      tickers: {
+        Row: {
+          added_at: string
+          analyst_rating: string | null
+          change_percent: number | null
+          company: string | null
+          id: string
+          market_cap: number | null
+          pe_ratio: number | null
+          price: number | null
+          ticker: string
+          updated_at: string
+          volume: number | null
+        }
+        Insert: {
+          added_at?: string
+          analyst_rating?: string | null
+          change_percent?: number | null
+          company?: string | null
+          id?: string
+          market_cap?: number | null
+          pe_ratio?: number | null
+          price?: number | null
+          ticker: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Update: {
+          added_at?: string
+          analyst_rating?: string | null
+          change_percent?: number | null
+          company?: string | null
+          id?: string
+          market_cap?: number | null
+          pe_ratio?: number | null
+          price?: number | null
+          ticker?: string
+          updated_at?: string
+          volume?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
