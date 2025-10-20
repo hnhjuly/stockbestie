@@ -9,17 +9,40 @@ const corsHeaders = {
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 60 * 1000; // 60 seconds in milliseconds
 
-interface YahooFinanceQuote {
-  regularMarketPrice: number;
-  regularMarketChangePercent: number;
-  marketCap: number;
-  regularMarketVolume: number;
-  trailingPE?: number;
-  fiftyTwoWeekLow: number;
-  fiftyTwoWeekHigh: number;
-  epsTrailingTwelveMonths?: number;
-  shortName: string;
-  longName?: string;
+interface YahooQuoteSummary {
+  quoteSummary: {
+    result: Array<{
+      price?: {
+        regularMarketPrice?: { raw?: number } | number;
+        regularMarketChangePercent?: { raw?: number } | number;
+        regularMarketVolume?: { raw?: number } | number;
+        regularMarketTime?: number;
+        marketCap?: { raw?: number };
+        sharesOutstanding?: { raw?: number };
+      };
+      summaryDetail?: {
+        marketCap?: { raw?: number };
+        trailingPE?: { raw?: number };
+        forwardPE?: { raw?: number };
+      };
+      defaultKeyStatistics?: {
+        marketCap?: { raw?: number };
+        trailingPE?: { raw?: number };
+        forwardPE?: { raw?: number };
+        sharesOutstanding?: { raw?: number };
+        enterpriseValue?: { raw?: number };
+      };
+      financialData?: {
+        epsTrailingTwelveMonths?: { raw?: number };
+      };
+    }>;
+  };
+}
+
+function extractRawValue(field: any): number | undefined {
+  if (typeof field === 'number') return field;
+  if (field?.raw !== undefined) return field.raw;
+  return undefined;
 }
 
 async function fetchYahooFinanceData(ticker: string): Promise<any> {
@@ -33,37 +56,96 @@ async function fetchYahooFinanceData(ticker: string): Promise<any> {
   console.log(`Fetching fresh data for ${ticker}`);
   
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+    const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=price,summaryDetail,defaultKeyStatistics,financialData`;
     const response = await fetch(url);
     
     if (!response.ok) {
       throw new Error(`Yahoo Finance API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    const quote = data.chart.result[0];
+    const data: YahooQuoteSummary = await response.json();
+    const result = data.quoteSummary?.result?.[0];
     
-    if (!quote) {
+    if (!result) {
       throw new Error(`No data found for ticker ${ticker}`);
     }
 
-    const meta = quote.meta;
-    const marketPrice = meta.regularMarketPrice;
-    const previousClose = meta.chartPreviousClose;
-    const changePercent = ((marketPrice - previousClose) / previousClose) * 100;
+    const { price, summaryDetail, defaultKeyStatistics, financialData } = result;
+
+    // Extract price and volume
+    const marketPrice = extractRawValue(price?.regularMarketPrice) ?? 0;
+    const changePercent = extractRawValue(price?.regularMarketChangePercent) ?? 0;
+    const volume = extractRawValue(price?.regularMarketVolume) ?? 0;
+    const marketTime = price?.regularMarketTime ?? Date.now() / 1000;
+
+    // Market Cap with fallbacks
+    let marketCap: number | null = null;
+    marketCap = extractRawValue(price?.marketCap) ?? null;
+    if (!marketCap) {
+      marketCap = extractRawValue(summaryDetail?.marketCap) ?? null;
+    }
+    if (!marketCap) {
+      // Try to compute from shares * price
+      const shares = extractRawValue(defaultKeyStatistics?.sharesOutstanding) 
+                     ?? extractRawValue(price?.sharesOutstanding);
+      if (shares && marketPrice > 0) {
+        marketCap = shares * marketPrice;
+      }
+    }
+
+    // Debug logging for Market Cap
+    if (!marketCap || marketCap === 0) {
+      console.warn(`[${ticker}] Market Cap resolving to 0 or null. Tried:`, {
+        'price.marketCap': price?.marketCap,
+        'summaryDetail.marketCap': summaryDetail?.marketCap,
+        'defaultKeyStatistics.sharesOutstanding': defaultKeyStatistics?.sharesOutstanding,
+        'price.sharesOutstanding': price?.sharesOutstanding,
+        'computed': marketCap
+      });
+    }
+
+    // P/E Ratio with fallbacks
+    let trailingPE: number | null = null;
+    trailingPE = extractRawValue(summaryDetail?.trailingPE) ?? null;
+    if (!trailingPE) {
+      trailingPE = extractRawValue(defaultKeyStatistics?.trailingPE) ?? null;
+    }
+    if (!trailingPE) {
+      // Try to compute from price / eps
+      const eps = extractRawValue(financialData?.epsTrailingTwelveMonths);
+      if (eps && eps > 0 && marketPrice > 0) {
+        trailingPE = marketPrice / eps;
+      }
+    }
+
+    const forwardPE = extractRawValue(summaryDetail?.forwardPE) 
+                      ?? extractRawValue(defaultKeyStatistics?.forwardPE) 
+                      ?? null;
+
+    // Debug logging for P/E
+    if (!trailingPE || trailingPE === 0) {
+      console.warn(`[${ticker}] P/E resolving to 0 or null. Tried:`, {
+        'summaryDetail.trailingPE': summaryDetail?.trailingPE,
+        'defaultKeyStatistics.trailingPE': defaultKeyStatistics?.trailingPE,
+        'financialData.epsTrailingTwelveMonths': financialData?.epsTrailingTwelveMonths,
+        'computed': trailingPE,
+        'forwardPE': forwardPE
+      });
+    }
 
     const stockData = {
       ticker,
-      companyName: meta.longName || meta.shortName || ticker,
+      companyName: ticker, // Yahoo quoteSummary doesn't provide name directly
       currentPrice: marketPrice,
       priceChangePercent: changePercent,
-      marketCapRaw: meta.marketCap || 0,
-      volumeRaw: meta.regularMarketVolume || 0,
-      peRatio: meta.trailingPE || 0,
-      low52Week: meta.fiftyTwoWeekLow || 0,
-      high52Week: meta.fiftyTwoWeekHigh || 0,
-      eps: meta.epsTrailingTwelveMonths || 0,
-      asOfTime: new Date(meta.regularMarketTime * 1000).toLocaleString('en-US', { 
+      marketCapRaw: marketCap,
+      volumeRaw: volume,
+      peRatio: trailingPE,
+      forwardPE: forwardPE,
+      low52Week: 0, // Not available in this endpoint
+      high52Week: 0, // Not available in this endpoint
+      eps: extractRawValue(financialData?.epsTrailingTwelveMonths) ?? null,
+      asOfTime: new Date(marketTime * 1000).toLocaleString('en-US', { 
         year: 'numeric', 
         month: '2-digit', 
         day: '2-digit', 
@@ -82,7 +164,9 @@ async function fetchYahooFinanceData(ticker: string): Promise<any> {
   }
 }
 
-function formatMarketCap(value: number): string {
+function formatMarketCap(value: number | null): string {
+  if (!value || value === 0) return '—';
+  
   if (value >= 1e12) {
     return `${(value / 1e12).toFixed(2)} T`;
   } else if (value >= 1e9) {
@@ -132,12 +216,23 @@ serve(async (req) => {
     // Filter out failed requests and format the data
     const stocks = results
       .filter(result => result !== null)
-      .map(stock => ({
-        ...stock,
-        marketCapDisplay: formatMarketCap(stock.marketCapRaw),
-        volumeDisplay: formatVolume(stock.volumeRaw),
-        analystPrediction: `Data from Yahoo Finance - ${stock.priceChangePercent > 0 ? 'Positive' : 'Negative'} movement today`,
-      }));
+      .map(stock => {
+        // Format P/E ratio
+        let peRatioDisplay = 'N/A';
+        if (stock.peRatio && stock.peRatio > 0) {
+          peRatioDisplay = stock.peRatio.toFixed(2);
+        } else if (stock.forwardPE && stock.forwardPE > 0) {
+          peRatioDisplay = `${stock.forwardPE.toFixed(2)} (fwd)`;
+        }
+
+        return {
+          ...stock,
+          marketCapDisplay: formatMarketCap(stock.marketCapRaw),
+          volumeDisplay: formatVolume(stock.volumeRaw),
+          peRatioDisplay,
+          analystPrediction: `Data from Yahoo Finance - ${stock.priceChangePercent > 0 ? 'Positive' : 'Negative'} movement today`,
+        };
+      });
 
     return new Response(
       JSON.stringify({ stocks }),
