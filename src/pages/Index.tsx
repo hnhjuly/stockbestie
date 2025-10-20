@@ -154,6 +154,16 @@ const Index = () => {
       <main className="container mx-auto px-4 py-4 md:py-8">
         {/* Ticker Management */}
         <div className="mb-4 md:mb-6 space-y-4">
+          <div className="flex justify-center mb-6">
+            <Button
+              variant="default"
+              size="sm"
+              className="shadow-md hover:shadow-lg transition-shadow"
+            >
+              Get Stock Bestie App now!
+            </Button>
+          </div>
+          
           <TickerSearch 
             existingTickers={tickers}
             onTickerAdded={handleTickerAdded}
