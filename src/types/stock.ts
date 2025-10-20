@@ -15,5 +15,5 @@ export interface Stock {
   analystPrediction: string;
 }
 
-export type SortField = 'currentPrice' | 'marketCapRaw' | 'priceChangePercent';
+export type SortField = 'currentPrice' | 'marketCapRaw' | 'priceChangePercent' | 'companyName';
 export type SortDirection = 'asc' | 'desc';

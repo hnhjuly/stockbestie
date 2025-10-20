@@ -33,7 +33,14 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
     const modifier = sortDirection === 'asc' ? 1 : -1;
-    return (aValue - bValue) * modifier;
+    
+    // Handle string sorting for company names
+    if (sortField === 'companyName') {
+      return (aValue as string).localeCompare(bValue as string) * modifier;
+    }
+    
+    // Handle numeric sorting
+    return ((aValue as number) - (bValue as number)) * modifier;
   });
 
   const SortIcon = ({ field }: { field: SortField }) => {
@@ -56,7 +63,16 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
         <TableHeader>
           <TableRow>
             <TableHead>Ticker</TableHead>
-            <TableHead>Company</TableHead>
+            <TableHead>
+              <Button
+                variant="ghost"
+                onClick={() => handleSort('companyName')}
+                className="hover:bg-accent"
+              >
+                Company
+                <SortIcon field="companyName" />
+              </Button>
+            </TableHead>
             <TableHead>
               <Button
                 variant="ghost"
