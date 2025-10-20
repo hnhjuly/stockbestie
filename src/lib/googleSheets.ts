@@ -12,7 +12,14 @@ export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
       throw error;
     }
 
-    return data.stocks || [];
+    const stocks = data.stocks || [];
+    
+    // Sort stocks to match the order of tickers array (newest first)
+    return stocks.sort((a: Stock, b: Stock) => {
+      const indexA = tickers.indexOf(a.ticker);
+      const indexB = tickers.indexOf(b.ticker);
+      return indexA - indexB;
+    });
   } catch (error) {
     console.error('Error fetching stock data:', error);
     throw error;
