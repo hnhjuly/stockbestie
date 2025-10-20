@@ -9,37 +9,39 @@ const corsHeaders = {
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 60 * 1000; // 60 seconds in milliseconds
 
-interface YahooQuoteSummary {
-  price: {
-    regularMarketPrice: { raw: number };
-    regularMarketChangePercent: { raw: number };
-    regularMarketVolume: { raw: number };
-    regularMarketTime: number;
-    shortName?: string;
-    longName?: string;
-  };
-  summaryDetail: {
-    fiftyTwoWeekLow?: { raw: number };
-    fiftyTwoWeekHigh?: { raw: number };
-  };
+interface YahooQuoteResult {
+  symbol: string;
+  shortName?: string;
+  longName?: string;
+  regularMarketPrice?: number;
+  regularMarketChangePercent?: number;
+  regularMarketVolume?: number;
+  fiftyTwoWeekLow?: number;
+  fiftyTwoWeekHigh?: number;
+  regularMarketTime?: number;
 }
 
-async function fetchYahooFinanceData(ticker: string): Promise<any> {
-  // Check cache first
-  const cached = cache.get(ticker);
+async function fetchYahooFinanceData(tickers: string[]): Promise<any[]> {
+  // Check cache for all tickers
+  const cacheKey = tickers.sort().join(',');
+  const cached = cache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    console.log(`Cache hit for ${ticker}`);
+    console.log(`Cache hit for tickers: ${tickers.join(', ')}`);
     return cached.data;
   }
 
-  console.log(`Fetching fresh data for ${ticker}`);
+  console.log(`Fetching fresh data for tickers: ${tickers.join(', ')}`);
   
   try {
-    const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=price,summaryDetail`;
+    const symbols = tickers.join(',');
+    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`;
+    
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (StockBestie)',
         'Accept': 'application/json',
+        'Referer': 'https://finance.yahoo.com',
+        'Cache-Control': 'no-store',
       },
     });
     
@@ -48,62 +50,70 @@ async function fetchYahooFinanceData(ticker: string): Promise<any> {
     }
 
     const data = await response.json();
-    const result = data.quoteSummary?.result?.[0];
+    const results = data.quoteResponse?.result;
     
-    if (!result) {
-      throw new Error(`No data found for ticker ${ticker}`);
+    if (!results || !Array.isArray(results)) {
+      throw new Error('No data found in response');
     }
 
-    const price = result.price;
-    const summaryDetail = result.summaryDetail;
-    
-    const marketPrice = price.regularMarketPrice?.raw ?? price.regularMarketPrice;
-    const previousClose = price.regularMarketPreviousClose?.raw ?? price.regularMarketPreviousClose;
-    const changePercent = price.regularMarketChangePercent?.raw ?? price.regularMarketChangePercent;
+    const stocksData = results.map((quote: YahooQuoteResult) => {
+      const marketTime = quote.regularMarketTime 
+        ? new Date(quote.regularMarketTime * 1000).toLocaleString('en-US', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          })
+        : new Date().toLocaleString('en-US', { 
+            year: 'numeric', 
+            month: '2-digit', 
+            day: '2-digit', 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          });
 
-    const stockData = {
-      ticker,
-      companyName: price.longName || price.shortName || ticker,
-      currentPrice: marketPrice,
-      priceChangePercent: changePercent,
-      volumeRaw: price.regularMarketVolume?.raw ?? price.regularMarketVolume ?? 0,
-      low52Week: summaryDetail?.fiftyTwoWeekLow?.raw ?? null,
-      high52Week: summaryDetail?.fiftyTwoWeekHigh?.raw ?? null,
-      asOfTime: new Date(price.regularMarketTime * 1000).toLocaleString('en-US', { 
-        year: 'numeric', 
-        month: '2-digit', 
-        day: '2-digit', 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      }),
-    };
+      return {
+        ticker: quote.symbol,
+        companyName: quote.shortName || quote.longName || quote.symbol,
+        currentPrice: quote.regularMarketPrice ?? null,
+        priceChangePercent: quote.regularMarketChangePercent ?? null,
+        volumeRaw: quote.regularMarketVolume ?? null,
+        low52Week: quote.fiftyTwoWeekLow ?? null,
+        high52Week: quote.fiftyTwoWeekHigh ?? null,
+        asOfTime: marketTime,
+      };
+    });
 
     // Store in cache
-    cache.set(ticker, { data: stockData, timestamp: Date.now() });
+    cache.set(cacheKey, { data: stocksData, timestamp: Date.now() });
 
-    return stockData;
+    return stocksData;
   } catch (error) {
-    console.error(`Error fetching ${ticker}:`, error);
+    console.error(`Error fetching quotes:`, error);
     throw error;
   }
 }
 
-function format52WeekPrice(value: number | null): string {
+function formatVolume(value: number | null): string {
   if (value === null || value === undefined) {
     return '—';
   }
-  return `$${value.toFixed(2)}`;
-}
-
-function formatVolume(value: number): string {
   if (value >= 1e9) {
-    return `${(value / 1e9).toFixed(2)} B`;
+    return `${(value / 1e9).toFixed(1)} B`;
   } else if (value >= 1e6) {
-    return `${(value / 1e6).toFixed(2)} M`;
+    return `${(value / 1e6).toFixed(1)} M`;
   } else if (value >= 1e3) {
     return `${(value / 1e3).toFixed(1)} K`;
   }
   return `${value.toFixed(0)}`;
+}
+
+function formatPrice(value: number | null): string {
+  if (value === null || value === undefined) {
+    return '—';
+  }
+  return `$${value.toFixed(2)}`;
 }
 
 serve(async (req) => {
@@ -121,26 +131,19 @@ serve(async (req) => {
 
     console.log(`Fetching data for tickers: ${tickers.join(', ')}`);
 
-    // Fetch all tickers in parallel
-    const promises = tickers.map(ticker => 
-      fetchYahooFinanceData(ticker).catch(error => {
-        console.error(`Failed to fetch ${ticker}:`, error);
-        return null;
-      })
-    );
-
-    const results = await Promise.all(promises);
+    // Fetch all tickers in a single request
+    const stocksData = await fetchYahooFinanceData(tickers);
     
-    // Filter out failed requests and format the data
-    const stocks = results
-      .filter(result => result !== null)
-      .map(stock => ({
-        ...stock,
-        volumeDisplay: formatVolume(stock.volumeRaw),
-        low52WeekDisplay: format52WeekPrice(stock.low52Week),
-        high52WeekDisplay: format52WeekPrice(stock.high52Week),
-        analystPrediction: `Data from Yahoo Finance - ${stock.priceChangePercent > 0 ? 'Positive' : 'Negative'} movement today`,
-      }));
+    // Format the data
+    const stocks = stocksData.map(stock => ({
+      ...stock,
+      volumeDisplay: formatVolume(stock.volumeRaw),
+      low52WeekDisplay: formatPrice(stock.low52Week),
+      high52WeekDisplay: formatPrice(stock.high52Week),
+      analystPrediction: stock.priceChangePercent !== null
+        ? `Data from Yahoo Finance - ${stock.priceChangePercent > 0 ? 'Positive' : 'Negative'} movement today`
+        : 'Data from Yahoo Finance',
+    }));
 
     return new Response(
       JSON.stringify({ stocks }),

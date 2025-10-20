@@ -30,9 +30,9 @@ const Index = () => {
       const stockList: Stock[] = (data || []).map(row => ({
         ticker: row.ticker,
         companyName: row.company || row.ticker,
-        currentPrice: row.price || 0,
-        priceChangePercent: row.change_percent || 0,
-        volumeRaw: row.volume || 0,
+        currentPrice: row.price,
+        priceChangePercent: row.change_percent,
+        volumeRaw: row.volume,
         low52Week: row.low52,
         high52Week: row.high52,
         asOfTime: new Date(row.updated_at).toLocaleString('en-US', { 
@@ -42,9 +42,9 @@ const Index = () => {
           hour: '2-digit', 
           minute: '2-digit' 
         }),
-        volumeDisplay: formatVolume(row.volume || 0),
-        low52WeekDisplay: row.low52 ? `$${row.low52.toFixed(2)}` : '—',
-        high52WeekDisplay: row.high52 ? `$${row.high52.toFixed(2)}` : '—',
+        volumeDisplay: formatVolume(row.volume),
+        low52WeekDisplay: formatPrice(row.low52),
+        high52WeekDisplay: formatPrice(row.high52),
         analystPrediction: row.analyst_label || 'No data',
       }));
       
@@ -57,14 +57,43 @@ const Index = () => {
     }
   };
 
+  const formatVolume = (value: number | null): string => {
+    if (value === null || value === undefined) {
+      return '—';
+    }
+    if (value >= 1e9) {
+      return `${(value / 1e9).toFixed(1)} B`;
+    } else if (value >= 1e6) {
+      return `${(value / 1e6).toFixed(1)} M`;
+    } else if (value >= 1e3) {
+      return `${(value / 1e3).toFixed(1)} K`;
+    }
+    return `${value.toFixed(0)}`;
+  };
+
+  const formatPrice = (value: number | null): string => {
+    if (value === null || value === undefined) {
+      return '—';
+    }
+    return `$${value.toFixed(2)}`;
+  };
+
   const refreshStocks = async () => {
+    if (tickers.length === 0) {
+      toast.error('No tickers to refresh');
+      return;
+    }
+
     try {
       setIsRefreshing(true);
       
       // Fetch fresh data from Yahoo
       const yahooData = await fetchStockData(tickers);
       
-      // Update each ticker in the database
+      // Update the in-memory state with fresh data
+      setStocks(yahooData);
+      
+      // Update database with fresh data
       for (const stock of yahooData) {
         await supabase
           .from('tickers')
@@ -81,8 +110,6 @@ const Index = () => {
           .eq('ticker', stock.ticker);
       }
       
-      // Reload from database
-      await loadStocksFromDB();
       toast.success('Stock data refreshed successfully');
     } catch (error) {
       toast.error('Failed to refresh stock data');
@@ -90,17 +117,6 @@ const Index = () => {
     } finally {
       setIsRefreshing(false);
     }
-  };
-
-  const formatVolume = (value: number): string => {
-    if (value >= 1e9) {
-      return `${(value / 1e9).toFixed(2)} B`;
-    } else if (value >= 1e6) {
-      return `${(value / 1e6).toFixed(2)} M`;
-    } else if (value >= 1e3) {
-      return `${(value / 1e3).toFixed(1)} K`;
-    }
-    return `${value.toFixed(0)}`;
   };
 
   const addTicker = async () => {

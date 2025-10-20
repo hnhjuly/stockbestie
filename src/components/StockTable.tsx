@@ -125,18 +125,24 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
             >
               <TableCell className="font-semibold">{stock.ticker}</TableCell>
               <TableCell className="max-w-[200px] truncate">{stock.companyName}</TableCell>
-              <TableCell className="font-mono">${stock.currentPrice.toFixed(2)}</TableCell>
+              <TableCell className="font-mono">${stock.currentPrice !== null ? stock.currentPrice.toFixed(2) : '—'}</TableCell>
               <TableCell>
-                <div className={`flex items-center gap-1 ${getPriceChangeColor(stock.priceChangePercent)}`}>
-                  {stock.priceChangePercent >= 0 ? (
-                    <TrendingUp className="h-4 w-4" />
+                <div className={`flex items-center gap-1 ${stock.priceChangePercent !== null ? getPriceChangeColor(stock.priceChangePercent) : 'text-muted-foreground'}`}>
+                  {stock.priceChangePercent !== null ? (
+                    <>
+                      {stock.priceChangePercent >= 0 ? (
+                        <TrendingUp className="h-4 w-4" />
+                      ) : (
+                        <TrendingDown className="h-4 w-4" />
+                      )}
+                      <span className="font-semibold">
+                        {stock.priceChangePercent >= 0 ? '+' : ''}
+                        {stock.priceChangePercent.toFixed(2)}%
+                      </span>
+                    </>
                   ) : (
-                    <TrendingDown className="h-4 w-4" />
+                    <span>—</span>
                   )}
-                  <span className="font-semibold">
-                    {stock.priceChangePercent >= 0 ? '+' : ''}
-                    {stock.priceChangePercent.toFixed(2)}%
-                  </span>
                 </div>
               </TableCell>
               <TableCell className="text-muted-foreground">{stock.volumeDisplay}</TableCell>
