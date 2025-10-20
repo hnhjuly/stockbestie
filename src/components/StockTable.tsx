@@ -17,7 +17,7 @@ interface StockTableProps {
 }
 
 export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
-  const [sortField, setSortField] = useState<SortField>('marketCapRaw');
+  const [sortField, setSortField] = useState<SortField | null>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const handleSort = (field: SortField) => {
@@ -29,7 +29,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
     }
   };
 
-  const sortedStocks = [...stocks].sort((a, b) => {
+  const sortedStocks = sortField ? [...stocks].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
     const modifier = sortDirection === 'asc' ? 1 : -1;
@@ -41,7 +41,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
     
     // Handle numeric sorting
     return ((aValue as number) - (bValue as number)) * modifier;
-  });
+  }) : stocks;
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return <ArrowUpDown className="ml-2 h-4 w-4" />;
