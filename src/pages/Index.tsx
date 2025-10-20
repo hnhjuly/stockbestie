@@ -9,12 +9,17 @@ import { RefreshCw, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 
+const STORAGE_KEY = 'stockBestie_tickers';
+
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [tickers, setTickers] = useState<string[]>(['AAPL', 'GOOGL', 'MSFT']);
+  const [tickers, setTickers] = useState<string[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : ['AAPL', 'GOOGL', 'MSFT'];
+  });
   const [newTicker, setNewTicker] = useState('');
 
   const loadStocks = async (showToast = false) => {
@@ -55,6 +60,7 @@ const Index = () => {
   };
 
   useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tickers));
     loadStocks();
   }, [tickers]);
 
