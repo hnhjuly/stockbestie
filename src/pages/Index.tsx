@@ -5,8 +5,9 @@ import { StockDetail } from '@/components/StockDetail';
 import { fetchStockData } from '@/lib/googleSheets';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RefreshCw, TrendingUp, Plus, X } from 'lucide-react';
+import { RefreshCw, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
+import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -65,11 +66,11 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-primary" />
+                <img src={stockBestieLogo} alt="Stock Bestie Logo" className="h-8 w-8 object-contain" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">AI Stock Sheet</h1>
-                <p className="text-sm text-muted-foreground">Real-time stock market data</p>
+                <h1 className="text-2xl font-bold">Stock Bestie</h1>
+                <p className="text-sm text-muted-foreground">Real-time stock market buddy by Hanah July</p>
               </div>
             </div>
             <Button
