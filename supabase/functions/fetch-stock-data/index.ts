@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -154,6 +156,51 @@ function convertAnalystRating(rating: string | undefined | null): string {
   return 'N/A';
 }
 
+async function generateAnalystSummary(stock: any): Promise<string> {
+  if (!LOVABLE_API_KEY) {
+    return 'Summary unavailable';
+  }
+
+  try {
+    const prompt = `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
+
+Stock metrics:
+- Current Price: $${stock.currentPrice?.toFixed(2) || 'N/A'}
+- Price Change: ${stock.priceChangePercent?.toFixed(2) || 'N/A'}%
+- P/E Ratio: ${stock.peRatio?.toFixed(2) || 'N/A'}
+- Market Cap: ${stock.marketCapRaw ? formatMarketCap(stock.marketCapRaw) : 'N/A'}
+- 52-Week Range: $${stock.low52Week?.toFixed(2) || 'N/A'} - $${stock.high52Week?.toFixed(2) || 'N/A'}
+
+Focus on why analysts give this rating based on valuation, growth potential, and market position. Be concise and informative.`;
+
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: 'You are a financial analyst providing concise explanations of stock ratings.' },
+          { role: 'user', content: prompt }
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`AI gateway error: ${response.status}`);
+      return 'Summary unavailable';
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content;
+  } catch (error) {
+    console.error('Error generating summary:', error);
+    return 'Summary unavailable';
+  }
+}
+
 function mapYahooResults(results: any[]): any[] {
   return results.map((quote: any) => {
       const stockData = {
@@ -231,16 +278,21 @@ serve(async (req) => {
     // Fetch all tickers in a single batch request
     const results = await fetchYahooFinanceData(tickers);
     
-    // Format the data
-    const stocks = results.map(stock => ({
-      ...stock,
-      marketCapDisplay: formatMarketCap(stock.marketCapRaw),
-      volumeDisplay: formatVolume(stock.volumeRaw),
-      analystPrediction: stock.analystRating,
-    }));
+    // Generate AI summaries for each stock in parallel
+    const stocksWithSummaries = await Promise.all(
+      results.map(async (stock) => {
+        const summary = await generateAnalystSummary(stock);
+        return {
+          ...stock,
+          marketCapDisplay: formatMarketCap(stock.marketCapRaw),
+          volumeDisplay: formatVolume(stock.volumeRaw),
+          analystPrediction: `${stock.analystRating} - ${summary}`,
+        };
+      })
+    );
 
     return new Response(
-      JSON.stringify({ stocks }),
+      JSON.stringify({ stocks: stocksWithSummaries }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
