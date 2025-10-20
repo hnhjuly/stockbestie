@@ -65,19 +65,9 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
           <div>
             <h3 className="text-lg font-semibold mb-3">Market Data</h3>
             <div className="bg-card rounded-lg border">
-              <DetailRow label="Market Cap" value={stock.marketCapDisplay} />
               <DetailRow label="Volume" value={stock.volumeDisplay} />
-              <DetailRow label="P/E Ratio" value={stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'} />
-              <DetailRow label="EPS (TTM)" value={stock.eps ? `$${stock.eps.toFixed(2)}` : 'N/A'} />
-            </div>
-          </div>
-
-          {/* 52 Week Range */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">52 Week Range</h3>
-            <div className="bg-card rounded-lg border">
-              <DetailRow label="52W Low" value={`$${stock.low52Week.toFixed(2)}`} />
-              <DetailRow label="52W High" value={`$${stock.high52Week.toFixed(2)}`} />
+              <DetailRow label="52W Low" value={stock.low52WeekDisplay} />
+              <DetailRow label="52W High" value={stock.high52WeekDisplay} />
             </div>
           </div>
 

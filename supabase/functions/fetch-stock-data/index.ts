@@ -9,17 +9,19 @@ const corsHeaders = {
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 60 * 1000; // 60 seconds in milliseconds
 
-interface YahooFinanceQuote {
-  regularMarketPrice: number;
-  regularMarketChangePercent: number;
-  marketCap: number;
-  regularMarketVolume: number;
-  trailingPE?: number;
-  fiftyTwoWeekLow: number;
-  fiftyTwoWeekHigh: number;
-  epsTrailingTwelveMonths?: number;
-  shortName: string;
-  longName?: string;
+interface YahooQuoteSummary {
+  price: {
+    regularMarketPrice: { raw: number };
+    regularMarketChangePercent: { raw: number };
+    regularMarketVolume: { raw: number };
+    regularMarketTime: number;
+    shortName?: string;
+    longName?: string;
+  };
+  summaryDetail: {
+    fiftyTwoWeekLow?: { raw: number };
+    fiftyTwoWeekHigh?: { raw: number };
+  };
 }
 
 async function fetchYahooFinanceData(ticker: string): Promise<any> {
@@ -33,7 +35,7 @@ async function fetchYahooFinanceData(ticker: string): Promise<any> {
   console.log(`Fetching fresh data for ${ticker}`);
   
   try {
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+    const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=price,summaryDetail`;
     const response = await fetch(url);
     
     if (!response.ok) {
@@ -41,29 +43,28 @@ async function fetchYahooFinanceData(ticker: string): Promise<any> {
     }
 
     const data = await response.json();
-    const quote = data.chart.result[0];
+    const result = data.quoteSummary?.result?.[0];
     
-    if (!quote) {
+    if (!result) {
       throw new Error(`No data found for ticker ${ticker}`);
     }
 
-    const meta = quote.meta;
-    const marketPrice = meta.regularMarketPrice;
-    const previousClose = meta.chartPreviousClose;
-    const changePercent = ((marketPrice - previousClose) / previousClose) * 100;
+    const price = result.price;
+    const summaryDetail = result.summaryDetail;
+    
+    const marketPrice = price.regularMarketPrice?.raw ?? price.regularMarketPrice;
+    const previousClose = price.regularMarketPreviousClose?.raw ?? price.regularMarketPreviousClose;
+    const changePercent = price.regularMarketChangePercent?.raw ?? price.regularMarketChangePercent;
 
     const stockData = {
       ticker,
-      companyName: meta.longName || meta.shortName || ticker,
+      companyName: price.longName || price.shortName || ticker,
       currentPrice: marketPrice,
       priceChangePercent: changePercent,
-      marketCapRaw: meta.marketCap || 0,
-      volumeRaw: meta.regularMarketVolume || 0,
-      peRatio: meta.trailingPE || 0,
-      low52Week: meta.fiftyTwoWeekLow || 0,
-      high52Week: meta.fiftyTwoWeekHigh || 0,
-      eps: meta.epsTrailingTwelveMonths || 0,
-      asOfTime: new Date(meta.regularMarketTime * 1000).toLocaleString('en-US', { 
+      volumeRaw: price.regularMarketVolume?.raw ?? price.regularMarketVolume ?? 0,
+      low52Week: summaryDetail?.fiftyTwoWeekLow?.raw ?? null,
+      high52Week: summaryDetail?.fiftyTwoWeekHigh?.raw ?? null,
+      asOfTime: new Date(price.regularMarketTime * 1000).toLocaleString('en-US', { 
         year: 'numeric', 
         month: '2-digit', 
         day: '2-digit', 
@@ -82,15 +83,11 @@ async function fetchYahooFinanceData(ticker: string): Promise<any> {
   }
 }
 
-function formatMarketCap(value: number): string {
-  if (value >= 1e12) {
-    return `${(value / 1e12).toFixed(2)} T`;
-  } else if (value >= 1e9) {
-    return `${(value / 1e9).toFixed(2)} B`;
-  } else if (value >= 1e6) {
-    return `${(value / 1e6).toFixed(2)} M`;
+function format52WeekPrice(value: number | null): string {
+  if (value === null || value === undefined) {
+    return '—';
   }
-  return `${value.toFixed(0)}`;
+  return `$${value.toFixed(2)}`;
 }
 
 function formatVolume(value: number): string {
@@ -134,8 +131,9 @@ serve(async (req) => {
       .filter(result => result !== null)
       .map(stock => ({
         ...stock,
-        marketCapDisplay: formatMarketCap(stock.marketCapRaw),
         volumeDisplay: formatVolume(stock.volumeRaw),
+        low52WeekDisplay: format52WeekPrice(stock.low52Week),
+        high52WeekDisplay: format52WeekPrice(stock.high52Week),
         analystPrediction: `Data from Yahoo Finance - ${stock.priceChangePercent > 0 ? 'Positive' : 'Negative'} movement today`,
       }));
 

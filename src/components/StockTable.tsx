@@ -17,7 +17,7 @@ interface StockTableProps {
 }
 
 export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
-  const [sortField, setSortField] = useState<SortField>('marketCapRaw');
+  const [sortField, setSortField] = useState<SortField>('currentPrice');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const handleSort = (field: SortField) => {
@@ -32,6 +32,12 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
   const sortedStocks = [...stocks].sort((a, b) => {
     const aValue = a[sortField];
     const bValue = b[sortField];
+    
+    // Handle null values - push them to the end
+    if (aValue === null && bValue === null) return 0;
+    if (aValue === null) return 1;
+    if (bValue === null) return -1;
+    
     const modifier = sortDirection === 'asc' ? 1 : -1;
     return (aValue - bValue) * modifier;
   });
@@ -80,15 +86,33 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
             <TableHead>
               <Button
                 variant="ghost"
-                onClick={() => handleSort('marketCapRaw')}
+                onClick={() => handleSort('volumeRaw')}
                 className="hover:bg-accent"
               >
-                Market Cap
-                <SortIcon field="marketCapRaw" />
+                Volume
+                <SortIcon field="volumeRaw" />
               </Button>
             </TableHead>
-            <TableHead>Volume</TableHead>
-            <TableHead className="text-right">P/E</TableHead>
+            <TableHead className="w-[110px]">
+              <Button
+                variant="ghost"
+                onClick={() => handleSort('low52Week')}
+                className="hover:bg-accent"
+              >
+                52W Low
+                <SortIcon field="low52Week" />
+              </Button>
+            </TableHead>
+            <TableHead className="w-[110px]">
+              <Button
+                variant="ghost"
+                onClick={() => handleSort('high52Week')}
+                className="hover:bg-accent"
+              >
+                52W High
+                <SortIcon field="high52Week" />
+              </Button>
+            </TableHead>
             <TableHead className="min-w-[300px]">Analyst Prediction</TableHead>
           </TableRow>
         </TableHeader>
@@ -115,11 +139,9 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                   </span>
                 </div>
               </TableCell>
-              <TableCell>{stock.marketCapDisplay}</TableCell>
               <TableCell className="text-muted-foreground">{stock.volumeDisplay}</TableCell>
-              <TableCell className="text-right font-mono">
-                {stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'}
-              </TableCell>
+              <TableCell className="font-mono w-[110px]">{stock.low52WeekDisplay}</TableCell>
+              <TableCell className="font-mono w-[110px]">{stock.high52WeekDisplay}</TableCell>
               <TableCell className="text-sm">
                 <span className={`font-semibold ${
                   stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
