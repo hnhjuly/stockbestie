@@ -144,7 +144,6 @@ const Index = () => {
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
-      toast.info('To install this app, use your browser\'s "Add to Home Screen" option');
       return;
     }
 
