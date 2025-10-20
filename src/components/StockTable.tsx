@@ -10,6 +10,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface StockTableProps {
   stocks: Stock[];
@@ -101,24 +107,47 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
             >
               <TableCell className="font-semibold">{stock.ticker}</TableCell>
               <TableCell className="max-w-[200px] truncate">{stock.companyName}</TableCell>
-              <TableCell className="font-mono">${stock.currentPrice.toFixed(2)}</TableCell>
-              <TableCell>
-                <div className={`flex items-center gap-1 ${getPriceChangeColor(stock.priceChangePercent)}`}>
-                  {stock.priceChangePercent >= 0 ? (
-                    <TrendingUp className="h-4 w-4" />
-                  ) : (
-                    <TrendingDown className="h-4 w-4" />
-                  )}
-                  <span className="font-semibold">
-                    {stock.priceChangePercent >= 0 ? '+' : ''}
-                    {stock.priceChangePercent.toFixed(2)}%
-                  </span>
-                </div>
+              <TableCell className="font-mono">
+                {stock.currentPrice ? `$${stock.currentPrice.toFixed(2)}` : '—'}
               </TableCell>
-              <TableCell>{stock.marketCapDisplay}</TableCell>
+              <TableCell>
+                {stock.priceChangePercent !== null ? (
+                  <div className={`flex items-center gap-1 ${getPriceChangeColor(stock.priceChangePercent)}`}>
+                    {stock.priceChangePercent >= 0 ? (
+                      <TrendingUp className="h-4 w-4" />
+                    ) : (
+                      <TrendingDown className="h-4 w-4" />
+                    )}
+                    <span className="font-semibold">
+                      {stock.priceChangePercent >= 0 ? '+' : ''}
+                      {stock.priceChangePercent.toFixed(2)}%
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
+              </TableCell>
+              <TableCell>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="cursor-help">{stock.marketCapDisplay}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>As of {stock.asOfTime}, USD (Yahoo)</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </TableCell>
               <TableCell className="text-muted-foreground">{stock.volumeDisplay}</TableCell>
               <TableCell className="text-right font-mono">
-                {stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'}
+                {stock.peRatio && stock.peRatio > 0 ? (
+                  stock.peRatio.toFixed(2)
+                ) : stock.forwardPE && stock.forwardPE > 0 ? (
+                  `N/A (Fwd: ${stock.forwardPE.toFixed(2)})`
+                ) : (
+                  'N/A'
+                )}
               </TableCell>
               <TableCell className="text-sm">
                 <span className={`font-semibold ${

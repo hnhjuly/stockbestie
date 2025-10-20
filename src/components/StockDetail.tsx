@@ -46,18 +46,22 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
           <div className="bg-accent/50 rounded-lg p-6">
             <div className="text-sm text-muted-foreground mb-2">Current Price</div>
             <div className="flex items-baseline gap-4">
-              <span className="text-4xl font-bold font-mono">${stock.currentPrice.toFixed(2)}</span>
-              <div className={`flex items-center gap-2 text-xl ${getPriceChangeColor(stock.priceChangePercent)}`}>
-                {stock.priceChangePercent >= 0 ? (
-                  <TrendingUp className="h-5 w-5" />
-                ) : (
-                  <TrendingDown className="h-5 w-5" />
-                )}
-                <span className="font-semibold">
-                  {stock.priceChangePercent >= 0 ? '+' : ''}
-                  {stock.priceChangePercent.toFixed(2)}%
-                </span>
-              </div>
+              <span className="text-4xl font-bold font-mono">
+                {stock.currentPrice ? `$${stock.currentPrice.toFixed(2)}` : '—'}
+              </span>
+              {stock.priceChangePercent !== null && (
+                <div className={`flex items-center gap-2 text-xl ${getPriceChangeColor(stock.priceChangePercent)}`}>
+                  {stock.priceChangePercent >= 0 ? (
+                    <TrendingUp className="h-5 w-5" />
+                  ) : (
+                    <TrendingDown className="h-5 w-5" />
+                  )}
+                  <span className="font-semibold">
+                    {stock.priceChangePercent >= 0 ? '+' : ''}
+                    {stock.priceChangePercent.toFixed(2)}%
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -67,8 +71,17 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
             <div className="bg-card rounded-lg border">
               <DetailRow label="Market Cap" value={stock.marketCapDisplay} />
               <DetailRow label="Volume" value={stock.volumeDisplay} />
-              <DetailRow label="P/E Ratio" value={stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'} />
-              <DetailRow label="EPS (TTM)" value={stock.eps ? `$${stock.eps.toFixed(2)}` : 'N/A'} />
+              <DetailRow 
+                label="P/E Ratio (Trailing)" 
+                value={
+                  stock.peRatio && stock.peRatio > 0 
+                    ? stock.peRatio.toFixed(2) 
+                    : stock.forwardPE && stock.forwardPE > 0 
+                      ? `N/A (Fwd: ${stock.forwardPE.toFixed(2)})`
+                      : 'N/A'
+                } 
+              />
+              <DetailRow label="EPS (TTM)" value={stock.eps && stock.eps > 0 ? `$${stock.eps.toFixed(2)}` : 'N/A'} />
             </div>
           </div>
 
@@ -76,8 +89,8 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
           <div>
             <h3 className="text-lg font-semibold mb-3">52 Week Range</h3>
             <div className="bg-card rounded-lg border">
-              <DetailRow label="52W Low" value={`$${stock.low52Week.toFixed(2)}`} />
-              <DetailRow label="52W High" value={`$${stock.high52Week.toFixed(2)}`} />
+              <DetailRow label="52W Low" value={stock.low52Week ? `$${stock.low52Week.toFixed(2)}` : '—'} />
+              <DetailRow label="52W High" value={stock.high52Week ? `$${stock.high52Week.toFixed(2)}` : '—'} />
             </div>
           </div>
 

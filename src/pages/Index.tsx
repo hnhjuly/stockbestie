@@ -191,7 +191,7 @@ const Index = () => {
           </div>
         ) : stocks.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-muted-foreground">No stocks found. Add tickers to your Google Sheet.</p>
+            <p className="text-muted-foreground">No stocks yet — add one above.</p>
           </div>
         ) : (
           <div className="space-y-6">
