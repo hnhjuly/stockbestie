@@ -4,7 +4,8 @@ import { StockTable } from '@/components/StockTable';
 import { StockDetail } from '@/components/StockDetail';
 import { fetchStockData } from '@/lib/googleSheets';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, TrendingUp } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { RefreshCw, TrendingUp, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Index = () => {
@@ -12,11 +13,13 @@ const Index = () => {
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [tickers, setTickers] = useState<string[]>(['AAPL', 'GOOGL', 'MSFT']);
+  const [newTicker, setNewTicker] = useState('');
 
   const loadStocks = async (showToast = false) => {
     try {
       setIsRefreshing(true);
-      const data = await fetchStockData();
+      const data = await fetchStockData(tickers);
       setStocks(data);
       if (showToast) {
         toast.success('Stock data refreshed successfully');
@@ -30,9 +33,29 @@ const Index = () => {
     }
   };
 
+  const addTicker = () => {
+    const ticker = newTicker.trim().toUpperCase();
+    if (!ticker) {
+      toast.error('Please enter a ticker symbol');
+      return;
+    }
+    if (tickers.includes(ticker)) {
+      toast.error('Ticker already added');
+      return;
+    }
+    setTickers([...tickers, ticker]);
+    setNewTicker('');
+    toast.success(`${ticker} added`);
+  };
+
+  const removeTicker = (ticker: string) => {
+    setTickers(tickers.filter(t => t !== ticker));
+    toast.success(`${ticker} removed`);
+  };
+
   useEffect(() => {
     loadStocks();
-  }, []);
+  }, [tickers]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -64,6 +87,43 @@ const Index = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Ticker Management */}
+        <div className="mb-6 space-y-4">
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="Enter ticker (e.g., AAPL, NVDA, NYSE:PLTR)"
+              value={newTicker}
+              onChange={(e) => setNewTicker(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addTicker()}
+              className="max-w-md"
+            />
+            <Button onClick={addTicker} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Ticker
+            </Button>
+          </div>
+          
+          {tickers.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {tickers.map((ticker) => (
+                <div
+                  key={ticker}
+                  className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
+                >
+                  {ticker}
+                  <button
+                    onClick={() => removeTicker(ticker)}
+                    className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center space-y-4">
