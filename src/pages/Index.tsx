@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Stock } from '@/types/stock';
 import { StockTable } from '@/components/StockTable';
 import { StockDetail } from '@/components/StockDetail';
 import { fetchStockData } from '@/lib/googleSheets';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, X, LogOut } from 'lucide-react';
+import { RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { TickerSearch } from '@/components/TickerSearch';
-import { User } from '@supabase/supabase-js';
 
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -18,8 +16,6 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [tickers, setTickers] = useState<string[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-  const navigate = useNavigate();
 
   const loadTickersFromDB = async () => {
     try {
@@ -80,35 +76,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    // Check authentication status
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        navigate('/auth');
-        return;
-      }
-      
-      setUser(session.user);
-    };
-
-    checkAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        navigate('/auth');
-      } else {
-        setUser(session.user);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  useEffect(() => {
-    if (!user) return;
-
     const initializeApp = async () => {
       const tickerList = await loadTickersFromDB();
       
@@ -118,7 +85,7 @@ const Index = () => {
         try {
           const { error } = await supabase
             .from('tickers')
-            .insert(defaultTickers.map(ticker => ({ ticker, user_id: user.id })));
+            .insert(defaultTickers.map(ticker => ({ ticker })));
           
           if (error) throw error;
           
@@ -132,7 +99,7 @@ const Index = () => {
     };
     
     initializeApp();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     if (tickers.length > 0) {
@@ -155,28 +122,15 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Real-time stock market buddy by Hanah July</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button
-                onClick={() => loadStocks(true)}
-                disabled={isRefreshing}
-                variant="outline"
-                className="gap-2"
-              >
-                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
-              <Button
-                onClick={async () => {
-                  await supabase.auth.signOut();
-                  navigate('/auth');
-                }}
-                variant="outline"
-                className="gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </Button>
-            </div>
+            <Button
+              onClick={() => loadStocks(true)}
+              disabled={isRefreshing}
+              variant="outline"
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
           </div>
         </div>
       </header>

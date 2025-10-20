@@ -88,17 +88,9 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
     }
 
     try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast.error('You must be logged in to add tickers');
-        return;
-      }
-
       const { error } = await supabase
         .from('tickers')
-        .insert({ ticker: tickerToAdd, user_id: user.id });
+        .insert({ ticker: tickerToAdd });
       
       if (error) throw error;
       
