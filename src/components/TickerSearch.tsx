@@ -54,7 +54,7 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
       }
     };
 
-    const timeoutId = setTimeout(searchTicker, 300);
+    const timeoutId = setTimeout(searchTicker, 150);
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 

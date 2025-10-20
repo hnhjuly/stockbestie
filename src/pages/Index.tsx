@@ -64,8 +64,8 @@ const Index = () => {
   };
 
   const handleTickerAdded = async (ticker: string) => {
-    // Reload tickers from database to ensure proper order
-    await loadTickersFromDB();
+    // Optimistically update UI - add ticker immediately
+    setTickers(prev => [ticker, ...prev]);
   };
 
   const removeTicker = async (ticker: string) => {
