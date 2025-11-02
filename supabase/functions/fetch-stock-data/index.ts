@@ -289,8 +289,8 @@ function mapYahooResults(results: any[]): any[] {
         // ETF-specific fields - try multiple field names
         netAssets: isETF ? (netAssets || quote.netAssets) : undefined,
         netAssetsDisplay: isETF ? formatMarketCap(netAssets || quote.netAssets || 0) : undefined,
-        dividendYield: isETF ? (quote.yield || quote.trailingAnnualDividendYield || quote.ytdReturn) : undefined,
-        expenseRatio: isETF ? (quote.annualReportExpenseRatio || quote.expenseRatio) : undefined,
+        dividendYield: isETF ? (quote.dividendYield || quote.trailingAnnualDividendYield) : undefined,
+        expenseRatio: isETF ? (quote.netExpenseRatio || quote.annualReportExpenseRatio || quote.expenseRatio) : undefined,
       };
 
       return stockData;
