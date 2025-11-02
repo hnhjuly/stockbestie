@@ -73,6 +73,11 @@ interface YahooFinanceQuote {
   shortName: string;
   longName?: string;
   averageAnalystRating?: string;
+  quoteType?: string;
+  // ETF-specific fields
+  totalAssets?: number;
+  yield?: number;
+  annualReportExpenseRatio?: number;
 }
 
 async function fetchYahooFinanceData(tickers: string[]): Promise<any[]> {
@@ -161,8 +166,27 @@ async function generateAnalystSummary(stock: any): Promise<string> {
     return 'Summary unavailable';
   }
 
+  // Return N/A for ETFs if no analyst rating
+  if (stock.type === 'etf' && stock.analystRating === 'N/A') {
+    return 'N/A';
+  }
+
   try {
-    const prompt = `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
+    const isETF = stock.type === 'etf';
+    
+    const prompt = isETF 
+      ? `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
+
+ETF metrics:
+- Current Price: $${stock.currentPrice?.toFixed(2) || 'N/A'}
+- Price Change: ${stock.priceChangePercent?.toFixed(2) || 'N/A'}%
+- Net Assets: ${stock.netAssetsDisplay || 'N/A'}
+- Dividend Yield: ${stock.dividendYield ? (stock.dividendYield * 100).toFixed(2) + '%' : 'N/A'}
+- Expense Ratio: ${stock.expenseRatio ? (stock.expenseRatio * 100).toFixed(2) + '%' : 'N/A'}
+- 52-Week Range: $${stock.low52Week?.toFixed(2) || 'N/A'} - $${stock.high52Week?.toFixed(2) || 'N/A'}
+
+Focus on why analysts give this rating based on the ETF's performance, holdings, costs, and market position. Be concise and informative.`
+      : `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
 
 Stock metrics:
 - Current Price: $${stock.currentPrice?.toFixed(2) || 'N/A'}
@@ -182,7 +206,7 @@ Focus on why analysts give this rating based on valuation, growth potential, and
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
-          { role: 'system', content: 'You are a financial analyst providing concise explanations of stock ratings.' },
+          { role: 'system', content: 'You are a financial analyst providing concise explanations of stock and ETF ratings.' },
           { role: 'user', content: prompt }
         ],
       }),
@@ -203,12 +227,17 @@ Focus on why analysts give this rating based on valuation, growth potential, and
 
 function mapYahooResults(results: any[]): any[] {
   return results.map((quote: any) => {
+      const isETF = quote.quoteType === 'ETF';
+      const marketCap = quote.marketCap || 0;
+      const netAssets = quote.totalAssets || 0;
+      
       const stockData = {
         ticker: quote.symbol,
         companyName: quote.shortName || quote.longName || quote.symbol,
+        type: isETF ? 'etf' : 'stock',
         currentPrice: quote.regularMarketPrice || null,
         priceChangePercent: quote.regularMarketChangePercent || null,
-        marketCapRaw: quote.marketCap || null,
+        marketCapRaw: marketCap,
         volumeRaw: quote.regularMarketVolume || null,
         peRatio: quote.trailingPE || null,
         low52Week: quote.fiftyTwoWeekLow || null,
@@ -230,6 +259,11 @@ function mapYahooResults(results: any[]): any[] {
               hour: '2-digit', 
               minute: '2-digit' 
             }),
+        // ETF-specific fields
+        netAssets: isETF ? netAssets : undefined,
+        netAssetsDisplay: isETF ? formatMarketCap(netAssets) : undefined,
+        dividendYield: isETF ? quote.yield : undefined,
+        expenseRatio: isETF ? quote.annualReportExpenseRatio : undefined,
       };
 
       return stockData;

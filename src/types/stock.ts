@@ -1,6 +1,7 @@
 export interface Stock {
   ticker: string;
   companyName: string;
+  type: 'stock' | 'etf';
   marketCapRaw: number;
   volumeRaw: number;
   currentPrice: number;
@@ -13,6 +14,11 @@ export interface Stock {
   marketCapDisplay: string;
   volumeDisplay: string;
   analystPrediction: string;
+  // ETF-specific fields
+  netAssets?: number;
+  netAssetsDisplay?: string;
+  dividendYield?: number;
+  expenseRatio?: number;
 }
 
 export type SortField = 'currentPrice' | 'marketCapRaw' | 'priceChangePercent' | 'companyName';

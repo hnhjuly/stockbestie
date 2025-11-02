@@ -63,12 +63,23 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
 
           {/* Market Data */}
           <div>
-            <h3 className="text-lg font-semibold mb-3">Market Data</h3>
+            <h3 className="text-lg font-semibold mb-3">{stock.type === 'etf' ? 'ETF Data' : 'Market Data'}</h3>
             <div className="bg-card rounded-lg border">
-              <DetailRow label="Market Cap" value={stock.marketCapDisplay} />
-              <DetailRow label="Volume" value={stock.volumeDisplay} />
-              <DetailRow label="P/E Ratio" value={stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'} />
-              <DetailRow label="EPS (TTM)" value={stock.eps ? `$${stock.eps.toFixed(2)}` : 'N/A'} />
+              {stock.type === 'etf' ? (
+                <>
+                  <DetailRow label="Net Assets" value={stock.netAssetsDisplay || 'N/A'} />
+                  <DetailRow label="Volume" value={stock.volumeDisplay} />
+                  <DetailRow label="Dividend Yield" value={stock.dividendYield ? `${(stock.dividendYield * 100).toFixed(2)}%` : 'N/A'} />
+                  <DetailRow label="Expense Ratio" value={stock.expenseRatio ? `${(stock.expenseRatio * 100).toFixed(2)}%` : 'N/A'} />
+                </>
+              ) : (
+                <>
+                  <DetailRow label="Market Cap" value={stock.marketCapDisplay} />
+                  <DetailRow label="Volume" value={stock.volumeDisplay} />
+                  <DetailRow label="P/E Ratio" value={stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'} />
+                  <DetailRow label="EPS (TTM)" value={stock.eps ? `$${stock.eps.toFixed(2)}` : 'N/A'} />
+                </>
+              )}
             </div>
           </div>
 
@@ -85,18 +96,22 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
           <div>
             <h3 className="text-lg font-semibold mb-3">Analyst Prediction</h3>
             <div className="bg-accent/50 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <span className={`font-bold text-lg ${
-                  stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
-                  stock.analystPrediction.startsWith('Sell') ? 'text-destructive' : 
-                  'text-warning'
-                }`}>
-                  {stock.analystPrediction.split(' - ')[0]}
-                </span>
-                <p className="text-sm text-muted-foreground flex-1">
-                  {stock.analystPrediction.split(' - ').slice(1).join(' - ')}
-                </p>
-              </div>
+              {stock.analystPrediction && stock.analystPrediction !== 'N/A' ? (
+                <div className="flex items-start gap-3">
+                  <span className={`font-bold text-lg ${
+                    stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
+                    stock.analystPrediction.startsWith('Sell') ? 'text-destructive' : 
+                    'text-warning'
+                  }`}>
+                    {stock.analystPrediction.split(' - ')[0]}
+                  </span>
+                  <p className="text-sm text-muted-foreground flex-1">
+                    {stock.analystPrediction.split(' - ').slice(1).join(' - ')}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">N/A</p>
+              )}
             </div>
           </div>
 

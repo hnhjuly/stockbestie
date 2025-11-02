@@ -87,7 +87,37 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs mb-2">
+              <div className="text-muted-foreground">
+                {stock.type === 'etf' ? 'Net Assets:' : 'Market Cap:'}
+                <span className="ml-1 font-mono text-foreground">
+                  {stock.type === 'etf' && stock.netAssetsDisplay ? stock.netAssetsDisplay : stock.marketCapDisplay}
+                </span>
+              </div>
+              <div className="text-muted-foreground">
+                Volume:
+                <span className="ml-1 font-mono text-foreground">{stock.volumeDisplay}</span>
+              </div>
+              <div className="text-muted-foreground">
+                {stock.type === 'etf' ? 'Div Yield:' : 'P/E:'}
+                <span className="ml-1 font-mono text-foreground">
+                  {stock.type === 'etf' 
+                    ? (stock.dividendYield ? `${(stock.dividendYield * 100).toFixed(2)}%` : 'N/A')
+                    : (stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A')
+                  }
+                </span>
+              </div>
+              <div className="text-muted-foreground">
+                {stock.type === 'etf' ? 'Exp Ratio:' : 'EPS:'}
+                <span className="ml-1 font-mono text-foreground">
+                  {stock.type === 'etf'
+                    ? (stock.expenseRatio ? `${(stock.expenseRatio * 100).toFixed(2)}%` : 'N/A')
+                    : (stock.eps ? `$${stock.eps.toFixed(2)}` : 'N/A')
+                  }
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
               <span>Tap for details</span>
               <span className={`font-semibold ${
                 stock.analystPrediction.startsWith('Strong Buy') || stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
@@ -95,7 +125,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 stock.analystPrediction.startsWith('Sell') || stock.analystPrediction.startsWith('Strong Sell') ? 'text-destructive' : 
                 'text-muted-foreground'
               }`}>
-                {stock.analystPrediction.split(' - ')[0]}
+                {stock.analystPrediction.split(' - ')[0] || 'N/A'}
               </span>
             </div>
           </div>
@@ -144,12 +174,13 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                   onClick={() => handleSort('marketCapRaw')}
                   className="hover:bg-accent"
                 >
-                  Market Cap
+                  {sortedStocks.some(s => s.type === 'etf') ? 'Mkt Cap / Net Assets' : 'Market Cap'}
                   <SortIcon field="marketCapRaw" />
                 </Button>
               </TableHead>
               <TableHead className="min-w-[100px]">Volume</TableHead>
-              <TableHead className="text-right min-w-[80px]">P/E</TableHead>
+              <TableHead className="text-right min-w-[100px]">P/E / Div Yield</TableHead>
+              <TableHead className="text-right min-w-[100px]">EPS / Exp Ratio</TableHead>
               <TableHead className="min-w-[300px]">Analyst Prediction</TableHead>
             </TableRow>
           </TableHeader>
@@ -176,10 +207,21 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                     </span>
                   </div>
                 </TableCell>
-                <TableCell>{stock.marketCapDisplay}</TableCell>
+                <TableCell>
+                  {stock.type === 'etf' && stock.netAssetsDisplay ? stock.netAssetsDisplay : stock.marketCapDisplay}
+                </TableCell>
                 <TableCell className="text-muted-foreground">{stock.volumeDisplay}</TableCell>
                 <TableCell className="text-right font-mono">
-                  {stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A'}
+                  {stock.type === 'etf' 
+                    ? (stock.dividendYield ? `${(stock.dividendYield * 100).toFixed(2)}%` : 'N/A')
+                    : (stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A')
+                  }
+                </TableCell>
+                <TableCell className="text-right font-mono">
+                  {stock.type === 'etf'
+                    ? (stock.expenseRatio ? `${(stock.expenseRatio * 100).toFixed(2)}%` : 'N/A')
+                    : (stock.eps ? `$${stock.eps.toFixed(2)}` : 'N/A')
+                  }
                 </TableCell>
                 <TableCell className="text-sm">
                   <span className={`font-semibold ${
@@ -188,7 +230,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                     stock.analystPrediction.startsWith('Sell') || stock.analystPrediction.startsWith('Strong Sell') ? 'text-destructive' : 
                     'text-muted-foreground'
                   }`}>
-                    {stock.analystPrediction.split(' - ')[0]}
+                    {stock.analystPrediction.split(' - ')[0] || 'N/A'}
                   </span>
                   {stock.analystPrediction.includes(' - ') && (
                     <span className="text-muted-foreground block mt-1">
