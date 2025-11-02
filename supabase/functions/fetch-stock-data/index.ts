@@ -286,11 +286,11 @@ function mapYahooResults(results: any[]): any[] {
               hour: '2-digit', 
               minute: '2-digit' 
             }),
-        // ETF-specific fields - try multiple field names
+        // ETF-specific fields (Yahoo returns these as percentage values, not ratios)
         netAssets: isETF ? (netAssets || quote.netAssets) : undefined,
         netAssetsDisplay: isETF ? formatMarketCap(netAssets || quote.netAssets || 0) : undefined,
-        dividendYield: isETF ? (quote.dividendYield || quote.trailingAnnualDividendYield) : undefined,
-        expenseRatio: isETF ? (quote.netExpenseRatio || quote.annualReportExpenseRatio || quote.expenseRatio) : undefined,
+        dividendYield: isETF ? quote.dividendYield : undefined,
+        expenseRatio: isETF ? quote.netExpenseRatio : undefined,
       };
 
       return stockData;
