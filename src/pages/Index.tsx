@@ -181,18 +181,21 @@ const Index = () => {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex items-center justify-center py-20 animate-fade-in">
             <div className="text-center space-y-4">
               <RefreshCw className="h-8 w-8 animate-spin mx-auto text-primary" />
               <p className="text-muted-foreground">Loading stock data...</p>
             </div>
           </div>
         ) : stocks.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-muted-foreground">No stocks found. Add companies to your Stock Bestie.</p>
+          <div className="text-center py-20 animate-fade-in">
+            <div className="text-center space-y-4">
+              <RefreshCw className="h-8 w-8 animate-spin mx-auto text-primary" />
+              <p className="text-muted-foreground">Loading companies... You may add more to your Stock Bestie</p>
+            </div>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold">Stock Portfolio</h2>
