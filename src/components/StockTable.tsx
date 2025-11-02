@@ -102,7 +102,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 {stock.type === 'etf' ? 'Div Yield:' : 'P/E:'}
                 <span className="ml-1 font-mono text-foreground">
                   {stock.type === 'etf' 
-                    ? (stock.dividendYield ? `${(stock.dividendYield * 100).toFixed(2)}%` : 'N/A')
+                    ? (stock.dividendYield ? `${stock.dividendYield.toFixed(2)}%` : 'N/A')
                     : (stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A')
                   }
                 </span>
@@ -111,7 +111,7 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 {stock.type === 'etf' ? 'Exp Ratio:' : 'EPS:'}
                 <span className="ml-1 font-mono text-foreground">
                   {stock.type === 'etf'
-                    ? (stock.expenseRatio ? `${(stock.expenseRatio * 100).toFixed(2)}%` : 'N/A')
+                    ? (stock.expenseRatio ? `${stock.expenseRatio.toFixed(2)}%` : 'N/A')
                     : (stock.eps ? `$${stock.eps.toFixed(2)}` : 'N/A')
                   }
                 </span>
@@ -213,13 +213,13 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 <TableCell className="text-muted-foreground">{stock.volumeDisplay}</TableCell>
                 <TableCell className="text-right font-mono">
                   {stock.type === 'etf' 
-                    ? (stock.dividendYield ? `${(stock.dividendYield * 100).toFixed(2)}%` : 'N/A')
+                    ? (stock.dividendYield ? `${stock.dividendYield.toFixed(2)}%` : 'N/A')
                     : (stock.peRatio ? stock.peRatio.toFixed(2) : 'N/A')
                   }
                 </TableCell>
                 <TableCell className="text-right font-mono">
                   {stock.type === 'etf'
-                    ? (stock.expenseRatio ? `${(stock.expenseRatio * 100).toFixed(2)}%` : 'N/A')
+                    ? (stock.expenseRatio ? `${stock.expenseRatio.toFixed(2)}%` : 'N/A')
                     : (stock.eps ? `$${stock.eps.toFixed(2)}` : 'N/A')
                   }
                 </TableCell>
