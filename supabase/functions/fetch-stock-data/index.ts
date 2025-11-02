@@ -238,6 +238,19 @@ function mapYahooResults(results: any[]): any[] {
       const marketCap = quote.marketCap || 0;
       const netAssets = quote.totalAssets || 0;
       
+      // Log ETF-specific fields for debugging
+      if (isETF) {
+        console.log(`ETF ${quote.symbol} fields:`, {
+          totalAssets: quote.totalAssets,
+          yield: quote.yield,
+          ytdReturn: quote.ytdReturn,
+          trailingAnnualDividendYield: quote.trailingAnnualDividendYield,
+          annualReportExpenseRatio: quote.annualReportExpenseRatio,
+          fundInceptionDate: quote.fundInceptionDate,
+          all_keys: Object.keys(quote)
+        });
+      }
+      
       const stockData = {
         ticker: quote.symbol,
         companyName: quote.shortName || quote.longName || quote.symbol,
@@ -266,11 +279,11 @@ function mapYahooResults(results: any[]): any[] {
               hour: '2-digit', 
               minute: '2-digit' 
             }),
-        // ETF-specific fields
-        netAssets: isETF ? netAssets : undefined,
-        netAssetsDisplay: isETF ? formatMarketCap(netAssets) : undefined,
-        dividendYield: isETF ? quote.yield : undefined,
-        expenseRatio: isETF ? quote.annualReportExpenseRatio : undefined,
+        // ETF-specific fields - try multiple field names
+        netAssets: isETF ? (netAssets || quote.netAssets) : undefined,
+        netAssetsDisplay: isETF ? formatMarketCap(netAssets || quote.netAssets || 0) : undefined,
+        dividendYield: isETF ? (quote.yield || quote.trailingAnnualDividendYield || quote.ytdReturn) : undefined,
+        expenseRatio: isETF ? (quote.annualReportExpenseRatio || quote.expenseRatio) : undefined,
       };
 
       return stockData;
