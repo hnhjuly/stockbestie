@@ -184,7 +184,7 @@ const Index = () => {
           <div className="flex items-center justify-center py-20 animate-fade-in">
             <div className="text-center space-y-4">
               <RefreshCw className="h-8 w-8 animate-spin mx-auto text-primary" />
-              <p className="text-muted-foreground">Loading stock data...</p>
+              <p className="text-muted-foreground">Loading companies... You may add more to your Stock Bestie</p>
             </div>
           </div>
         ) : stocks.length === 0 ? (
