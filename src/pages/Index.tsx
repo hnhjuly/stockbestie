@@ -17,6 +17,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [tickers, setTickers] = useState<string[]>([]);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const loadTickersFromDB = async () => {
     try {
@@ -51,6 +52,7 @@ const Index = () => {
       setIsRefreshing(true);
       const data = await fetchStockData(tickers);
       setStocks(data);
+      setLastUpdated(new Date());
       if (showToast) {
         toast.success('Stock data refreshed successfully');
       }
@@ -124,6 +126,17 @@ const Index = () => {
     if (tickers.length > 0) {
       loadStocks();
     }
+  }, [tickers]);
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    if (tickers.length === 0) return;
+
+    const interval = setInterval(() => {
+      loadStocks(false); // Don't show toast for auto-refresh
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
   }, [tickers]);
 
   return (
@@ -200,12 +213,17 @@ const Index = () => {
             </div>
           </div>
         ) : (
-          <div className="space-y-6 animate-fade-in">
+            <div className="space-y-6 animate-fade-in">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-semibold">Stock Portfolio</h2>
                 <p className="text-sm text-muted-foreground">
                   Tracking {stocks.length} stocks • Click any row for details
+                  {lastUpdated && (
+                    <span className="ml-2">
+                      • Updated {lastUpdated.toLocaleTimeString()}
+                    </span>
+                  )}
                 </p>
               </div>
             </div>
