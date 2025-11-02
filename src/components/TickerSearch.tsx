@@ -84,7 +84,7 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
 
     // If user typed something but we have no results, show error
     if (!ticker && searchResults.length === 0 && searchQuery.trim().length > 0) {
-      toast.error("Couldn't find a US stock for that name");
+      toast.error("Couldn't find a US stock or ETF for that name");
       return;
     }
 
@@ -142,7 +142,7 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
           <Input
             ref={inputRef}
             type="text"
-            placeholder="Enter ticker or company name (e.g., AAPL, Nvidia)"
+            placeholder="Enter ticker or company name (e.g., AAPL, VOO, SPY)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyDown={handleKeyDown}
