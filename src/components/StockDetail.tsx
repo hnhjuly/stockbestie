@@ -69,8 +69,8 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
                 <>
                   <DetailRow label="Net Assets" value={stock.netAssetsDisplay || 'N/A'} />
                   <DetailRow label="Volume" value={stock.volumeDisplay} />
-                  <DetailRow label="Dividend Yield" value={stock.dividendYield ? `${(stock.dividendYield * 100).toFixed(2)}%` : 'N/A'} />
-                  <DetailRow label="Expense Ratio" value={stock.expenseRatio ? `${(stock.expenseRatio * 100).toFixed(2)}%` : 'N/A'} />
+                  <DetailRow label="Dividend Yield" value={stock.dividendYield ? `${stock.dividendYield.toFixed(2)}%` : 'N/A'} />
+                  <DetailRow label="Expense Ratio" value={stock.expenseRatio ? `${stock.expenseRatio.toFixed(2)}%` : 'N/A'} />
                 </>
               ) : (
                 <>
