@@ -135,6 +135,13 @@ async function fetchYahooFinanceData(tickers: string[]): Promise<any[]> {
     const data = await response.json();
     const results = data.quoteResponse?.result || [];
     
+    console.log(`Yahoo Finance returned ${results.length} results`);
+    if (results.length > 0) {
+      console.log('Sample result:', JSON.stringify(results[0], null, 2));
+    } else {
+      console.log('Full response:', JSON.stringify(data, null, 2));
+    }
+    
     if (results.length === 0) {
       throw new Error(`No data found for tickers ${tickerString}`);
     }

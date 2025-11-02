@@ -35,12 +35,12 @@ Deno.serve(async (req) => {
     console.log(`Raw search results count: ${data.quotes?.length || 0}`);
     console.log('Sample quotes:', JSON.stringify(data.quotes?.slice(0, 3), null, 2));
     
-    // Filter for US stocks and ETFs (NASDAQ or NYSE, quoteType = EQUITY or ETF)
+    // Filter for US stocks and ETFs (NASDAQ, NYSE, or NYSEArca)
     const validResults = (data.quotes || [])
       .filter((quote: any) => {
         const isEquityOrETF = quote.quoteType === 'EQUITY' || quote.quoteType === 'ETF';
-        const isUSExchange = quote.exchange === 'NMS' || quote.exchange === 'NYQ' || 
-                            quote.exchDisp === 'NASDAQ' || quote.exchDisp === 'NYSE';
+        const isUSExchange = quote.exchange === 'NMS' || quote.exchange === 'NYQ' || quote.exchange === 'PCX' ||
+                            quote.exchDisp === 'NASDAQ' || quote.exchDisp === 'NYSE' || quote.exchDisp === 'NYSEArca';
         const hasSymbol = quote.symbol && !quote.symbol.includes('.');
         
         console.log(`Checking ${quote.symbol}: quoteType=${quote.quoteType}, isUSExchange=${isUSExchange}, exchange=${quote.exchange}, exchDisp=${quote.exchDisp}`);
