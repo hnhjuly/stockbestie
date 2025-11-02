@@ -54,8 +54,13 @@ const Index = () => {
       if (showToast) {
         toast.success('Stock data refreshed successfully');
       }
-    } catch (error) {
-      toast.error('Failed to fetch stock data');
+    } catch (error: any) {
+      // Check for rate limiting error
+      if (error?.message?.includes('rate limit') || error?.context?.rateLimited) {
+        toast.error('Rate limit reached. Please wait 30 seconds before refreshing.');
+      } else {
+        toast.error('Failed to fetch stock data');
+      }
       console.error(error);
     } finally {
       setIsLoading(false);

@@ -7,9 +7,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Cache to store stock data with 60-second expiration
+// Cache to store stock data with 5-minute expiration (to reduce rate limiting)
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = 60 * 1000; // 60 seconds in milliseconds
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 // Cache for Yahoo Finance cookie and crumb
 let yahooCookie: string | null = null;
@@ -101,6 +101,13 @@ async function fetchYahooFinanceData(tickers: string[]): Promise<any[]> {
     
     if (!response.ok) {
       console.error(`Yahoo Finance API error: ${response.status}`);
+      
+      // Handle rate limiting
+      if (response.status === 429) {
+        console.log('Rate limited by Yahoo Finance - will retry with backoff');
+        throw new Error('Yahoo Finance rate limit reached. Please wait a moment and try again.');
+      }
+      
       // If 401, clear cached auth and retry once
       if (response.status === 401) {
         console.log('Got 401, clearing auth cache and retrying...');
@@ -355,6 +362,21 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in fetch-stock-data function:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    
+    // Return more user-friendly error for rate limiting
+    if (errorMessage.includes('rate limit')) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Yahoo Finance rate limit reached. Please wait 30 seconds and try again.',
+          rateLimited: true 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 429,
+        }
+      );
+    }
+    
     return new Response(
       JSON.stringify({ error: errorMessage }),
       { 
