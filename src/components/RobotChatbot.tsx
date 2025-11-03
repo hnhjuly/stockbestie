@@ -81,19 +81,10 @@ function GlowingShadow() {
 export const RobotChatbot = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsChatOpen(false);
-      setIsClosing(false);
-    }, 200); // Match animation duration
-  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -190,11 +181,9 @@ export const RobotChatbot = () => {
       {/* 3D Robot */}
       <div
         className="relative w-48 h-48 cursor-pointer"
-        onMouseEnter={() => {
-          setIsHovered(true);
-          setIsChatOpen(true);
-        }}
+        onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onClick={() => setIsChatOpen(true)}
       >
         <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
           <ambientLight intensity={3.5} />
@@ -223,9 +212,7 @@ export const RobotChatbot = () => {
 
       {/* Chat Window - Glass morphism */}
       {isChatOpen && (
-        <div className={`absolute bottom-full right-0 mb-4 w-80 backdrop-blur-xl bg-background/80 border border-primary/30 rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.37)] overflow-hidden transition-all duration-200 ${
-          isClosing ? 'animate-scale-out opacity-0' : 'animate-scale-in opacity-100'
-        }`}>
+        <div className="absolute bottom-full right-0 mb-4 w-80 backdrop-blur-xl bg-background/80 border border-primary/30 rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.37)] animate-scale-in overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-primary/10 backdrop-blur-xl border-b border-primary/20">
             <div className="flex items-center gap-2">
@@ -235,8 +222,8 @@ export const RobotChatbot = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleClose}
-              className="h-8 w-8 p-0 hover:bg-primary/20 transition-colors duration-200"
+              onClick={() => setIsChatOpen(false)}
+              className="h-8 w-8 p-0 hover:bg-primary/20"
             >
               <X className="h-4 w-4" />
             </Button>
