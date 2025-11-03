@@ -80,17 +80,21 @@ serve(async (req) => {
       
       if (ticker && SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
         try {
+          console.log(`Fetching real-time data for ticker: ${ticker}`);
+          
           // Create Supabase client
           const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
           
           // Call the fetch-stock-data function
-          const { data: stockData, error: stockError } = await supabase.functions.invoke(
+          const { data: response, error: stockError } = await supabase.functions.invoke(
             'fetch-stock-data',
             { body: { tickers: [ticker] } }
           );
           
-          if (!stockError && stockData && stockData.length > 0) {
-            const stock = stockData[0];
+          console.log('Stock data response:', JSON.stringify(response));
+          
+          if (!stockError && response?.stocks && response.stocks.length > 0) {
+            const stock = response.stocks[0];
             const currentTime = new Date().toLocaleString('en-US', { 
               timeZone: 'America/New_York',
               hour: 'numeric',
@@ -101,12 +105,21 @@ serve(async (req) => {
               year: 'numeric'
             });
             
-            stockContext = `\n\nCURRENT STOCK DATA for ${ticker} (as of ${currentTime} ET):
-- Current Price: $${stock.price}
-- Change: ${stock.change > 0 ? '+' : ''}$${stock.change} (${stock.changePercent > 0 ? '+' : ''}${stock.changePercent}%)
-- Company: ${stock.name}
+            stockContext = `\n\nIMPORTANT - REAL-TIME STOCK DATA AVAILABLE:
+You MUST use this live data to answer the user's question about ${ticker}:
 
-Use this real-time data to answer the user's question accurately. Format your response naturally and include the timestamp.`;
+As of ${currentTime} ET:
+- ${stock.companyName} (${ticker})
+- Current Price: $${stock.currentPrice}
+- Price Change: ${stock.priceChangePercent > 0 ? '+' : ''}${stock.priceChangePercent.toFixed(2)}%
+- Market Cap: ${stock.marketCapDisplay}
+- Volume: ${stock.volumeDisplay}
+
+RESPONSE FORMAT: Start your answer with "As of ${currentTime} ET, ${stock.companyName} (${ticker}) is trading at $${stock.currentPrice}" and then provide additional context naturally. 📈✨`;
+            
+            console.log('Stock context added:', stockContext);
+          } else {
+            console.log('No stock data found or error:', stockError);
           }
         } catch (error) {
           console.error('Error fetching stock data:', error);
@@ -132,8 +145,10 @@ Key traits:
 - Knowledgeable about stocks, market analysis, and Yahoo Finance data
 - Keep responses concise (under 150 words) and easy to understand
 - Use emojis occasionally to be more personable 💼📈
-- When provided with real-time stock data, always cite it with the timestamp
-- When discussing specific stocks, mention relevant metrics like P/E ratio, market cap, analyst ratings
+- **CRITICAL**: When real-time stock data is provided in your context, you MUST use it and cite the exact timestamp
+- **NEVER** say you can't access real-time data if stock data is provided in your context
+- Format real-time price answers as: "As of [timestamp], [company] ([ticker]) is trading at $[price]"
+- When discussing stocks, mention relevant metrics like P/E ratio, market cap, analyst ratings
 - Always remind users that this is educational information, not financial advice
 
 You can discuss: stock prices, market trends, company fundamentals, analyst ratings, sector performance, and general investment concepts. Stay current with market knowledge and be helpful while maintaining your cute, sassy personality! ✨${stockContext}`
