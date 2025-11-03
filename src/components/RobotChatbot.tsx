@@ -16,13 +16,31 @@ interface Message {
 function RobotModel() {
   const { scene } = useGLTF(robotModel);
   const meshRef = useRef<any>();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      // Convert mouse position to normalized coordinates (-1 to 1)
+      const x = (event.clientX / window.innerWidth) * 2 - 1;
+      const y = -(event.clientY / window.innerHeight) * 2 + 1;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   useFrame((state) => {
     if (meshRef.current) {
       // Floating animation
       meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.2;
-      // Gentle rotation
-      meshRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.15;
+      
+      // Eye tracking - rotate head to follow cursor
+      const targetRotationY = mousePosition.x * 0.3;
+      const targetRotationX = mousePosition.y * 0.2;
+      
+      meshRef.current.rotation.y += (targetRotationY - meshRef.current.rotation.y) * 0.1;
+      meshRef.current.rotation.x += (targetRotationX - meshRef.current.rotation.x) * 0.1;
     }
   });
 
@@ -168,11 +186,13 @@ export const RobotChatbot = () => {
         onClick={() => setIsChatOpen(true)}
       >
         <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-          <ambientLight intensity={2.5} />
-          <directionalLight position={[5, 5, 5]} intensity={3.0} castShadow />
-          <directionalLight position={[-5, 3, -5]} intensity={2.0} />
-          <pointLight position={[0, 5, 0]} intensity={2.2} color="#ffffff" />
-          <pointLight position={[3, 0, 3]} intensity={1.2} color="#a0c5ff" />
+          <ambientLight intensity={3.5} />
+          <directionalLight position={[5, 5, 5]} intensity={4.0} castShadow />
+          <directionalLight position={[-5, 3, -5]} intensity={3.0} />
+          <directionalLight position={[0, 5, 5]} intensity={3.0} />
+          <pointLight position={[0, 5, 0]} intensity={3.0} color="#ffffff" />
+          <pointLight position={[3, 0, 3]} intensity={2.0} color="#e0f0ff" />
+          <pointLight position={[-3, 0, -3]} intensity={2.0} color="#ffffff" />
           <RobotModel />
           <GlowingShadow />
         </Canvas>
