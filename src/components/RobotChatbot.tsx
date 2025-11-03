@@ -66,8 +66,8 @@ function GlowingShadow() {
   });
 
   return (
-    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.8, 0]}>
-      <circleGeometry args={[1.5, 32]} />
+    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} scale={[1.0, 0.6, 1]}>
+      <circleGeometry args={[1.0, 32]} />
       <meshBasicMaterial 
         color="#3b82f6" 
         transparent 
@@ -193,10 +193,10 @@ export const RobotChatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-12 right-8 z-50">
+    <div className="fixed bottom-4 right-4 md:bottom-12 md:right-8 z-50">
       {/* 3D Robot */}
       <div
-        className="relative w-48 h-48 cursor-pointer"
+        className="relative w-32 h-32 md:w-48 md:h-48 cursor-pointer"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => setIsChatOpen(true)}
@@ -218,8 +218,10 @@ export const RobotChatbot = () => {
           <pointLight position={[0, 5, 0]} intensity={3.0} color="#ffffff" />
           <pointLight position={[3, 0, 3]} intensity={2.0} color="#e0f0ff" />
           <pointLight position={[-3, 0, -3]} intensity={2.0} color="#ffffff" />
-          <RobotModel />
-          <GlowingShadow />
+          <group scale={window.innerWidth < 768 ? 0.7 : 1}>
+            <RobotModel />
+            <GlowingShadow />
+          </group>
         </Canvas>
 
         {/* Hover prompt - Glass morphism */}
@@ -237,7 +239,7 @@ export const RobotChatbot = () => {
 
       {/* Chat Window - Glass morphism */}
       {isChatOpen && (
-        <div className="absolute bottom-full right-0 mb-4 w-80 backdrop-blur-xl bg-background/80 border border-primary/30 rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.37)] animate-scale-in overflow-hidden">
+        <div className="absolute bottom-full right-0 mb-4 w-[85vw] max-w-[320px] md:w-80 backdrop-blur-xl bg-background/80 border border-primary/30 rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.37)] animate-scale-in overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-primary/10 backdrop-blur-xl border-b border-primary/20">
             <div className="flex items-center gap-2">
@@ -255,7 +257,7 @@ export const RobotChatbot = () => {
           </div>
 
           {/* Messages */}
-          <div className="h-80 overflow-y-auto p-4 space-y-4 bg-background/50">
+          <div className="h-64 md:h-80 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-background/50">
             {messages.length === 0 && (
               <div className="text-center text-muted-foreground py-6">
                 <p className="text-sm">Hi! I'm Stock Bestie.</p>
