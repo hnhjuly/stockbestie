@@ -149,12 +149,6 @@ export const RobotChatbot = () => {
       );
 
       if (!response.ok) {
-        if (response.status === 402) {
-          toast.error('The chatbot has run out of credits. Please add credits to your workspace in Settings → Workspace → Usage.');
-          setMessages(prev => prev.filter(m => m.content !== ''));
-          setIsLoading(false);
-          return;
-        }
         if (response.status === 429) {
           toast.error('Too many requests. Please wait a moment and try again.');
           setMessages(prev => prev.filter(m => m.content !== ''));
@@ -187,7 +181,27 @@ export const RobotChatbot = () => {
 
             try {
               const parsed = JSON.parse(data);
-              const content = parsed.choices?.[0]?.delta?.content;
+              // Handle Gemini's response format
+              const content = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+              
+              if (content) {
+                setMessages(prev => {
+                  const newMessages = [...prev];
+                  const lastMessage = newMessages[newMessages.length - 1];
+                  if (lastMessage.role === 'assistant') {
+                    lastMessage.content += content;
+                  }
+                  return newMessages;
+                });
+              }
+            } catch (e) {
+              // Skip invalid JSON
+            }
+          } else if (line.trim()) {
+            // Handle raw JSON chunks from Gemini (no "data:" prefix)
+            try {
+              const parsed = JSON.parse(line);
+              const content = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
               
               if (content) {
                 setMessages(prev => {
