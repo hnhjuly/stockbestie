@@ -148,8 +148,24 @@ export const RobotChatbot = () => {
         }
       );
 
-      if (!response.ok || !response.body) {
+      if (!response.ok) {
+        if (response.status === 402) {
+          toast.error('The chatbot has run out of credits. Please add credits to your workspace in Settings → Workspace → Usage.');
+          setMessages(prev => prev.filter(m => m.content !== ''));
+          setIsLoading(false);
+          return;
+        }
+        if (response.status === 429) {
+          toast.error('Too many requests. Please wait a moment and try again.');
+          setMessages(prev => prev.filter(m => m.content !== ''));
+          setIsLoading(false);
+          return;
+        }
         throw new Error('Failed to start stream');
+      }
+      
+      if (!response.body) {
+        throw new Error('No response body');
       }
 
       const reader = response.body.getReader();
