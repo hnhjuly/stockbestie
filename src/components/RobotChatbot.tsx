@@ -30,7 +30,7 @@ function RobotModel() {
     <primitive 
       ref={meshRef} 
       object={scene} 
-      scale={1.5}
+      scale={2.5}
       position={[0, 0, 0]}
     />
   );
@@ -109,9 +109,10 @@ export const RobotChatbot = () => {
         onClick={() => setIsChatOpen(true)}
       >
         <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[5, 5, 5]} intensity={0.8} />
-          <spotLight position={[0, 10, 0]} intensity={0.5} />
+          <ambientLight intensity={1.2} />
+          <directionalLight position={[5, 5, 5]} intensity={1.5} />
+          <directionalLight position={[-5, 3, -5]} intensity={0.8} />
+          <pointLight position={[0, 5, 0]} intensity={1.0} />
           <RobotModel />
           <GlowingShadow />
         </Canvas>
