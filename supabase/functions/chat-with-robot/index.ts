@@ -29,10 +29,11 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful AI assistant for Stock Bestie, a stock market tracking app. You help users understand stock data, market trends, and answer questions about stocks. Be friendly, concise, and informative.'
+            content: 'You are a helpful AI assistant for Stock Bestie, a stock market tracking app. You help users understand stock data, market trends, and answer questions about stocks. Be friendly, concise, and informative. Keep responses under 200 words.'
           },
           ...messages
         ],
+        stream: true,
       }),
     });
 
@@ -42,13 +43,15 @@ serve(async (req) => {
       throw new Error(`AI API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    const assistantMessage = data.choices[0]?.message?.content || 'Sorry, I could not generate a response.';
-
-    return new Response(
-      JSON.stringify({ response: assistantMessage }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    // Return the stream directly
+    return new Response(response.body, {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
+    });
   } catch (error) {
     console.error('Error in chat-with-robot function:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
