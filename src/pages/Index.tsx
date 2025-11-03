@@ -10,7 +10,6 @@ import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { TickerSearch } from '@/components/TickerSearch';
 import { getDeviceId } from '@/lib/deviceId';
-import { RobotChatbot } from '@/components/RobotChatbot';
 
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -253,9 +252,6 @@ const Index = () => {
         open={!!selectedStock}
         onClose={() => setSelectedStock(null)}
       />
-
-      {/* Robot Chatbot */}
-      <RobotChatbot />
     </div>
   );
 };
