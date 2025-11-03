@@ -99,9 +99,10 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
               {stock.analystPrediction && stock.analystPrediction !== 'N/A' ? (
                 <div className="flex items-start gap-3">
                   <span className={`font-bold text-lg ${
-                    stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
-                    stock.analystPrediction.startsWith('Sell') ? 'text-destructive' : 
-                    'text-warning'
+                    stock.analystPrediction.startsWith('Strong Buy') || stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
+                    stock.analystPrediction.startsWith('Hold') ? 'text-warning' :
+                    stock.analystPrediction.startsWith('Sell') || stock.analystPrediction.startsWith('Strong Sell') ? 'text-destructive' : 
+                    'text-muted-foreground'
                   }`}>
                     {stock.analystPrediction.split(' - ')[0]}
                   </span>
