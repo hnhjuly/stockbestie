@@ -30,7 +30,7 @@ function RobotModel() {
     <primitive 
       ref={meshRef} 
       object={scene} 
-      scale={3}
+      scale={3.5}
       position={[0, 0, 0]}
     />
   );
@@ -159,7 +159,7 @@ export const RobotChatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-50">
+    <div className="fixed bottom-12 right-8 z-50">
       {/* 3D Robot */}
       <div
         className="relative w-48 h-48 cursor-pointer"
@@ -168,11 +168,11 @@ export const RobotChatbot = () => {
         onClick={() => setIsChatOpen(true)}
       >
         <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-          <ambientLight intensity={2.0} />
-          <directionalLight position={[5, 5, 5]} intensity={2.5} castShadow />
-          <directionalLight position={[-5, 3, -5]} intensity={1.5} />
-          <pointLight position={[0, 5, 0]} intensity={1.8} color="#ffffff" />
-          <pointLight position={[3, 0, 3]} intensity={0.8} color="#60a5fa" />
+          <ambientLight intensity={2.5} />
+          <directionalLight position={[5, 5, 5]} intensity={3.0} castShadow />
+          <directionalLight position={[-5, 3, -5]} intensity={2.0} />
+          <pointLight position={[0, 5, 0]} intensity={2.2} color="#ffffff" />
+          <pointLight position={[3, 0, 3]} intensity={1.2} color="#a0c5ff" />
           <RobotModel />
           <GlowingShadow />
         </Canvas>
@@ -192,7 +192,7 @@ export const RobotChatbot = () => {
 
       {/* Chat Window - Glass morphism */}
       {isChatOpen && (
-        <div className="absolute bottom-full right-0 mb-4 w-96 backdrop-blur-xl bg-background/80 border border-primary/30 rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.37)] animate-scale-in overflow-hidden">
+        <div className="absolute bottom-full right-0 mb-4 w-80 backdrop-blur-xl bg-background/80 border border-primary/30 rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.37)] animate-scale-in overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-primary/10 backdrop-blur-xl border-b border-primary/20">
             <div className="flex items-center gap-2">
@@ -210,11 +210,11 @@ export const RobotChatbot = () => {
           </div>
 
           {/* Messages */}
-          <div className="h-96 overflow-y-auto p-4 space-y-4 bg-background/50">
+          <div className="h-80 overflow-y-auto p-4 space-y-4 bg-background/50">
             {messages.length === 0 && (
-              <div className="text-center text-muted-foreground py-8">
-                <p className="text-sm">Hi! I'm your Stock Bestie assistant.</p>
-                <p className="text-sm">How can I help you today?</p>
+              <div className="text-center text-muted-foreground py-6">
+                <p className="text-sm">Hi! I'm Stock Bestie.</p>
+                <p className="text-sm">Do you have questions about the stock market?</p>
               </div>
             )}
             {messages.map((message, index) => (
