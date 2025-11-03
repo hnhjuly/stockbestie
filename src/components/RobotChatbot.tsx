@@ -84,6 +84,7 @@ export const RobotChatbot = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [canvasKey, setCanvasKey] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -93,6 +94,21 @@ export const RobotChatbot = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+      console.log('WebGL context lost, attempting to restore...');
+      // Force remount the Canvas by changing the key
+      setTimeout(() => setCanvasKey(prev => prev + 1), 100);
+    };
+
+    const canvas = document.querySelector('canvas');
+    if (canvas) {
+      canvas.addEventListener('webglcontextlost', handleContextLost);
+      return () => canvas.removeEventListener('webglcontextlost', handleContextLost);
+    }
+  }, [canvasKey]);
 
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -185,7 +201,16 @@ export const RobotChatbot = () => {
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => setIsChatOpen(true)}
       >
-        <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+        <Canvas 
+          key={canvasKey}
+          camera={{ position: [0, 0, 5], fov: 50 }}
+          gl={{ preserveDrawingBuffer: true }}
+          onCreated={({ gl }) => {
+            gl.domElement.addEventListener('webglcontextrestored', () => {
+              console.log('WebGL context restored');
+            });
+          }}
+        >
           <ambientLight intensity={3.5} />
           <directionalLight position={[5, 5, 5]} intensity={4.0} castShadow />
           <directionalLight position={[-5, 3, -5]} intensity={3.0} />
