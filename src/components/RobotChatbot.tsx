@@ -26,8 +26,22 @@ function RobotModel() {
       setMousePosition({ x, y });
     };
 
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length > 0) {
+        const touch = event.touches[0];
+        // Convert touch position to normalized coordinates (-1 to 1)
+        const x = (touch.clientX / window.innerWidth) * 2 - 1;
+        const y = -(touch.clientY / window.innerHeight) * 2 + 1;
+        setMousePosition({ x, y });
+      }
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
   }, []);
 
   useFrame((state) => {
