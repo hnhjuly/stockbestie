@@ -217,7 +217,7 @@ export const RobotChatbot = () => {
           <div className="flex items-center justify-between px-4 py-3 bg-primary/10 backdrop-blur-xl border-b border-primary/20">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(59,130,246,0.8)] animate-pulse"></div>
-              <h3 className="font-semibold text-foreground">Stock Bestie Assistant</h3>
+              <h3 className="font-semibold text-foreground">Stock Bestie</h3>
             </div>
             <Button
               variant="ghost"
