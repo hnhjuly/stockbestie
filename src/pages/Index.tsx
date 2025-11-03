@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Stock } from '@/types/stock';
 import { StockTable } from '@/components/StockTable';
 import { StockDetail } from '@/components/StockDetail';
+import { RobotChatbot } from '@/components/RobotChatbot';
 import { fetchStockData } from '@/lib/googleSheets';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, X } from 'lucide-react';
@@ -252,6 +253,9 @@ const Index = () => {
         open={!!selectedStock}
         onClose={() => setSelectedStock(null)}
       />
+
+      {/* 3D Robot Chatbot */}
+      <RobotChatbot />
     </div>
   );
 };
