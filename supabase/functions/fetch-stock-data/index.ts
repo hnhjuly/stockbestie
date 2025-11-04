@@ -181,12 +181,7 @@ function convertAnalystRating(rating: string | undefined | null): string {
   return 'N/A';
 }
 
-async function generateAnalystSummary(stock: any): Promise<string> {
-  if (!OPENAI_API_KEY) {
-    console.error('OPENAI_API_KEY is not set');
-    return 'Summary unavailable';
-  }
-  
+async function generateAnalystSummary(stock: any, forceGenerate: boolean = false): Promise<string> {
   // Check database cache first (persistent across function restarts)
   try {
     const { data: cached, error } = await supabase
@@ -198,15 +193,35 @@ async function generateAnalystSummary(stock: any): Promise<string> {
     
     if (!error && cached) {
       const cacheAge = Date.now() - new Date(cached.created_at).getTime();
-      if (cacheAge < SUMMARY_CACHE_DURATION) {
-        console.log(`Using cached summary for ${stock.ticker} (age: ${(cacheAge / 3600000).toFixed(1)}h)`);
+      const isExpired = cacheAge >= SUMMARY_CACHE_DURATION;
+      
+      // If not forcing generation, always return cached summary (even if expired)
+      if (!forceGenerate) {
+        console.log(`Using cached summary for ${stock.ticker} (age: ${(cacheAge / 3600000).toFixed(1)}h, expired: ${isExpired})`);
         return cached.summary;
-      } else {
-        console.log(`Cache expired for ${stock.ticker} (age: ${(cacheAge / 3600000).toFixed(1)}h)`);
       }
+      
+      // If forcing generation but cache is still fresh, don't regenerate
+      if (!isExpired) {
+        console.log(`Using fresh cached summary for ${stock.ticker} (age: ${(cacheAge / 3600000).toFixed(1)}h)`);
+        return cached.summary;
+      }
+      
+      console.log(`Cache expired for ${stock.ticker} (age: ${(cacheAge / 3600000).toFixed(1)}h), regenerating...`);
     }
   } catch (error) {
     console.error(`Error checking cache for ${stock.ticker}:`, error);
+  }
+  
+  // Only generate if we have API key and are forcing generation
+  if (!OPENAI_API_KEY) {
+    console.error('OPENAI_API_KEY is not set');
+    return 'Summary unavailable';
+  }
+  
+  if (!forceGenerate) {
+    console.log(`No cached summary for ${stock.ticker}, but not forcing generation`);
+    return 'Summary unavailable';
   }
   
   console.log(`Generating NEW summary for ${stock.ticker}...`);
@@ -415,15 +430,17 @@ serve(async (req) => {
     // Fetch all tickers in a single batch request
     const results = await fetchYahooFinanceData(validTickers);
     
-    // Generate AI summaries only if requested (for initial load or when explicitly needed)
+    // Always try to get summaries from cache, only generate new ones if includeAnalystPrediction is true
     const stocksWithSummaries = await Promise.all(
       results.map(async (stock) => {
-        const summary = includeAnalystPrediction ? await generateAnalystSummary(stock) : null;
+        const summary = await generateAnalystSummary(stock, includeAnalystPrediction);
         return {
           ...stock,
           marketCapDisplay: formatMarketCap(stock.marketCapRaw),
           volumeDisplay: formatVolume(stock.volumeRaw),
-          analystPrediction: summary ? `${stock.analystRating} - ${summary}` : stock.analystRating,
+          analystPrediction: summary && summary !== 'Summary unavailable' 
+            ? `${stock.analystRating} - ${summary}` 
+            : stock.analystRating,
         };
       })
     );
