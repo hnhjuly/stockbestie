@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -181,8 +181,8 @@ function convertAnalystRating(rating: string | undefined | null): string {
 }
 
 async function generateAnalystSummary(stock: any): Promise<string> {
-  if (!LOVABLE_API_KEY) {
-    console.error('LOVABLE_API_KEY is not set');
+  if (!OPENAI_API_KEY) {
+    console.error('OPENAI_API_KEY is not set');
     return 'Summary unavailable';
   }
   
@@ -227,14 +227,14 @@ Stock metrics:
 
 Focus on why analysts give this rating based on valuation, growth potential, and market position. Be concise and informative.`;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -252,7 +252,7 @@ Focus on why analysts give this rating based on valuation, growth potential, and
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`Lovable AI error for ${stock.ticker}: ${response.status} - ${errorText}`);
+      console.error(`OpenAI API error for ${stock.ticker}: ${response.status} - ${errorText}`);
       return 'Summary unavailable';
     }
 
