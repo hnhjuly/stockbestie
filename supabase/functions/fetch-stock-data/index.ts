@@ -8,13 +8,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Cache to store stock data with 5-minute expiration (to reduce rate limiting)
+// Cache to store stock data with 30-second expiration for real-time updates
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+const CACHE_DURATION = 30 * 1000; // 30 seconds in milliseconds
 
-// Cache for AI summaries with 1-hour expiration
+// Cache for AI summaries with 24-hour expiration to save tokens
 const summaryCache = new Map<string, { summary: string; timestamp: number }>();
-const SUMMARY_CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+const SUMMARY_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 // Cache for Yahoo Finance cookie and crumb
 let yahooCookie: string | null = null;
@@ -205,25 +205,16 @@ async function generateAnalystSummary(stock: any): Promise<string> {
     const isETF = stock.type === 'etf';
     
     const prompt = isETF 
-      ? `Write a casual, informative 2-3 sentence summary about ${stock.ticker} (${stock.companyName}) explaining the analyst rating.
+      ? `Write a casual, informative analysis about ${stock.ticker} (${stock.companyName}) ETF and what the analyst rating means.
 
-Current Stats:
-- Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% today)
-- Net Assets: ${stock.netAssetsDisplay || 'N/A'}
-- Dividend Yield: ${stock.dividendYield ? (stock.dividendYield * 100).toFixed(2) + '%' : 'N/A'}
-- Expense Ratio: ${stock.expenseRatio ? (stock.expenseRatio * 100).toFixed(2) + '%' : 'N/A'}
-- Analyst Rating: ${stock.analystRating}
+Analyst Rating: ${stock.analystRating}
 
-Write it naturally, like you're explaining to a friend. Focus on WHY analysts gave this rating. Keep it under 60 words and easy to understand.`
-      : `Write a casual, informative 2-3 sentence summary about ${stock.ticker} (${stock.companyName}) explaining the analyst rating.
+Focus on WHY analysts gave this rating and what it means for investors. Maximum 3 sentences. Do NOT include any numbers, prices, percentages, or specific metrics. Keep it conversational and easy to understand.`
+      : `Write a casual, informative analysis about ${stock.ticker} (${stock.companyName}) and what the analyst rating means.
 
-Current Stats:
-- Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% today)
-- P/E Ratio: ${stock.peRatio?.toFixed(2) || 'N/A'}
-- Market Cap: ${stock.marketCapRaw ? formatMarketCap(stock.marketCapRaw) : 'N/A'}
-- Analyst Rating: ${stock.analystRating}
+Analyst Rating: ${stock.analystRating}
 
-Write it naturally, like you're explaining to a friend. Focus on WHY analysts gave this rating. Keep it under 60 words and easy to understand.`;
+Focus on WHY analysts gave this rating and what it means for investors. Maximum 3 sentences. Do NOT include any numbers, prices, percentages, or specific metrics. Keep it conversational and easy to understand.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
