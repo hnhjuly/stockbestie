@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+const GOOGLE_API_KEY = Deno.env.get('GOOGLE_GEMINI_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -177,8 +177,8 @@ function convertAnalystRating(rating: string | undefined | null): string {
 }
 
 async function generateAnalystSummary(stock: any): Promise<string> {
-  if (!OPENAI_API_KEY) {
-    console.error('OPENAI_API_KEY is not set');
+  if (!GOOGLE_API_KEY) {
+    console.error('GOOGLE_GEMINI_API_KEY is not set');
     return 'Summary unavailable';
   }
   
@@ -215,30 +215,32 @@ Stock metrics:
 
 Focus on why analysts give this rating based on valuation, growth potential, and market position. Be concise and informative.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GOOGLE_API_KEY}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-nano-2025-08-07',
-        messages: [
-          { role: 'system', content: 'You are a financial analyst providing concise explanations of stock and ETF ratings.' },
-          { role: 'user', content: prompt }
-        ],
-        max_completion_tokens: 150,
+        contents: [{
+          parts: [{
+            text: `You are a financial analyst. ${prompt}`
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 150,
+        }
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`OpenAI API error for ${stock.ticker}: ${response.status} - ${errorText}`);
+      console.error(`Google Gemini API error for ${stock.ticker}: ${response.status} - ${errorText}`);
       return 'Summary unavailable';
     }
 
     const data = await response.json();
-    const summary = data.choices[0].message.content;
+    const summary = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Summary unavailable';
     console.log(`Generated summary for ${stock.ticker}: ${summary.substring(0, 50)}...`);
     return summary;
   } catch (error) {
