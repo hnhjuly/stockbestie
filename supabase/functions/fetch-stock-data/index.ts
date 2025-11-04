@@ -178,8 +178,11 @@ function convertAnalystRating(rating: string | undefined | null): string {
 
 async function generateAnalystSummary(stock: any): Promise<string> {
   if (!OPENAI_API_KEY) {
+    console.error('OPENAI_API_KEY is not set');
     return 'Summary unavailable';
   }
+  
+  console.log(`Generating summary for ${stock.ticker}...`);
 
   // Return N/A for ETFs if no analyst rating
   if (stock.type === 'etf' && stock.analystRating === 'N/A') {
@@ -230,14 +233,16 @@ Focus on why analysts give this rating based on valuation, growth potential, and
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(`OpenAI API error: ${response.status} - ${errorText}`);
+      console.error(`OpenAI API error for ${stock.ticker}: ${response.status} - ${errorText}`);
       return 'Summary unavailable';
     }
 
     const data = await response.json();
-    return data.choices[0].message.content;
+    const summary = data.choices[0].message.content;
+    console.log(`Generated summary for ${stock.ticker}: ${summary.substring(0, 50)}...`);
+    return summary;
   } catch (error) {
-    console.error('Error generating summary:', error);
+    console.error(`Error generating summary for ${stock.ticker}:`, error);
     return 'Summary unavailable';
   }
 }
