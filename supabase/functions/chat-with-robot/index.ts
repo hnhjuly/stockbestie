@@ -9,17 +9,8 @@ const corsHeaders = {
 // Helper function to extract stock ticker from user message
 function extractTicker(message: string): string | null {
   const upperMessage = message.toUpperCase();
-  const tickerPatterns = [
-    /\b([A-Z]{1,5})\b/g,  // Match 1-5 uppercase letters
-    /NVIDIA|NVDA/i,
-    /TESLA|TSLA/i,
-    /APPLE|AAPL/i,
-    /MICROSOFT|MSFT/i,
-    /AMAZON|AMZN/i,
-    /GOOGLE|GOOGL/i,
-  ];
   
-  // Common stock name to ticker mapping
+  // Common stock name to ticker mapping (including international)
   const nameToTicker: { [key: string]: string } = {
     'NVIDIA': 'NVDA',
     'TESLA': 'TSLA',
@@ -29,6 +20,11 @@ function extractTicker(message: string): string | null {
     'GOOGLE': 'GOOGL',
     'META': 'META',
     'FACEBOOK': 'META',
+    'ROLLS-ROYCE': 'RR.L',
+    'ROLLS ROYCE': 'RR.L',
+    'BP': 'BP.L',
+    'HSBC': 'HSBA.L',
+    'SHELL': 'SHEL.L',
   };
   
   for (const [name, ticker] of Object.entries(nameToTicker)) {
@@ -37,6 +33,13 @@ function extractTicker(message: string): string | null {
     }
   }
   
+  // Match tickers with international suffixes (e.g., RR.L for London Stock Exchange)
+  const internationalMatch = upperMessage.match(/\b([A-Z]{1,5}\.[A-Z]{1,2})\b/);
+  if (internationalMatch) {
+    return internationalMatch[1];
+  }
+  
+  // Match regular tickers
   const matches = upperMessage.match(/\b([A-Z]{1,5})\b/g);
   if (matches && matches.length > 0) {
     return matches[0];
@@ -180,6 +183,13 @@ Financial advice disclaimer:
 Real-time data handling:
 - When real-time stock data is in your context, USE IT and cite the exact timestamp
 - Format: "As of [timestamp], [company] ([ticker]) is trading at $[price]"
+
+International Stocks Knowledge:
+- You support stocks from all major global exchanges (US, UK, Europe, Asia)
+- UK stocks use .L suffix (e.g., RR.L for Rolls-Royce Holdings on London Stock Exchange)
+- Common UK stocks: RR.L (Rolls-Royce), BP.L (BP), HSBA.L (HSBC), SHEL.L (Shell)
+- When users mention international companies, help them find the correct ticker with the right exchange suffix
+- If asked about Rolls-Royce, always clarify: "Do you mean Rolls-Royce Holdings (RR.L) from the UK, or Richtech Robotics (RR) from the US?"
 
 Examples of beginner-friendly explanations:
 - Instead of "high volatility", say "the price goes up and down a lot"

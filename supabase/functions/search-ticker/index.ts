@@ -44,23 +44,28 @@ Deno.serve(async (req) => {
     console.log(`Raw search results count: ${data.quotes?.length || 0}`);
     console.log('Sample quotes:', JSON.stringify(data.quotes?.slice(0, 3), null, 2));
     
-    // Filter for US stocks and ETFs (NASDAQ, NYSE, or NYSEArca)
+    // Filter for stocks and ETFs from all major exchanges (US and international)
     const validResults = (data.quotes || [])
       .filter((quote: any) => {
         const isEquityOrETF = quote.quoteType === 'EQUITY' || quote.quoteType === 'ETF';
-        const isUSExchange = quote.exchange === 'NMS' || quote.exchange === 'NYQ' || quote.exchange === 'PCX' ||
-                            quote.exchDisp === 'NASDAQ' || quote.exchDisp === 'NYSE' || quote.exchDisp === 'NYSEArca';
-        const hasSymbol = quote.symbol && !quote.symbol.includes('.');
+        const hasSymbol = quote.symbol && quote.symbol.length > 0;
         
-        console.log(`Checking ${quote.symbol}: quoteType=${quote.quoteType}, isUSExchange=${isUSExchange}, exchange=${quote.exchange}, exchDisp=${quote.exchDisp}`);
+        // Accept major exchanges including international ones
+        const validExchanges = ['NMS', 'NYQ', 'PCX', 'LSE', 'LON', 'TOR', 'FRA', 'EPA', 'JPX', 'HKG'];
+        const validExchangeDisp = ['NASDAQ', 'NYSE', 'NYSEArca', 'LSE', 'London', 'Toronto', 'Frankfurt', 'Paris', 'Tokyo', 'Hong Kong'];
         
-        return isEquityOrETF && isUSExchange && hasSymbol;
+        const isValidExchange = validExchanges.includes(quote.exchange) || 
+                               validExchangeDisp.some(ex => quote.exchDisp?.includes(ex));
+        
+        console.log(`Checking ${quote.symbol}: quoteType=${quote.quoteType}, exchange=${quote.exchange}, exchDisp=${quote.exchDisp}, isValid=${isEquityOrETF && hasSymbol && isValidExchange}`);
+        
+        return isEquityOrETF && hasSymbol && isValidExchange;
       })
-      .slice(0, 5)
+      .slice(0, 10) // Get more results to show both US and international options
       .map((quote: any) => ({
         symbol: quote.symbol,
         shortname: quote.shortname || quote.longname || '',
-        exchange: quote.exchDisp || (quote.exchange === 'NMS' ? 'NASDAQ' : 'NYSE')
+        exchange: quote.exchDisp || quote.exchange || 'Unknown'
       }));
 
     console.log(`Found ${validResults.length} valid US stocks/ETFs`);
