@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { TickerSearch } from '@/components/TickerSearch';
 import { getDeviceId } from '@/lib/deviceId';
 import { RobotChatbot } from '@/components/RobotChatbot';
+import { PWAInstallButton } from '@/components/PWAInstallButton';
 
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -195,7 +196,8 @@ const Index = () => {
       <main className="container mx-auto px-4 py-4 md:py-8">
         {/* Ticker Management */}
         <div className="mb-4 md:mb-6 space-y-4">
-          <TickerSearch 
+          <PWAInstallButton />
+          <TickerSearch
             existingTickers={tickers}
             onTickerAdded={handleTickerAdded}
           />
