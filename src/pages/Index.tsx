@@ -41,8 +41,8 @@ const Index = () => {
     }
   };
 
-  const loadStocks = async (showToast = false) => {
-    console.log('loadStocks called with tickers:', tickers);
+  const loadStocks = async (showToast = false, includeAnalystPrediction = true) => {
+    console.log('loadStocks called with tickers:', tickers, 'includeAnalystPrediction:', includeAnalystPrediction);
     
     if (tickers.length === 0) {
       console.log('No tickers to load');
@@ -55,7 +55,7 @@ const Index = () => {
     try {
       setIsRefreshing(true);
       console.log('Fetching stock data for:', tickers);
-      const data = await fetchStockData(tickers);
+      const data = await fetchStockData(tickers, includeAnalystPrediction);
       console.log('Stock data received:', data);
       setStocks(data);
       setLastUpdated(new Date());
@@ -151,12 +151,12 @@ const Index = () => {
     }
   }, [tickers]);
 
-  // Auto-refresh every 30 seconds
+  // Auto-refresh every 30 seconds - only fetch Yahoo Finance data, no AI
   useEffect(() => {
     if (tickers.length === 0) return;
 
     const interval = setInterval(() => {
-      loadStocks(false); // Don't show toast for auto-refresh
+      loadStocks(false, false); // Don't show toast, don't include AI predictions
     }, 30000); // 30 seconds
 
     return () => clearInterval(interval);
@@ -178,7 +178,7 @@ const Index = () => {
               </div>
             </div>
             <Button
-              onClick={() => loadStocks(true)}
+              onClick={() => loadStocks(true, false)}
               disabled={isRefreshing}
               variant="outline"
               className="gap-2 flex-shrink-0"

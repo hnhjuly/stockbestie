@@ -380,7 +380,7 @@ serve(async (req) => {
   }
 
   try {
-    const { tickers } = await req.json();
+    const { tickers, includeAnalystPrediction = true } = await req.json();
     
     // Input validation
     if (!tickers || !Array.isArray(tickers)) {
@@ -415,15 +415,15 @@ serve(async (req) => {
     // Fetch all tickers in a single batch request
     const results = await fetchYahooFinanceData(validTickers);
     
-    // Generate AI summaries for each stock in parallel
+    // Generate AI summaries only if requested (for initial load or when explicitly needed)
     const stocksWithSummaries = await Promise.all(
       results.map(async (stock) => {
-        const summary = await generateAnalystSummary(stock);
+        const summary = includeAnalystPrediction ? await generateAnalystSummary(stock) : null;
         return {
           ...stock,
           marketCapDisplay: formatMarketCap(stock.marketCapRaw),
           volumeDisplay: formatVolume(stock.volumeRaw),
-          analystPrediction: `${stock.analystRating} - ${summary}`,
+          analystPrediction: summary ? `${stock.analystRating} - ${summary}` : stock.analystRating,
         };
       })
     );

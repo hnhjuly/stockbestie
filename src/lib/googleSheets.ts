@@ -1,10 +1,10 @@
 import { Stock } from '@/types/stock';
 import { supabase } from '@/integrations/supabase/client';
 
-export const fetchStockData = async (tickers: string[]): Promise<Stock[]> => {
+export const fetchStockData = async (tickers: string[], includeAnalystPrediction: boolean = true): Promise<Stock[]> => {
   try {
     const { data, error } = await supabase.functions.invoke('fetch-stock-data', {
-      body: { tickers },
+      body: { tickers, includeAnalystPrediction },
     });
 
     if (error) {
