@@ -205,7 +205,7 @@ async function generateAnalystSummary(stock: any): Promise<string> {
     const isETF = stock.type === 'etf';
     
     const prompt = isETF 
-      ? `You're a gossipy insider spilling tea on this ETF! Write a 2-3 sentence summary about ${stock.ticker} (${stock.companyName}) that sounds like you're texting a friend with the REAL scoop.
+      ? `Write a casual, informative 2-3 sentence summary about ${stock.ticker} (${stock.companyName}) explaining the analyst rating.
 
 Current Stats:
 - Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% today)
@@ -214,8 +214,8 @@ Current Stats:
 - Expense Ratio: ${stock.expenseRatio ? (stock.expenseRatio * 100).toFixed(2) + '%' : 'N/A'}
 - Analyst Rating: ${stock.analystRating}
 
-Make it juicy and fun! Use phrases like "word on the street is...", "analysts are lowkey obsessed", "not gonna lie", "the vibes are...", etc. Explain WHY analysts gave this rating in a gossipy but accurate way. Keep it under 60 words!`
-      : `You're a gossipy insider spilling tea on this stock! Write a 2-3 sentence summary about ${stock.ticker} (${stock.companyName}) that sounds like you're texting a friend with the REAL scoop.
+Write it naturally, like you're explaining to a friend. Focus on WHY analysts gave this rating. Keep it under 60 words and easy to understand.`
+      : `Write a casual, informative 2-3 sentence summary about ${stock.ticker} (${stock.companyName}) explaining the analyst rating.
 
 Current Stats:
 - Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% today)
@@ -223,7 +223,7 @@ Current Stats:
 - Market Cap: ${stock.marketCapRaw ? formatMarketCap(stock.marketCapRaw) : 'N/A'}
 - Analyst Rating: ${stock.analystRating}
 
-Make it juicy and fun! Use phrases like "word on the street is...", "analysts are lowkey obsessed", "not gonna lie", "the vibes are...", etc. Explain WHY analysts gave this rating in a gossipy but accurate way. Keep it under 60 words!`;
+Write it naturally, like you're explaining to a friend. Focus on WHY analysts gave this rating. Keep it under 60 words and easy to understand.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -236,7 +236,7 @@ Make it juicy and fun! Use phrases like "word on the street is...", "analysts ar
         messages: [
           {
             role: 'system',
-            content: 'You are a gossipy finance insider who makes stock analysis fun and relatable. Write like you\'re texting a bestie with the real tea! 💅'
+            content: 'You are a knowledgeable finance friend explaining stock analysis in a casual, easy-to-understand way. Be informative and conversational.'
           },
           {
             role: 'user',
