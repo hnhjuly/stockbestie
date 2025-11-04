@@ -8,7 +8,16 @@ Deno.serve(async (req) => {
   try {
     const { query } = await req.json();
     
-    if (!query || query.trim().length === 0) {
+    // Input validation
+    if (!query || typeof query !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Invalid query parameter' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Limit query length to prevent abuse
+    if (query.trim() === '' || query.length > 100) {
       return new Response(
         JSON.stringify({ results: [] }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -63,9 +72,8 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Search error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return new Response(
-      JSON.stringify({ error: errorMessage, results: [] }),
+      JSON.stringify({ error: 'Failed to search tickers', results: [] }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }

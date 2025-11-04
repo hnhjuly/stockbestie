@@ -330,14 +330,38 @@ serve(async (req) => {
   try {
     const { tickers } = await req.json();
     
-    if (!tickers || !Array.isArray(tickers) || tickers.length === 0) {
-      throw new Error('Invalid tickers array');
+    // Input validation
+    if (!tickers || !Array.isArray(tickers)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid tickers parameter' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    console.log(`Fetching data for tickers: ${tickers.join(', ')}`);
+    // Limit number of tickers to prevent abuse
+    if (tickers.length === 0 || tickers.length > 20) {
+      return new Response(
+        JSON.stringify({ error: 'Number of tickers must be between 1 and 20' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate ticker format
+    const validTickers = tickers.filter(t => 
+      typeof t === 'string' && t.length > 0 && t.length <= 10 && /^[A-Z0-9\.\-]+$/.test(t)
+    );
+
+    if (validTickers.length === 0) {
+      return new Response(
+        JSON.stringify({ error: 'No valid tickers provided' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Fetching data for tickers: ${validTickers.join(', ')}`);
 
     // Fetch all tickers in a single batch request
-    const results = await fetchYahooFinanceData(tickers);
+    const results = await fetchYahooFinanceData(validTickers);
     
     // Generate AI summaries for each stock in parallel
     const stocksWithSummaries = await Promise.all(
@@ -361,27 +385,26 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Error in fetch-stock-data function:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
-    // Return more user-friendly error for rate limiting
-    if (errorMessage.includes('rate limit')) {
+    // Check if it's a rate limit error
+    if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
       return new Response(
         JSON.stringify({ 
-          error: 'Yahoo Finance rate limit reached. Please wait 30 seconds and try again.',
-          rateLimited: true 
+          error: 'Service temporarily unavailable. Please try again shortly.' 
         }),
         { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
     
     return new Response(
-      JSON.stringify({ error: errorMessage }),
+      JSON.stringify({ error: 'Failed to fetch stock data' }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
   }
