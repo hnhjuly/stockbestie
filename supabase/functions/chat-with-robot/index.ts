@@ -48,14 +48,16 @@ function extractTicker(message: string): string | null {
   return null;
 }
 
-// Helper function to check if message is asking about stock price
-function isAskingAboutPrice(message: string): boolean {
-  const priceKeywords = [
-    'price', 'cost', 'worth', 'trading at', 'how much',
-    'current', 'today', 'now', 'value', 'stock price'
+// Helper function to check if message is asking about stocks
+function isAskingAboutStocks(message: string): boolean {
+  const stockKeywords = [
+    'stock', 'ticker', 'company', 'price', 'cost', 'worth', 'trading',
+    'shares', 'invest', 'buy', 'sell', 'market', 'etf', 'fund',
+    'tell me about', 'what do you know', 'how is', "what's",
+    'performance', 'doing', 'analysis', 'rating'
   ];
   const lowerMessage = message.toLowerCase();
-  return priceKeywords.some(keyword => lowerMessage.includes(keyword));
+  return stockKeywords.some(keyword => lowerMessage.includes(keyword));
 }
 
 serve(async (req) => {
@@ -96,9 +98,9 @@ serve(async (req) => {
     // Get the last user message
     const lastUserMessage = messages[messages.length - 1]?.content || '';
     
-    // Check if user is asking about stock price
+    // Check if user is asking about stocks and try to fetch data
     let stockContext = '';
-    if (isAskingAboutPrice(lastUserMessage)) {
+    if (isAskingAboutStocks(lastUserMessage)) {
       const ticker = extractTicker(lastUserMessage);
       
       if (ticker && SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
@@ -128,19 +130,31 @@ serve(async (req) => {
               year: 'numeric'
             });
             
-            stockContext = `\n\nIMPORTANT - REAL-TIME STOCK DATA AVAILABLE:
-You MUST use this live data to answer the user's question about ${ticker}:
+            // Build comprehensive stock context
+            const additionalInfo = [];
+            if (stock.peRatio) additionalInfo.push(`P/E Ratio: ${stock.peRatio.toFixed(2)}`);
+            if (stock.eps) additionalInfo.push(`EPS: $${stock.eps.toFixed(2)}`);
+            if (stock.low52Week && stock.high52Week) {
+              additionalInfo.push(`52-Week Range: $${stock.low52Week.toFixed(2)} - $${stock.high52Week.toFixed(2)}`);
+            }
+            if (stock.analystRating) additionalInfo.push(`Analyst Rating: ${stock.analystRating}`);
+            
+            stockContext = `\n\nIMPORTANT - REAL-TIME STOCK DATA FOR ${ticker}:
+You MUST use this live data to answer the user's question:
 
-As of ${currentTime} ET:
-- ${stock.companyName} (${ticker})
+Current Information (as of ${currentTime} ET):
+- Company: ${stock.companyName} (${ticker})
+- Type: ${stock.type === 'etf' ? 'ETF' : 'Stock'}
 - Current Price: $${stock.currentPrice}
-- Price Change: ${stock.priceChangePercent > 0 ? '+' : ''}${stock.priceChangePercent.toFixed(2)}%
+- Price Change Today: ${stock.priceChangePercent > 0 ? '+' : ''}${stock.priceChangePercent.toFixed(2)}%
 - Market Cap: ${stock.marketCapDisplay}
 - Volume: ${stock.volumeDisplay}
+${additionalInfo.length > 0 ? '- ' + additionalInfo.join('\n- ') : ''}
+${stock.analystPrediction ? '\nAnalyst Insight: ' + stock.analystPrediction : ''}
 
-RESPONSE FORMAT: Start your answer with "As of ${currentTime} ET, ${stock.companyName} (${ticker}) is trading at $${stock.currentPrice}" and then provide additional context naturally. 📈✨`;
+KEY INSTRUCTION: When the user asks about this stock, provide the current price and relevant details from above. Be conversational and explain what the metrics mean in simple terms for beginners! 📊✨`;
             
-            console.log('Stock context added:', stockContext);
+            console.log('Stock context added for:', ticker);
           } else {
             console.log('No stock data found or error:', stockError);
           }
@@ -194,8 +208,15 @@ Financial advice disclaimer:
 - For personal financial advice: "This is all for educational purposes only, not financial advice! Always do your own research and maybe chat with a professional advisor before making any big moves! 💡"
 
 Real-time data handling:
-- When real-time stock data is in your context, USE IT and cite the exact timestamp
-- Format: "As of [timestamp], [company] ([ticker]) is trading at $[price]"
+- When real-time stock data is in your context, ALWAYS USE IT to answer questions
+- Start with the most relevant info (usually price), then explain what it means
+- If analyst predictions are available, incorporate them naturally
+- Make the numbers relatable: "That's up 5% today, which is pretty solid!" or "The P/E ratio of 15 means..."
+
+Stock Knowledge:
+- You can look up and provide information on ANY stock ticker from global exchanges
+- When users ask about a ticker you don't immediately recognize, the system will fetch live data for you
+- Always use ticker symbols when available (e.g., RL for Ralph Lauren, AAPL for Apple)
 
 International Stocks Knowledge:
 - You support stocks from all major global exchanges (US, UK, Europe, Asia)
