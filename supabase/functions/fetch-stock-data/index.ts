@@ -12,6 +12,10 @@ const corsHeaders = {
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
+// Cache for AI summaries with 1-hour expiration
+const summaryCache = new Map<string, { summary: string; timestamp: number }>();
+const SUMMARY_CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
 // Cache for Yahoo Finance cookie and crumb
 let yahooCookie: string | null = null;
 let yahooCrumb: string | null = null;
@@ -182,6 +186,14 @@ async function generateAnalystSummary(stock: any): Promise<string> {
     return 'Summary unavailable';
   }
   
+  // Check cache first
+  const cacheKey = `${stock.ticker}_${stock.analystRating}`;
+  const cached = summaryCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < SUMMARY_CACHE_DURATION) {
+    console.log(`Using cached summary for ${stock.ticker}`);
+    return cached.summary;
+  }
+  
   console.log(`Generating summary for ${stock.ticker}...`);
 
   // Return N/A for ETFs if no analyst rating
@@ -242,6 +254,10 @@ Focus on why analysts give this rating based on valuation, growth potential, and
     const data = await response.json();
     const summary = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Summary unavailable';
     console.log(`Generated summary for ${stock.ticker}: ${summary.substring(0, 50)}...`);
+    
+    // Cache the summary
+    summaryCache.set(cacheKey, { summary, timestamp: Date.now() });
+    
     return summary;
   } catch (error) {
     console.error(`Error generating summary for ${stock.ticker}:`, error);
