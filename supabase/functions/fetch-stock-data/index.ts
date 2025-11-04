@@ -1,20 +1,21 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.1';
 
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Cache to store stock data with 30-second expiration for real-time updates
-const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_DURATION = 30 * 1000; // 30 seconds in milliseconds
-
-// Cache for AI summaries with 24-hour expiration to save tokens
-const summaryCache = new Map<string, { summary: string; timestamp: number }>();
+// Cache duration for AI summaries - 24 hours to save tokens
 const SUMMARY_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+// Initialize Supabase client for persistent caching
+const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 // Cache for Yahoo Finance cookie and crumb
 let yahooCookie: string | null = null;
@@ -186,15 +187,29 @@ async function generateAnalystSummary(stock: any): Promise<string> {
     return 'Summary unavailable';
   }
   
-  // Check cache first
-  const cacheKey = `${stock.ticker}_${stock.analystRating}`;
-  const cached = summaryCache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < SUMMARY_CACHE_DURATION) {
-    console.log(`Using cached summary for ${stock.ticker}`);
-    return cached.summary;
+  // Check database cache first (persistent across function restarts)
+  try {
+    const { data: cached, error } = await supabase
+      .from('analyst_summaries')
+      .select('summary, created_at')
+      .eq('ticker', stock.ticker)
+      .eq('analyst_rating', stock.analystRating)
+      .single();
+    
+    if (!error && cached) {
+      const cacheAge = Date.now() - new Date(cached.created_at).getTime();
+      if (cacheAge < SUMMARY_CACHE_DURATION) {
+        console.log(`Using cached summary for ${stock.ticker} (age: ${(cacheAge / 3600000).toFixed(1)}h)`);
+        return cached.summary;
+      } else {
+        console.log(`Cache expired for ${stock.ticker} (age: ${(cacheAge / 3600000).toFixed(1)}h)`);
+      }
+    }
+  } catch (error) {
+    console.error(`Error checking cache for ${stock.ticker}:`, error);
   }
   
-  console.log(`Generating summary for ${stock.ticker}...`);
+  console.log(`Generating NEW summary for ${stock.ticker}...`);
 
   // Return N/A for ETFs if no analyst rating
   if (stock.type === 'etf' && stock.analystRating === 'N/A') {
@@ -249,8 +264,25 @@ Focus on WHY analysts gave this rating and what it means for investors. Maximum 
     const summary = data.choices?.[0]?.message?.content || 'Summary unavailable';
     console.log(`Generated summary for ${stock.ticker}: ${summary.substring(0, 50)}...`);
     
-    // Cache the summary
-    summaryCache.set(cacheKey, { summary, timestamp: Date.now() });
+    // Save to database cache (upsert to replace old cache)
+    try {
+      await supabase
+        .from('analyst_summaries')
+        .upsert(
+          { 
+            ticker: stock.ticker, 
+            analyst_rating: stock.analystRating,
+            summary,
+            created_at: new Date().toISOString()
+          },
+          { 
+            onConflict: 'ticker,analyst_rating'
+          }
+        );
+      console.log(`Cached summary for ${stock.ticker} in database`);
+    } catch (cacheError) {
+      console.error(`Failed to cache summary for ${stock.ticker}:`, cacheError);
+    }
     
     return summary;
   } catch (error) {

@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      analyst_summaries: {
+        Row: {
+          analyst_rating: string
+          created_at: string
+          id: string
+          summary: string
+          ticker: string
+        }
+        Insert: {
+          analyst_rating: string
+          created_at?: string
+          id?: string
+          summary: string
+          ticker: string
+        }
+        Update: {
+          analyst_rating?: string
+          created_at?: string
+          id?: string
+          summary?: string
+          ticker?: string
+        }
+        Relationships: []
+      }
       portfolio_tickers: {
         Row: {
           added_at: string
