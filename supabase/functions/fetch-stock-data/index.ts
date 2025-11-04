@@ -175,14 +175,54 @@ function convertAnalystRating(rating: string | undefined | null): string {
   return 'N/A';
 }
 
-async function generateAnalystSummary(stock: any): Promise<string> {
-  if (!LOVABLE_API_KEY) {
-    return 'Summary unavailable';
+function generateFallbackSummary(stock: any): string {
+  const isETF = stock.type === 'etf';
+  const rating = stock.analystRating;
+  
+  if (rating === 'N/A') {
+    return isETF ? 'N/A' : 'No analyst rating available for this stock.';
   }
+  
+  const priceChange = stock.priceChangePercent || 0;
+  const peRatio = stock.peRatio;
+  
+  if (isETF) {
+    const expenseRatio = stock.expenseRatio ? (stock.expenseRatio * 100).toFixed(2) + '%' : 'N/A';
+    const divYield = stock.dividendYield ? (stock.dividendYield * 100).toFixed(2) + '%' : 'N/A';
+    
+    if (rating === 'Strong Buy' || rating === 'Buy') {
+      return `Strong fundamentals with ${divYield} dividend yield and ${expenseRatio} expense ratio. Recent ${priceChange > 0 ? 'positive' : 'negative'} momentum suggests ${rating.toLowerCase()} opportunity.`;
+    } else if (rating === 'Hold') {
+      return `Stable performance with ${expenseRatio} expense ratio. Current metrics suggest maintaining position at this level.`;
+    } else {
+      return `Higher expense ratio at ${expenseRatio} and recent performance trends warrant caution.`;
+    }
+  } else {
+    const peText = peRatio ? `P/E of ${peRatio.toFixed(1)}` : 'N/A P/E';
+    
+    if (rating === 'Strong Buy') {
+      return `Strong growth potential with ${peText}. Analysts see significant upside based on fundamentals and market position.`;
+    } else if (rating === 'Buy') {
+      return `Positive outlook with ${peText}. Recent ${priceChange > 0 ? 'gains' : 'pullback'} presents opportunity for investors.`;
+    } else if (rating === 'Hold') {
+      return `Fair valuation at ${peText}. Current metrics suggest maintaining position while monitoring developments.`;
+    } else if (rating === 'Sell') {
+      return `Concerns about valuation at ${peText}. Recent performance and market conditions suggest caution.`;
+    } else {
+      return `Significant concerns with ${peText}. Analysts recommend reviewing position given current outlook.`;
+    }
+  }
+}
 
+async function generateAnalystSummary(stock: any): Promise<string> {
   // Return N/A for ETFs if no analyst rating
   if (stock.type === 'etf' && stock.analystRating === 'N/A') {
     return 'N/A';
+  }
+
+  // If no API key, return fallback immediately
+  if (!LOVABLE_API_KEY) {
+    return generateFallbackSummary(stock);
   }
 
   try {
@@ -228,14 +268,16 @@ Focus on why analysts give this rating based on valuation, growth potential, and
 
     if (!response.ok) {
       console.error(`AI gateway error: ${response.status}`);
-      return 'Summary unavailable';
+      // Return fallback summary instead of generic message
+      return generateFallbackSummary(stock);
     }
 
     const data = await response.json();
     return data.choices[0].message.content;
   } catch (error) {
     console.error('Error generating summary:', error);
-    return 'Summary unavailable';
+    // Return fallback summary instead of generic message
+    return generateFallbackSummary(stock);
   }
 }
 
