@@ -231,27 +231,25 @@ async function generateAnalystSummary(stock: any): Promise<string> {
     const isETF = stock.type === 'etf';
     
     const prompt = isETF 
-      ? `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
+      ? `Okay bestie, spill the tea on ${stock.ticker} (${stock.companyName})! Analysts are calling it a "${stock.analystRating}" and here's the inside scoop based on the REAL numbers:
 
-ETF metrics:
-- Current Price: $${stock.currentPrice?.toFixed(2) || 'N/A'}
-- Price Change: ${stock.priceChangePercent?.toFixed(2) || 'N/A'}%
+📊 The Tea:
+- Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% change)
 - Net Assets: ${stock.netAssetsDisplay || 'N/A'}
 - Dividend Yield: ${stock.dividendYield ? (stock.dividendYield * 100).toFixed(2) + '%' : 'N/A'}
 - Expense Ratio: ${stock.expenseRatio ? (stock.expenseRatio * 100).toFixed(2) + '%' : 'N/A'}
 - 52-Week Range: $${stock.low52Week?.toFixed(2) || 'N/A'} - $${stock.high52Week?.toFixed(2) || 'N/A'}
 
-Focus on why analysts give this rating based on the ETF's performance, holdings, costs, and market position. Be concise and informative.`
-      : `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
+Write a juicy, viral-worthy explanation (MAX 4 short paragraphs) about why analysts rated it this way. Start with a HOOK that makes people go "wait, WHAT?!" Use these EXACT metrics only - no making stuff up! Sound like you're gossiping with your bestie about the hottest market drama. Keep it snappy, sassy, and packed with the most important info that explains the rating.`
+      : `Okay bestie, spill the tea on ${stock.ticker} (${stock.companyName})! Analysts are calling it a "${stock.analystRating}" and here's the inside scoop based on the REAL numbers:
 
-Stock metrics:
-- Current Price: $${stock.currentPrice?.toFixed(2) || 'N/A'}
-- Price Change: ${stock.priceChangePercent?.toFixed(2) || 'N/A'}%
+📊 The Tea:
+- Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% change)
 - P/E Ratio: ${stock.peRatio?.toFixed(2) || 'N/A'}
 - Market Cap: ${stock.marketCapRaw ? formatMarketCap(stock.marketCapRaw) : 'N/A'}
 - 52-Week Range: $${stock.low52Week?.toFixed(2) || 'N/A'} - $${stock.high52Week?.toFixed(2) || 'N/A'}
 
-Focus on why analysts give this rating based on valuation, growth potential, and market position. Be concise and informative.`;
+Write a juicy, viral-worthy explanation (MAX 4 short paragraphs) about why analysts rated it this way. Start with a HOOK that makes people go "wait, WHAT?!" Use these EXACT metrics only - no making stuff up! Sound like you're gossiping with your bestie about the hottest market drama. Keep it snappy, sassy, and packed with the most important info that explains the rating.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -262,10 +260,10 @@ Focus on why analysts give this rating based on valuation, growth potential, and
       body: JSON.stringify({
         model: 'gpt-5-mini-2025-08-07',
         messages: [
-          { role: 'system', content: 'You are a financial analyst providing concise explanations of stock and ETF ratings.' },
+          { role: 'system', content: 'You are a gossipy insider friend who explains stock ratings in a viral, hook-y way. Keep it under 4 short paragraphs. Use ONLY the provided metrics - never hallucinate or make up information. Sound sassy, authentic, and make people want to keep reading.' },
           { role: 'user', content: prompt }
         ],
-        max_completion_tokens: 150,
+        max_completion_tokens: 300,
       }),
     });
 
