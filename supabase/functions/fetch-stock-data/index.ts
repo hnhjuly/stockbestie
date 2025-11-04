@@ -205,27 +205,25 @@ async function generateAnalystSummary(stock: any): Promise<string> {
     const isETF = stock.type === 'etf';
     
     const prompt = isETF 
-      ? `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
+      ? `You're a gossipy insider spilling tea on this ETF! Write a 2-3 sentence summary about ${stock.ticker} (${stock.companyName}) that sounds like you're texting a friend with the REAL scoop.
 
-ETF metrics:
-- Current Price: $${stock.currentPrice?.toFixed(2) || 'N/A'}
-- Price Change: ${stock.priceChangePercent?.toFixed(2) || 'N/A'}%
+Current Stats:
+- Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% today)
 - Net Assets: ${stock.netAssetsDisplay || 'N/A'}
 - Dividend Yield: ${stock.dividendYield ? (stock.dividendYield * 100).toFixed(2) + '%' : 'N/A'}
 - Expense Ratio: ${stock.expenseRatio ? (stock.expenseRatio * 100).toFixed(2) + '%' : 'N/A'}
-- 52-Week Range: $${stock.low52Week?.toFixed(2) || 'N/A'} - $${stock.high52Week?.toFixed(2) || 'N/A'}
+- Analyst Rating: ${stock.analystRating}
 
-Focus on why analysts give this rating based on the ETF's performance, holdings, costs, and market position. Be concise and informative.`
-      : `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
+Make it juicy and fun! Use phrases like "word on the street is...", "analysts are lowkey obsessed", "not gonna lie", "the vibes are...", etc. Explain WHY analysts gave this rating in a gossipy but accurate way. Keep it under 60 words!`
+      : `You're a gossipy insider spilling tea on this stock! Write a 2-3 sentence summary about ${stock.ticker} (${stock.companyName}) that sounds like you're texting a friend with the REAL scoop.
 
-Stock metrics:
-- Current Price: $${stock.currentPrice?.toFixed(2) || 'N/A'}
-- Price Change: ${stock.priceChangePercent?.toFixed(2) || 'N/A'}%
+Current Stats:
+- Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% today)
 - P/E Ratio: ${stock.peRatio?.toFixed(2) || 'N/A'}
 - Market Cap: ${stock.marketCapRaw ? formatMarketCap(stock.marketCapRaw) : 'N/A'}
-- 52-Week Range: $${stock.low52Week?.toFixed(2) || 'N/A'} - $${stock.high52Week?.toFixed(2) || 'N/A'}
+- Analyst Rating: ${stock.analystRating}
 
-Focus on why analysts give this rating based on valuation, growth potential, and market position. Be concise and informative.`;
+Make it juicy and fun! Use phrases like "word on the street is...", "analysts are lowkey obsessed", "not gonna lie", "the vibes are...", etc. Explain WHY analysts gave this rating in a gossipy but accurate way. Keep it under 60 words!`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -238,7 +236,7 @@ Focus on why analysts give this rating based on valuation, growth potential, and
         messages: [
           {
             role: 'system',
-            content: 'You are a financial analyst. Provide clear, concise analysis.'
+            content: 'You are a gossipy finance insider who makes stock analysis fun and relatable. Write like you\'re texting a bestie with the real tea! 💅'
           },
           {
             role: 'user',
