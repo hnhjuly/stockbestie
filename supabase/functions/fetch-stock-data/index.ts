@@ -1,7 +1,6 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -176,110 +175,67 @@ function convertAnalystRating(rating: string | undefined | null): string {
   return 'N/A';
 }
 
-function generateFallbackSummary(stock: any): string {
-  const isETF = stock.type === 'etf';
-  const rating = stock.analystRating;
-  
-  if (rating === 'N/A') {
-    return isETF ? 'N/A' : 'No analyst rating available for this stock.';
-  }
-  
-  const priceChange = stock.priceChangePercent || 0;
-  const peRatio = stock.peRatio;
-  
-  if (isETF) {
-    const expenseRatio = stock.expenseRatio ? (stock.expenseRatio * 100).toFixed(2) + '%' : 'N/A';
-    const divYield = stock.dividendYield ? (stock.dividendYield * 100).toFixed(2) + '%' : 'N/A';
-    
-    if (rating === 'Strong Buy' || rating === 'Buy') {
-      return `Strong fundamentals with ${divYield} dividend yield and ${expenseRatio} expense ratio. Recent ${priceChange > 0 ? 'positive' : 'negative'} momentum suggests ${rating.toLowerCase()} opportunity.`;
-    } else if (rating === 'Hold') {
-      return `Stable performance with ${expenseRatio} expense ratio. Current metrics suggest maintaining position at this level.`;
-    } else {
-      return `Higher expense ratio at ${expenseRatio} and recent performance trends warrant caution.`;
-    }
-  } else {
-    const peText = peRatio ? `P/E of ${peRatio.toFixed(1)}` : 'N/A P/E';
-    
-    if (rating === 'Strong Buy') {
-      return `Strong growth potential with ${peText}. Analysts see significant upside based on fundamentals and market position.`;
-    } else if (rating === 'Buy') {
-      return `Positive outlook with ${peText}. Recent ${priceChange > 0 ? 'gains' : 'pullback'} presents opportunity for investors.`;
-    } else if (rating === 'Hold') {
-      return `Fair valuation at ${peText}. Current metrics suggest maintaining position while monitoring developments.`;
-    } else if (rating === 'Sell') {
-      return `Concerns about valuation at ${peText}. Recent performance and market conditions suggest caution.`;
-    } else {
-      return `Significant concerns with ${peText}. Analysts recommend reviewing position given current outlook.`;
-    }
-  }
-}
-
 async function generateAnalystSummary(stock: any): Promise<string> {
+  if (!LOVABLE_API_KEY) {
+    return 'Summary unavailable';
+  }
+
   // Return N/A for ETFs if no analyst rating
   if (stock.type === 'etf' && stock.analystRating === 'N/A') {
     return 'N/A';
-  }
-
-  // If no API key, return fallback immediately
-  if (!OPENAI_API_KEY) {
-    console.log('No OpenAI API key configured, using fallback summary');
-    return generateFallbackSummary(stock);
   }
 
   try {
     const isETF = stock.type === 'etf';
     
     const prompt = isETF 
-      ? `Okay bestie, spill the tea on ${stock.ticker} (${stock.companyName})! Analysts are calling it a "${stock.analystRating}" and here's the inside scoop based on the REAL numbers:
+      ? `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
 
-📊 The Tea:
-- Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% change)
+ETF metrics:
+- Current Price: $${stock.currentPrice?.toFixed(2) || 'N/A'}
+- Price Change: ${stock.priceChangePercent?.toFixed(2) || 'N/A'}%
 - Net Assets: ${stock.netAssetsDisplay || 'N/A'}
 - Dividend Yield: ${stock.dividendYield ? (stock.dividendYield * 100).toFixed(2) + '%' : 'N/A'}
 - Expense Ratio: ${stock.expenseRatio ? (stock.expenseRatio * 100).toFixed(2) + '%' : 'N/A'}
 - 52-Week Range: $${stock.low52Week?.toFixed(2) || 'N/A'} - $${stock.high52Week?.toFixed(2) || 'N/A'}
 
-Write a juicy, viral-worthy explanation (MAX 4 short paragraphs) about why analysts rated it this way. Start with a HOOK that makes people go "wait, WHAT?!" Use these EXACT metrics only - no making stuff up! Sound like you're gossiping with your bestie about the hottest market drama. Keep it snappy, sassy, and packed with the most important info that explains the rating.`
-      : `Okay bestie, spill the tea on ${stock.ticker} (${stock.companyName})! Analysts are calling it a "${stock.analystRating}" and here's the inside scoop based on the REAL numbers:
+Focus on why analysts give this rating based on the ETF's performance, holdings, costs, and market position. Be concise and informative.`
+      : `Generate a brief 2-3 sentence summary explaining why ${stock.ticker} (${stock.companyName}) has an analyst rating of "${stock.analystRating}". 
 
-📊 The Tea:
-- Price: $${stock.currentPrice?.toFixed(2) || 'N/A'} (${stock.priceChangePercent?.toFixed(2) || 'N/A'}% change)
+Stock metrics:
+- Current Price: $${stock.currentPrice?.toFixed(2) || 'N/A'}
+- Price Change: ${stock.priceChangePercent?.toFixed(2) || 'N/A'}%
 - P/E Ratio: ${stock.peRatio?.toFixed(2) || 'N/A'}
 - Market Cap: ${stock.marketCapRaw ? formatMarketCap(stock.marketCapRaw) : 'N/A'}
 - 52-Week Range: $${stock.low52Week?.toFixed(2) || 'N/A'} - $${stock.high52Week?.toFixed(2) || 'N/A'}
 
-Write a juicy, viral-worthy explanation (MAX 4 short paragraphs) about why analysts rated it this way. Start with a HOOK that makes people go "wait, WHAT?!" Use these EXACT metrics only - no making stuff up! Sound like you're gossiping with your bestie about the hottest market drama. Keep it snappy, sassy, and packed with the most important info that explains the rating.`;
+Focus on why analysts give this rating based on valuation, growth potential, and market position. Be concise and informative.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini-2025-08-07',
+        model: 'google/gemini-2.5-flash',
         messages: [
-          { role: 'system', content: 'You are a gossipy insider friend who explains stock ratings in a viral, hook-y way. Keep it under 4 short paragraphs. Use ONLY the provided metrics - never hallucinate or make up information. Sound sassy, authentic, and make people want to keep reading.' },
+          { role: 'system', content: 'You are a financial analyst providing concise explanations of stock and ETF ratings.' },
           { role: 'user', content: prompt }
         ],
-        max_completion_tokens: 300,
       }),
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`OpenAI API error: ${response.status} - ${errorText}`);
-      // Return fallback summary instead of generic message
-      return generateFallbackSummary(stock);
+      console.error(`AI gateway error: ${response.status}`);
+      return 'Summary unavailable';
     }
 
     const data = await response.json();
     return data.choices[0].message.content;
   } catch (error) {
     console.error('Error generating summary:', error);
-    // Return fallback summary instead of generic message
-    return generateFallbackSummary(stock);
+    return 'Summary unavailable';
   }
 }
 

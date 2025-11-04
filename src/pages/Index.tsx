@@ -126,9 +126,7 @@ const Index = () => {
           }
           
           console.log('Default tickers inserted successfully');
-          // Reload from DB to ensure state is in sync
-          await loadTickersFromDB();
-          setIsLoading(false);
+          setTickers(defaultTickers);
         } catch (error) {
           console.error('Failed to insert default tickers:', error);
           toast.error('Failed to initialize default stocks');
