@@ -42,7 +42,10 @@ const Index = () => {
   };
 
   const loadStocks = async (showToast = false) => {
+    console.log('loadStocks called with tickers:', tickers);
+    
     if (tickers.length === 0) {
+      console.log('No tickers to load');
       setStocks([]);
       setIsLoading(false);
       setIsRefreshing(false);
@@ -51,21 +54,26 @@ const Index = () => {
 
     try {
       setIsRefreshing(true);
+      console.log('Fetching stock data for:', tickers);
       const data = await fetchStockData(tickers);
+      console.log('Stock data received:', data);
       setStocks(data);
       setLastUpdated(new Date());
       if (showToast) {
         toast.success('Stock data refreshed successfully');
       }
     } catch (error: any) {
+      console.error('Error loading stocks:', error);
       // Check for rate limiting error
       if (error?.message?.includes('rate limit') || error?.context?.rateLimited) {
         toast.error('Rate limit reached. Please wait 30 seconds before refreshing.');
       } else {
-        toast.error('Failed to fetch stock data');
+        toast.error('Failed to fetch stock data. Please try refreshing.');
       }
-      console.error(error);
+      // Set empty stocks on error to show empty state instead of infinite loading
+      setStocks([]);
     } finally {
+      console.log('loadStocks completed, setting loading to false');
       setIsLoading(false);
       setIsRefreshing(false);
     }
@@ -98,9 +106,12 @@ const Index = () => {
 
   useEffect(() => {
     const initializeApp = async () => {
+      console.log('Initializing app...');
       const tickerList = await loadTickersFromDB();
+      console.log('Loaded tickers from DB:', tickerList);
       
       if (tickerList.length === 0) {
+        console.log('No tickers found, inserting defaults');
         // Insert default tickers if database is empty for this device
         const defaultTickers = ['NVDA', 'TSLA', 'AAPL'];
         const deviceId = getDeviceId();
@@ -109,23 +120,34 @@ const Index = () => {
             .from('tickers')
             .insert(defaultTickers.map(ticker => ({ ticker, user_id: deviceId })));
           
-          if (error) throw error;
+          if (error) {
+            console.error('Error inserting default tickers:', error);
+            throw error;
+          }
           
+          console.log('Default tickers inserted successfully');
           setTickers(defaultTickers);
         } catch (error) {
           console.error('Failed to insert default tickers:', error);
+          toast.error('Failed to initialize default stocks');
+          setIsLoading(false);
         }
+      } else {
+        // If tickers loaded from DB, we still need to turn off loading
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
     
     initializeApp();
   }, []);
 
   useEffect(() => {
+    console.log('Tickers changed:', tickers);
     if (tickers.length > 0) {
+      console.log('Loading stocks for tickers:', tickers);
       loadStocks();
+    } else {
+      console.log('No tickers yet, skipping load');
     }
   }, [tickers]);
 
