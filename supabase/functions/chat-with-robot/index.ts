@@ -62,12 +62,12 @@ serve(async (req) => {
 
   try {
     const { messages } = await req.json();
-    const GOOGLE_GEMINI_API_KEY = Deno.env.get('GOOGLE_GEMINI_API_KEY');
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!GOOGLE_GEMINI_API_KEY) {
-      throw new Error('GOOGLE_GEMINI_API_KEY is not configured');
+    if (!OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY is not configured');
     }
 
     // Get the last user message
@@ -127,7 +127,7 @@ RESPONSE FORMAT: Start your answer with "As of ${currentTime} ET, ${stock.compan
       }
     }
 
-    // Convert messages to Gemini format
+    // System prompt for OpenAI
     const systemPrompt = `You are Stock Bestie, a gossipy finance-savvy friend who happens to be an informative robot!
 
 🚨 ABSOLUTE RULES - NEVER BREAK THESE:
@@ -168,41 +168,26 @@ Examples of beginner-friendly explanations:
 
 Remember: Simple words, short sentences, explain everything! 🚀${stockContext}`;
 
-    // Convert chat messages to Gemini format
-    const geminiContents = [];
-    for (const msg of messages) {
-      if (msg.role === 'system') continue; // Skip system messages as we'll add them separately
-      geminiContents.push({
-        role: msg.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: msg.content }]
-      });
-    }
-
-    // Prepend system prompt as first user message
-    geminiContents.unshift({
-      role: 'user',
-      parts: [{ text: systemPrompt }]
-    });
-    geminiContents.splice(1, 0, {
-      role: 'model',
-      parts: [{ text: 'Understood! I\'ll be Stock Bestie and help with all your stock questions!' }]
-    });
+    // Convert messages to OpenAI format
+    const openAIMessages = [
+      { role: 'system', content: systemPrompt },
+      ...messages
+    ];
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:streamGenerateContent?key=${GOOGLE_GEMINI_API_KEY}`,
+      'https://api.openai.com/v1/chat/completions',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
         },
         body: JSON.stringify({
-          contents: geminiContents,
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-          }
+          model: 'gpt-4o-mini',
+          messages: openAIMessages,
+          stream: true,
+          temperature: 0.7,
+          max_tokens: 1024,
         }),
       }
     );
