@@ -92,22 +92,28 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
             </div>
           </div>
 
-          {/* Analyst Prediction */}
+          {/* Analyst Prediction / ETF Summary */}
           <div>
-            <h3 className="text-lg font-semibold mb-3">Analyst Prediction</h3>
+            <h3 className="text-lg font-semibold mb-3">
+              {stock.type === 'etf' ? 'ETF Summary' : 'Analyst Prediction'}
+            </h3>
             <div className="bg-accent/50 rounded-lg p-4">
               {stock.analystPrediction && stock.analystPrediction !== 'N/A' ? (
                 <div className="flex items-start gap-3">
-                  <span className={`font-bold text-lg ${
-                    stock.analystPrediction.startsWith('Strong Buy') || stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
-                    stock.analystPrediction.startsWith('Hold') ? 'text-warning' :
-                    stock.analystPrediction.startsWith('Sell') || stock.analystPrediction.startsWith('Strong Sell') ? 'text-destructive' : 
-                    'text-muted-foreground'
-                  }`}>
-                    {stock.analystPrediction.split(' - ')[0]}
-                  </span>
+                  {stock.type === 'stock' && (
+                    <span className={`font-bold text-lg ${
+                      stock.analystPrediction.startsWith('Strong Buy') || stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
+                      stock.analystPrediction.startsWith('Hold') ? 'text-warning' :
+                      stock.analystPrediction.startsWith('Sell') || stock.analystPrediction.startsWith('Strong Sell') ? 'text-destructive' : 
+                      'text-muted-foreground'
+                    }`}>
+                      {stock.analystPrediction.split(' - ')[0]}
+                    </span>
+                  )}
                   <p className="text-sm text-muted-foreground flex-1">
-                    {stock.analystPrediction.split(' - ').slice(1).join(' - ')}
+                    {stock.type === 'etf' 
+                      ? stock.analystPrediction 
+                      : stock.analystPrediction.split(' - ').slice(1).join(' - ')}
                   </p>
                 </div>
               ) : (

@@ -226,20 +226,18 @@ async function generateAnalystSummary(stock: any, forceGenerate: boolean = false
   
   console.log(`Generating NEW summary for ${stock.ticker}...`);
 
-  // Return N/A for ETFs if no analyst rating
-  if (stock.type === 'etf' && stock.analystRating === 'N/A') {
-    return 'N/A';
-  }
-
   try {
     const isETF = stock.type === 'etf';
     
     const prompt = isETF 
-      ? `Write a casual, informative analysis about ${stock.ticker} (${stock.companyName}) ETF and what the analyst rating means.
+      ? `Write a brief, informative summary about the ${stock.ticker} (${stock.companyName}) ETF. 
 
-Analyst Rating: ${stock.analystRating}
+Focus on:
+1. What types of companies or sectors this ETF invests in
+2. The main holdings or focus of the fund
+3. Who this ETF is suitable for
 
-Focus on WHY analysts gave this rating and what it means for investors. Maximum 3 sentences. Do NOT include any numbers, prices, percentages, or specific metrics. Keep it conversational and easy to understand.`
+Maximum 3 sentences. Keep it casual and easy to understand for everyday investors.`
       : `Write a casual, informative analysis about ${stock.ticker} (${stock.companyName}) and what the analyst rating means.
 
 Analyst Rating: ${stock.analystRating}
