@@ -232,7 +232,14 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 </TableCell>
                 <TableCell className="text-sm">
                   {stock.type === 'etf' ? (
-                    <span className="font-semibold text-primary">ETF</span>
+                    <>
+                      <span className="font-semibold text-primary">ETF</span>
+                      {stock.analystPrediction && stock.analystPrediction !== 'N/A' && (
+                        <span className="text-muted-foreground block mt-1">
+                          {stock.analystPrediction}
+                        </span>
+                      )}
+                    </>
                   ) : (
                     <>
                       <span className={`font-semibold ${
