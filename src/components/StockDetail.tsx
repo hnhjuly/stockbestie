@@ -110,7 +110,7 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
                       {stock.analystPrediction.split(' - ')[0]}
                     </span>
                   )}
-                  <p className="text-sm text-muted-foreground flex-1">
+                  <p className={`text-sm text-muted-foreground flex-1 ${stock.type === 'etf' ? 'font-normal' : ''}`}>
                     {stock.type === 'etf' 
                       ? stock.analystPrediction 
                       : stock.analystPrediction.split(' - ').slice(1).join(' - ')}
