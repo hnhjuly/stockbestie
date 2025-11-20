@@ -38,6 +38,33 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_limits: {
+        Row: {
+          chat_count: number
+          created_at: string
+          device_id: string
+          id: string
+          last_reset_date: string
+          updated_at: string
+        }
+        Insert: {
+          chat_count?: number
+          created_at?: string
+          device_id: string
+          id?: string
+          last_reset_date?: string
+          updated_at?: string
+        }
+        Update: {
+          chat_count?: number
+          created_at?: string
+          device_id?: string
+          id?: string
+          last_reset_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       portfolio_tickers: {
         Row: {
           added_at: string

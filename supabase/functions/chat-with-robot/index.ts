@@ -66,7 +66,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, deviceId } = await req.json();
     
     // Input validation
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -88,6 +88,79 @@ serve(async (req) => {
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
+    // Create Supabase client for chat limits
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
+
+    // Check and enforce daily chat limit (20 chats per day)
+    if (deviceId) {
+      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+      
+      // Get or create chat limit record
+      const { data: limitRecord, error: limitError } = await supabase
+        .from('chat_limits')
+        .select('*')
+        .eq('device_id', deviceId)
+        .single();
+
+      if (limitError && limitError.code !== 'PGRST116') { // PGRST116 = no rows found
+        console.error('Error fetching chat limits:', limitError);
+      } else {
+        let currentCount = 0;
+        let shouldReset = false;
+
+        if (limitRecord) {
+          // Check if we need to reset (new day)
+          if (limitRecord.last_reset_date !== today) {
+            shouldReset = true;
+            currentCount = 0;
+          } else {
+            currentCount = limitRecord.chat_count;
+          }
+
+          // Check if limit reached
+          if (currentCount >= 20) {
+            return new Response(
+              JSON.stringify({ 
+                limitReached: true,
+                message: "Come back tomorrow, let's talk about Stock Market 📈" 
+              }),
+              { 
+                status: 429, 
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+              }
+            );
+          }
+
+          // Update count
+          if (shouldReset) {
+            await supabase
+              .from('chat_limits')
+              .update({ 
+                chat_count: 1, 
+                last_reset_date: today 
+              })
+              .eq('device_id', deviceId);
+          } else {
+            await supabase
+              .from('chat_limits')
+              .update({ 
+                chat_count: currentCount + 1 
+              })
+              .eq('device_id', deviceId);
+          }
+        } else {
+          // Create new record
+          await supabase
+            .from('chat_limits')
+            .insert({ 
+              device_id: deviceId, 
+              chat_count: 1, 
+              last_reset_date: today 
+            });
+        }
+      }
+    }
+
     if (!OPENAI_API_KEY) {
       return new Response(
         JSON.stringify({ error: 'Service configuration error' }),
@@ -106,9 +179,6 @@ serve(async (req) => {
       if (ticker && SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY) {
         try {
           console.log(`Fetching real-time data for ticker: ${ticker}`);
-          
-          // Create Supabase client
-          const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
           
           // Call the fetch-stock-data function
           const { data: response, error: stockError } = await supabase.functions.invoke(

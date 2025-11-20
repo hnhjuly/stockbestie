@@ -7,6 +7,7 @@ import { Send, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import robotModel from '@/assets/bestibotcute.glb';
+import { getDeviceId } from '@/lib/deviceId';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -136,6 +137,7 @@ export const RobotChatbot = () => {
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
     try {
+      const deviceId = getDeviceId();
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-with-robot`,
         {
@@ -144,14 +146,32 @@ export const RobotChatbot = () => {
             'Content-Type': 'application/json',
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
-          body: JSON.stringify({ messages: [...messages, userMessage] }),
+          body: JSON.stringify({ 
+            messages: [...messages, userMessage],
+            deviceId 
+          }),
         }
       );
 
       if (!response.ok) {
         if (response.status === 429) {
-          toast.error('Too many requests. Please wait a moment and try again.');
-          setMessages(prev => prev.filter(m => m.content !== ''));
+          // Check if it's the daily limit
+          const errorData = await response.json();
+          if (errorData.limitReached) {
+            // Add the limit message as an assistant message
+            setMessages(prev => {
+              const newMessages = [...prev];
+              const lastMessage = newMessages[newMessages.length - 1];
+              if (lastMessage.role === 'assistant') {
+                lastMessage.content = errorData.message;
+              }
+              return newMessages;
+            });
+            toast.error('Daily chat limit reached (20/day)');
+          } else {
+            toast.error('Too many requests. Please wait a moment and try again.');
+            setMessages(prev => prev.filter(m => m.content !== ''));
+          }
           setIsLoading(false);
           return;
         }
