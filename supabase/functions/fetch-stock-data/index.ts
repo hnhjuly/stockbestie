@@ -11,8 +11,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Cache duration for AI summaries - 24 hours to save tokens
-const SUMMARY_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+// Cache duration for AI summaries - 1 week to save tokens
+const SUMMARY_CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
 // Initialize Supabase client for persistent caching
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
