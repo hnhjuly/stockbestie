@@ -7,7 +7,7 @@ import { Send, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import robotModel from '@/assets/bestibotcute.glb';
-import { useAuth } from '@/hooks/useAuth';
+import { getDeviceId } from '@/lib/deviceId';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -94,7 +94,7 @@ function GlowingShadow() {
 }
 
 export const RobotChatbot = () => {
-  const { user } = useAuth();
+  const deviceId = getDeviceId();
   const [isHovered, setIsHovered] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -127,7 +127,7 @@ export const RobotChatbot = () => {
   }, [canvasKey]);
 
   const handleSendMessage = async () => {
-    if (!input.trim() || isLoading || !user) return;
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = { role: 'user', content: input };
     setMessages(prev => [...prev, userMessage]);
@@ -145,11 +145,10 @@ export const RobotChatbot = () => {
           headers: {
             'Content-Type': 'application/json',
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
           },
           body: JSON.stringify({ 
             messages: [...messages, userMessage],
-            userId: user.id
+            deviceId: deviceId
           }),
         }
       );

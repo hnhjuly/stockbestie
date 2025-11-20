@@ -1,22 +1,20 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Stock } from '@/types/stock';
 import { StockTable } from '@/components/StockTable';
 import { StockDetail } from '@/components/StockDetail';
 import { fetchStockData } from '@/lib/googleSheets';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, X, LogOut } from 'lucide-react';
+import { RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { TickerSearch } from '@/components/TickerSearch';
-import { useAuth } from "@/hooks/useAuth";
+import { getDeviceId } from '@/lib/deviceId';
 import { RobotChatbot } from '@/components/RobotChatbot';
 import { PWAInstallButton } from '@/components/PWAInstallButton';
 
 const Index = () => {
-  const { user, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const deviceId = getDeviceId();
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,21 +22,12 @@ const Index = () => {
   const [tickers, setTickers] = useState<string[]>([]);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  // Redirect to auth if not logged in
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/auth');
-    }
-  }, [user, authLoading, navigate]);
-
   const loadTickersFromDB = async () => {
-    if (!user) return [];
-    
     try {
       const { data, error } = await supabase
         .from('tickers')
         .select('ticker')
-        .eq('user_id', user.id)
+        .eq('user_id', deviceId)
         .order('added_at', { ascending: false });
       
       if (error) throw error;
@@ -97,14 +86,12 @@ const Index = () => {
   };
 
   const removeTicker = async (ticker: string) => {
-    if (!user) return;
-    
     try {
       const { error } = await supabase
         .from('tickers')
         .delete()
         .eq('ticker', ticker)
-        .eq('user_id', user.id);
+        .eq('user_id', deviceId);
       
       if (error) throw error;
       
@@ -118,8 +105,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!user) return;
-    
     const initializeApp = async () => {
       console.log('Initializing app...');
       const tickerList = await loadTickersFromDB();
@@ -127,12 +112,12 @@ const Index = () => {
       
       if (tickerList.length === 0) {
         console.log('No tickers found, inserting defaults');
-        // Insert default tickers if database is empty for this user
+        // Insert default tickers if database is empty for this device
         const defaultTickers = ['NVDA', 'TSLA', 'AAPL'];
         try {
           const { error } = await supabase
             .from('tickers')
-            .insert(defaultTickers.map(ticker => ({ ticker, user_id: user.id })));
+            .insert(defaultTickers.map(ticker => ({ ticker, user_id: deviceId })));
           
           if (error) {
             console.error('Error inserting default tickers:', error);
@@ -153,7 +138,7 @@ const Index = () => {
     };
     
     initializeApp();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     console.log('Tickers changed:', tickers);
@@ -167,35 +152,18 @@ const Index = () => {
 
   // Auto-refresh every 30 seconds - only fetch Yahoo Finance data, no AI
   useEffect(() => {
-    if (tickers.length === 0 || !user) return;
+    if (tickers.length === 0) return;
 
     const interval = setInterval(() => {
       loadStocks(false, false); // Don't show toast, don't include AI predictions
     }, 30000); // 30 seconds
 
     return () => clearInterval(interval);
-  }, [tickers, user]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/auth');
-  };
+  }, [tickers]);
 
   const handleRefresh = async () => {
     await loadStocks(true, true);
   };
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -226,14 +194,6 @@ const Index = () => {
               variant="outline"
             >
               <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </Button>
-            <Button 
-              onClick={handleLogout}
-              size="sm"
-              variant="outline"
-              title="Logout"
-            >
-              <LogOut className="h-4 w-4" />
             </Button>
             <PWAInstallButton />
           </div>
