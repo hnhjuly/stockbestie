@@ -52,7 +52,8 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
     );
   };
 
-  const getPriceChangeColor = (change: number) => {
+  const getPriceChangeColor = (change: number | null) => {
+    if (change === null) return 'text-muted-foreground';
     if (change >= 0) return 'text-success';
     return 'text-destructive';
   };
@@ -75,14 +76,15 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
               <div className="text-right ml-3">
                 <div className="font-mono font-semibold text-lg">${stock.currentPrice.toFixed(2)}</div>
                 <div className={`flex items-center justify-end gap-1 text-sm ${getPriceChangeColor(stock.priceChangePercent)}`}>
-                  {stock.priceChangePercent >= 0 ? (
+                  {stock.priceChangePercent !== null && stock.priceChangePercent >= 0 ? (
                     <TrendingUp className="h-3.5 w-3.5" />
-                  ) : (
+                  ) : stock.priceChangePercent !== null ? (
                     <TrendingDown className="h-3.5 w-3.5" />
-                  )}
+                  ) : null}
                   <span className="font-semibold">
-                    {stock.priceChangePercent >= 0 ? '+' : ''}
-                    {stock.priceChangePercent.toFixed(2)}%
+                    {stock.priceChangePercent !== null ? (
+                      `${stock.priceChangePercent >= 0 ? '+' : ''}${stock.priceChangePercent.toFixed(2)}%`
+                    ) : 'N/A'}
                   </span>
                 </div>
               </div>
@@ -196,14 +198,15 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                 <TableCell className="font-mono">${stock.currentPrice.toFixed(2)}</TableCell>
                 <TableCell>
                   <div className={`flex items-center gap-1 ${getPriceChangeColor(stock.priceChangePercent)}`}>
-                    {stock.priceChangePercent >= 0 ? (
+                    {stock.priceChangePercent !== null && stock.priceChangePercent >= 0 ? (
                       <TrendingUp className="h-4 w-4" />
-                    ) : (
+                    ) : stock.priceChangePercent !== null ? (
                       <TrendingDown className="h-4 w-4" />
-                    )}
+                    ) : null}
                     <span className="font-semibold">
-                      {stock.priceChangePercent >= 0 ? '+' : ''}
-                      {stock.priceChangePercent.toFixed(2)}%
+                      {stock.priceChangePercent !== null ? (
+                        `${stock.priceChangePercent >= 0 ? '+' : ''}${stock.priceChangePercent.toFixed(2)}%`
+                      ) : 'N/A'}
                     </span>
                   </div>
                 </TableCell>
