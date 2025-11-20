@@ -42,26 +42,26 @@ export type Database = {
         Row: {
           chat_count: number
           created_at: string
-          device_id: string
           id: string
           last_reset_date: string
           updated_at: string
+          user_id: string
         }
         Insert: {
           chat_count?: number
           created_at?: string
-          device_id: string
           id?: string
           last_reset_date?: string
           updated_at?: string
+          user_id: string
         }
         Update: {
           chat_count?: number
           created_at?: string
-          device_id?: string
           id?: string
           last_reset_date?: string
           updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
