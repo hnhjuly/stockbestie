@@ -94,7 +94,6 @@ function GlowingShadow() {
 }
 
 export const RobotChatbot = () => {
-  const deviceId = getDeviceId();
   const [isHovered, setIsHovered] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -138,6 +137,7 @@ export const RobotChatbot = () => {
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
     try {
+      const deviceId = getDeviceId();
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-with-robot`,
         {
@@ -148,7 +148,7 @@ export const RobotChatbot = () => {
           },
           body: JSON.stringify({ 
             messages: [...messages, userMessage],
-            deviceId: deviceId
+            deviceId 
           }),
         }
       );

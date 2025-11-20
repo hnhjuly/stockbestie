@@ -25,7 +25,6 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
   const [selectedIndex, setSelectedIndex] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const deviceId = getDeviceId();
 
   useEffect(() => {
     const searchTicker = async () => {
@@ -90,6 +89,7 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
     }
 
     try {
+      const deviceId = getDeviceId();
       const { error } = await supabase
         .from('tickers')
         .insert({ ticker: tickerToAdd, user_id: deviceId });

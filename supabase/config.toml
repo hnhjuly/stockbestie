@@ -1,10 +1,10 @@
 project_id = "wsfdnwxsdmizxuurorpe"
 
-[functions.chat-with-robot]
-verify_jwt = false
-
 [functions.fetch-stock-data]
 verify_jwt = false
 
 [functions.search-ticker]
+verify_jwt = false
+
+[functions.chat-with-robot]
 verify_jwt = false
