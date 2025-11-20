@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useAuth } from '@/hooks/useAuth';
+import { getDeviceId } from '@/lib/deviceId';
 
 interface SearchResult {
   symbol: string;
@@ -18,7 +18,6 @@ interface TickerSearchProps {
 }
 
 export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchProps) => {
-  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -26,6 +25,7 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
   const [selectedIndex, setSelectedIndex] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const deviceId = getDeviceId();
 
   useEffect(() => {
     const searchTicker = async () => {
@@ -71,11 +71,6 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
   }, []);
 
   const addTicker = async (ticker?: string) => {
-    if (!user) {
-      toast.error('Please log in to add tickers');
-      return;
-    }
-
     const tickerToAdd = ticker || searchResults[selectedIndex]?.symbol || searchQuery.trim().toUpperCase();
     
     if (!tickerToAdd) {
@@ -97,7 +92,7 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
     try {
       const { error } = await supabase
         .from('tickers')
-        .insert({ ticker: tickerToAdd, user_id: user.id });
+        .insert({ ticker: tickerToAdd, user_id: deviceId });
       
       if (error) throw error;
       
