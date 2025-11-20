@@ -121,14 +121,18 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
             </div>
             <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
               <span>Tap for details</span>
-              <span className={`font-semibold ${
-                stock.analystPrediction.startsWith('Strong Buy') || stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
-                stock.analystPrediction.startsWith('Hold') ? 'text-warning' :
-                stock.analystPrediction.startsWith('Sell') || stock.analystPrediction.startsWith('Strong Sell') ? 'text-destructive' : 
-                'text-muted-foreground'
-              }`}>
-                {stock.analystPrediction.split(' - ')[0] || 'N/A'}
-              </span>
+              {stock.type === 'etf' ? (
+                <span className="font-semibold text-primary">ETF</span>
+              ) : (
+                <span className={`font-semibold ${
+                  stock.analystPrediction.startsWith('Strong Buy') || stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
+                  stock.analystPrediction.startsWith('Hold') ? 'text-warning' :
+                  stock.analystPrediction.startsWith('Sell') || stock.analystPrediction.startsWith('Strong Sell') ? 'text-destructive' : 
+                  'text-muted-foreground'
+                }`}>
+                  {stock.analystPrediction.split(' - ')[0] || 'N/A'}
+                </span>
+              )}
             </div>
           </div>
         ))}
@@ -227,18 +231,24 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
                   }
                 </TableCell>
                 <TableCell className="text-sm">
-                  <span className={`font-semibold ${
-                    stock.analystPrediction.startsWith('Strong Buy') || stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
-                    stock.analystPrediction.startsWith('Hold') ? 'text-warning' :
-                    stock.analystPrediction.startsWith('Sell') || stock.analystPrediction.startsWith('Strong Sell') ? 'text-destructive' : 
-                    'text-muted-foreground'
-                  }`}>
-                    {stock.analystPrediction.split(' - ')[0] || 'N/A'}
-                  </span>
-                  {stock.analystPrediction.includes(' - ') && (
-                    <span className="text-muted-foreground block mt-1">
-                      {stock.analystPrediction.split(' - ').slice(1).join(' - ')}
-                    </span>
+                  {stock.type === 'etf' ? (
+                    <span className="font-semibold text-primary">ETF</span>
+                  ) : (
+                    <>
+                      <span className={`font-semibold ${
+                        stock.analystPrediction.startsWith('Strong Buy') || stock.analystPrediction.startsWith('Buy') ? 'text-success' : 
+                        stock.analystPrediction.startsWith('Hold') ? 'text-warning' :
+                        stock.analystPrediction.startsWith('Sell') || stock.analystPrediction.startsWith('Strong Sell') ? 'text-destructive' : 
+                        'text-muted-foreground'
+                      }`}>
+                        {stock.analystPrediction.split(' - ')[0] || 'N/A'}
+                      </span>
+                      {stock.analystPrediction.includes(' - ') && (
+                        <span className="text-muted-foreground block mt-1">
+                          {stock.analystPrediction.split(' - ').slice(1).join(' - ')}
+                        </span>
+                      )}
+                    </>
                   )}
                 </TableCell>
               </TableRow>
