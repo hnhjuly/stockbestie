@@ -432,12 +432,14 @@ serve(async (req) => {
     const stocksWithSummaries = await Promise.all(
       results.map(async (stock) => {
         const summary = await generateAnalystSummary(stock, includeAnalystPrediction);
+        const isETF = stock.type === 'etf';
+        
         return {
           ...stock,
           marketCapDisplay: formatMarketCap(stock.marketCapRaw),
           volumeDisplay: formatVolume(stock.volumeRaw),
           analystPrediction: summary && summary !== 'Summary unavailable' 
-            ? `${stock.analystRating} - ${summary}` 
+            ? (isETF ? summary : `${stock.analystRating} - ${summary}`)
             : stock.analystRating,
         };
       })
