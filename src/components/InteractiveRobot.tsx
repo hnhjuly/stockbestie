@@ -90,20 +90,20 @@ function RobotModel({ mousePosition, onLoaded, isMobile, isBlinking, isWinking }
       }
     });
     
-    // More sensitive rotation - head/eyes looking toward cursor (higher sensitivity on mobile)
-    const sensitivity = isMobile ? 0.6 : 0.4;
+    // High sensitivity rotation - head/eyes looking toward cursor
+    const sensitivity = isMobile ? 1.0 : 0.8;
     const targetRotationY = mousePosition.x * sensitivity;
-    const targetRotationX = mousePosition.y * (sensitivity * 0.5);
+    const targetRotationX = mousePosition.y * (sensitivity * 0.6);
     
     modelRef.current.rotation.y = THREE.MathUtils.lerp(
       modelRef.current.rotation.y,
       targetRotationY,
-      isMobile ? 0.1 : 0.06
+      isMobile ? 0.15 : 0.12
     );
     modelRef.current.rotation.x = THREE.MathUtils.lerp(
       modelRef.current.rotation.x,
       targetRotationX,
-      isMobile ? 0.1 : 0.06
+      isMobile ? 0.15 : 0.12
     );
   });
   
