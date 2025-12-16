@@ -66,11 +66,10 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
     }
   }, [isLookingAtForm, hasMovedCloser]);
   
-  // When looking at form, override mouse position to look at form intently
+  // When looking at form, look right toward the form (since mascot is on left)
   useEffect(() => {
     if (isLookingAtForm) {
-      // Look left and slightly down toward the form
-      setMousePosition({ x: -0.9, y: 0.4 });
+      setMousePosition({ x: 0.9, y: 0.3 });
     }
   }, [isLookingAtForm]);
   
@@ -112,8 +111,8 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   
   return (
     <div
-      className={`fixed top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float transition-all duration-700 ease-out ${
-        hasMovedCloser ? 'right-[8%] md:right-[15%]' : 'right-[5%] md:right-[12%]'
+      className={`fixed top-1/2 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float transition-all duration-1000 ease-out ${
+        hasMovedCloser ? 'left-[5%] md:left-[15%]' : 'right-[5%] md:right-[12%]'
       }`}
     >
       {/* Subtle shadow */}
