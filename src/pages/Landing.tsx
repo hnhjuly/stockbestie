@@ -62,7 +62,7 @@ const Landing = () => {
           <img 
             src={sbLogo} 
             alt="Stock Bestie logo" 
-            className="w-24 h-24 md:w-32 md:h-32 object-contain"
+            className="w-24 h-24 md:w-32 md:h-32 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.25)]"
           />
         </div>
 
