@@ -61,19 +61,13 @@ const Landing = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
       </div>
 
-      {/* Interactive 3D Robot - Desktop only (fixed position) */}
-      <div className="hidden md:block">
-        <InteractiveRobot isLookingAtForm={isInputFocused} />
-      </div>
+      {/* Interactive 3D Robot - looks at form when user is typing */}
+      <InteractiveRobot isLookingAtForm={isInputFocused} />
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:py-12 relative z-10">
-        {/* Logo + Mascot row on mobile, just logo on desktop */}
-        <div className="mb-3 md:mb-6 parallax-scale flex items-center gap-2 md:gap-0">
-          <img src={sbLogo} alt="Stock Bestie logo" className="w-14 h-14 md:w-32 md:h-32 object-contain" />
-          {/* Mobile mascot - inline beside logo */}
-          <div className="md:hidden w-16 h-20">
-            <InteractiveRobot isLookingAtForm={isInputFocused} isMobile />
-          </div>
+        {/* SB Logo at top center with parallax */}
+        <div className="mb-3 md:mb-6 parallax-scale">
+          <img src={sbLogo} alt="Stock Bestie logo" className="w-16 h-16 md:w-32 md:h-32 object-contain" />
         </div>
 
         {/* Title with parallax */}

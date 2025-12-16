@@ -80,10 +80,9 @@ function RobotModel({ mousePosition, onLoaded }: RobotModelProps) {
 
 interface InteractiveRobotProps {
   isLookingAtForm?: boolean;
-  isMobile?: boolean;
 }
 
-const InteractiveRobot = ({ isLookingAtForm = false, isMobile = false }: InteractiveRobotProps) => {
+const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
@@ -130,32 +129,10 @@ const InteractiveRobot = ({ isLookingAtForm = false, isMobile = false }: Interac
       window.removeEventListener('touchmove', handleTouchMove);
     };
   }, [isLookingAtForm]);
-
-  // Mobile inline version - no fixed positioning, smaller size, no thought bubbles
-  if (isMobile) {
-    return (
-      <div className="w-full h-full cursor-pointer relative">
-        <Suspense 
-          fallback={
-            <div className="w-full h-full flex items-center justify-center">
-              <Loader2 className="w-4 h-4 text-primary animate-spin" />
-            </div>
-          }
-        >
-          <Canvas camera={{ position: [0, 0, 4], fov: 45 }}>
-            <ambientLight intensity={0.9} />
-            <directionalLight position={[5, 5, 5]} intensity={1} />
-            <RobotModel mousePosition={mousePosition} onLoaded={() => setIsLoaded(true)} />
-          </Canvas>
-        </Suspense>
-      </div>
-    );
-  }
   
-  // Desktop fixed version
   return (
     <div
-      className="fixed right-[8%] top-1/3 -translate-y-1/2 w-48 h-56 z-20 logo-float cursor-pointer"
+      className="fixed right-[2%] md:right-[8%] top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float cursor-pointer"
       onMouseEnter={() => setIsInteracting(true)}
       onMouseLeave={() => setIsInteracting(false)}
       onTouchStart={() => setIsInteracting(true)}
