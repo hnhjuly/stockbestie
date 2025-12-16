@@ -6,10 +6,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Sparkles, TrendingUp, Bot, ChartLine, Loader2 } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
-import robotModel from '@/assets/bestibotcute.glb';
+const ROBOT_MODEL_URL = 'https://wsfdnwxsdmizxuurorpe.supabase.co/storage/v1/object/public/assets/base_basic_shaded.glb';
 
 function RobotModel() {
-  const { scene } = useGLTF(robotModel);
+  const { scene } = useGLTF(ROBOT_MODEL_URL);
   return <primitive object={scene} scale={1.5} position={[0, -1, 0]} />;
 }
 
