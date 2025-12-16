@@ -69,44 +69,100 @@ const ThoughtBubble = () => {
   return (
     <div
       className={`
-        absolute -top-16 left-1/2 -translate-x-1/2 
-        max-w-[180px] md:max-w-[220px]
-        px-4 py-3
-        rounded-2xl
-        text-xs md:text-sm text-foreground/90
-        text-center
-        transition-all duration-500 ease-out
+        absolute -top-20 left-1/2 -translate-x-1/2 
+        transition-all duration-700 ease-out
         ${isVisible 
-          ? 'opacity-100 translate-y-0' 
-          : 'opacity-0 translate-y-2 pointer-events-none'
+          ? 'opacity-100 translate-y-0 scale-100' 
+          : 'opacity-0 translate-y-4 scale-90 pointer-events-none'
         }
       `}
-      style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255,255,255,0.2)',
-        boxShadow: `
-          0 8px 32px rgba(0,0,0,0.1),
-          inset 0 1px 0 rgba(255,255,255,0.2),
-          inset 0 -1px 0 rgba(255,255,255,0.05)
-        `,
-      }}
     >
-      {currentThought}
-      
-      {/* Bubble tail */}
-      <div
-        className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 rotate-45"
-        style={{
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          border: '1px solid rgba(255,255,255,0.2)',
-          borderTop: 'none',
-          borderLeft: 'none',
-        }}
-      />
+      {/* Main blob container */}
+      <div className="relative">
+        {/* SVG Blob Shape */}
+        <svg
+          viewBox="0 0 200 100"
+          className="w-[180px] md:w-[220px] h-auto"
+          style={{
+            filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.15))',
+          }}
+        >
+          <defs>
+            <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.25)" />
+              <stop offset="50%" stopColor="rgba(255,255,255,0.12)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0.08)" />
+            </linearGradient>
+            <linearGradient id="blobStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+            </linearGradient>
+            <filter id="blur">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" />
+            </filter>
+          </defs>
+          
+          {/* Organic blob path */}
+          <path
+            d="M20,50 
+               Q10,25 40,15 
+               Q70,5 100,10 
+               Q140,5 165,20 
+               Q190,35 185,55 
+               Q190,75 160,85 
+               Q130,95 100,90 
+               Q60,95 35,85 
+               Q10,75 20,50 Z"
+            fill="url(#blobGradient)"
+            stroke="url(#blobStroke)"
+            strokeWidth="1"
+            style={{
+              backdropFilter: 'blur(12px)',
+            }}
+          />
+          
+          {/* Inner highlight */}
+          <path
+            d="M30,45 
+               Q25,30 50,22 
+               Q75,15 95,18"
+            fill="none"
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+
+        {/* Text overlay */}
+        <div 
+          className="absolute inset-0 flex items-center justify-center px-6 py-4"
+          style={{ paddingBottom: '12px' }}
+        >
+          <span className="text-xs md:text-sm text-foreground/90 text-center leading-snug font-medium">
+            {currentThought}
+          </span>
+        </div>
+
+        {/* Floating connector dots */}
+        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1">
+          <div 
+            className="w-3 h-3 rounded-full"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            }}
+          />
+          <div 
+            className="w-2 h-2 rounded-full"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 };
