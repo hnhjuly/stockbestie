@@ -98,7 +98,7 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   
   return (
     <div
-      className="fixed right-[5%] md:right-[12%] top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float"
+      className="fixed right-[2%] md:right-[8%] top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float"
     >
       {/* Subtle shadow */}
       <div 
