@@ -92,12 +92,12 @@ const ThoughtBubble = () => {
         >
           <defs>
             <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.25)" />
-              <stop offset="50%" stopColor="rgba(255,255,255,0.12)" />
-              <stop offset="100%" stopColor="rgba(255,255,255,0.08)" />
+              <stop offset="0%" stopColor="rgba(30,30,40,0.85)" />
+              <stop offset="50%" stopColor="rgba(40,40,55,0.75)" />
+              <stop offset="100%" stopColor="rgba(35,35,50,0.8)" />
             </linearGradient>
             <linearGradient id="blobStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
+              <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
               <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
             </linearGradient>
           </defs>
@@ -151,7 +151,7 @@ const ThoughtBubble = () => {
           className="absolute inset-0 flex items-center justify-center px-6 py-4"
           style={{ paddingBottom: '12px' }}
         >
-          <span className="text-xs md:text-sm text-foreground/90 text-center leading-snug font-medium">
+          <span className="text-xs md:text-sm text-white/95 text-center leading-snug font-medium">
             {currentThought}
           </span>
         </div>
@@ -161,18 +161,18 @@ const ThoughtBubble = () => {
           <div 
             className="w-3 h-3 rounded-full animate-pulse"
             style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
-              border: '1px solid rgba(255,255,255,0.3)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              background: 'linear-gradient(135deg, rgba(30,30,40,0.85) 0%, rgba(40,40,55,0.75) 100%)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
               animationDuration: '2s',
             }}
           />
           <div 
             className="w-2 h-2 rounded-full animate-pulse"
             style={{
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%)',
-              border: '1px solid rgba(255,255,255,0.25)',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              background: 'linear-gradient(135deg, rgba(35,35,50,0.85) 0%, rgba(45,45,60,0.75) 100%)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
               animationDuration: '2s',
               animationDelay: '0.3s',
             }}
