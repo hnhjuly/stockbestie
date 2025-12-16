@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Sparkles, TrendingUp, Bot, ChartLine, Loader2 } from 'lucide-react';
+import { Sparkles, TrendingUp, Bot, ChartLine, Loader2, Users } from 'lucide-react';
 import sbLogo from '@/assets/sb-logo.png';
 import InteractiveRobot from '@/components/InteractiveRobot';
 const Landing = () => {
@@ -11,6 +11,17 @@ const Landing = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchWaitlistCount = async () => {
+      const { count } = await supabase
+        .from('waitlist')
+        .select('*', { count: 'exact', head: true });
+      setWaitlistCount(count);
+    };
+    fetchWaitlistCount();
+  }, [isSubmitted]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
@@ -110,6 +121,18 @@ const Landing = () => {
             </p>
           </div>}
       </main>
+
+      {/* Waitlist Count */}
+      {waitlistCount !== null && waitlistCount > 0 && (
+        <div className="text-center relative z-10 mb-4 parallax-up">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-card/30 backdrop-blur-sm rounded-full border border-border/30">
+            <Users className="h-4 w-4 text-primary" />
+            <span className="text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">{waitlistCount.toLocaleString()}</span> people on the waitlist
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Footer with parallax */}
       <footer className="py-6 text-center relative z-10 parallax-up stagger-5">
