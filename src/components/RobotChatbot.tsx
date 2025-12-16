@@ -271,10 +271,10 @@ export const RobotChatbot = () => {
 
         {/* Hover prompt - Glass morphism */}
         {isHovered && !isChatOpen && (
-          <div className="absolute -top-16 left-1/2 -translate-x-1/2 animate-fade-in pointer-events-none">
-            <div className="backdrop-blur-xl bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 shadow-[0_8px_32px_0_rgba(59,130,246,0.37)]">
-              <p className="text-sm font-medium whitespace-nowrap text-foreground">How can I help you?</p>
-              <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1">
+          <div className="absolute -top-16 right-2 animate-fade-in pointer-events-none">
+            <div className="backdrop-blur-xl bg-primary/10 border border-primary/30 rounded-2xl px-5 py-3 shadow-[0_8px_32px_0_rgba(59,130,246,0.37)] w-max max-w-[calc(100vw-2rem)]">
+              <p className="text-sm font-medium text-foreground whitespace-normal">How can I help you?</p>
+              <div className="absolute top-full right-12 -mt-1">
                 <div className="w-3 h-3 backdrop-blur-xl bg-primary/10 border-r border-b border-primary/30 rotate-45"></div>
               </div>
             </div>
