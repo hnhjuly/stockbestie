@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Sparkles, TrendingUp, Bot, ChartLine } from 'lucide-react';
-import AnimatedSprite from '@/components/AnimatedSprite';
+import { Sparkles, TrendingUp, Bot, ChartLine, Loader2 } from 'lucide-react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useGLTF } from '@react-three/drei';
+
+const ROBOT_MODEL_URL = 'https://wsfdnwxsdmizxuurorpe.supabase.co/storage/v1/object/public/assets/base_basic_shaded.glb';
+
+function RobotModel() {
+  const { scene } = useGLTF(ROBOT_MODEL_URL);
+  return <primitive object={scene} scale={1.5} position={[0, -1, 0]} />;
+}
 const Landing = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,9 +59,21 @@ const Landing = () => {
       </div>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative z-10">
-        {/* Animated Mascot */}
-        <div className="mb-8 animate-fade-in logo-float">
-          <AnimatedSprite className="w-48 h-48 md:w-64 md:h-64" />
+        {/* 3D Robot Mascot */}
+        <div className="mb-8 animate-fade-in w-48 h-48 md:w-64 md:h-64">
+          <Suspense fallback={<div className="w-full h-full flex items-center justify-center"><Loader2 className="w-8 h-8 text-primary animate-spin" /></div>}>
+            <Canvas camera={{ position: [0, 0, 4], fov: 50 }}>
+              <ambientLight intensity={0.6} />
+              <directionalLight position={[5, 5, 5]} intensity={1} />
+              <RobotModel />
+              <OrbitControls 
+                enableZoom={false} 
+                enablePan={false}
+                autoRotate
+                autoRotateSpeed={2}
+              />
+            </Canvas>
+          </Suspense>
         </div>
 
         {/* Title */}
