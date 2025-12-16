@@ -51,7 +51,7 @@ const Landing = () => {
       setIsSubmitting(false);
     }
   };
-  return <div className="h-screen max-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col overflow-hidden">
+  return <div className="h-[100dvh] bg-gradient-to-br from-background via-background to-primary/5 flex flex-col overflow-hidden">
       {/* Floating shapes background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
@@ -64,36 +64,36 @@ const Landing = () => {
       {/* Interactive 3D Robot - looks at form when user is typing */}
       <InteractiveRobot isLookingAtForm={isInputFocused} />
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-4 md:py-12 relative z-10">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-2 md:py-12 relative z-10">
         {/* SB Logo at top center with parallax */}
-        <div className="mb-3 md:mb-6 parallax-scale">
-          <img src={sbLogo} alt="Stock Bestie logo" className="w-16 h-16 md:w-32 md:h-32 object-contain" />
+        <div className="mb-2 md:mb-6 parallax-scale">
+          <img src={sbLogo} alt="Stock Bestie logo" className="w-12 h-12 md:w-32 md:h-32 object-contain" />
         </div>
 
         {/* Title with parallax */}
-        <h1 className="text-3xl md:text-6xl font-bold text-center mb-2 md:mb-4 parallax-up stagger-1">
+        <h1 className="text-2xl md:text-6xl font-bold text-center mb-1 md:mb-4 parallax-up stagger-1">
           Stock <span className="text-muted-foreground/70">Bestie</span>
         </h1>
 
-        <p className="text-sm md:text-xl text-muted-foreground text-center max-w-md mb-4 md:mb-8 parallax-blur stagger-2">
+        <p className="text-xs md:text-xl text-muted-foreground text-center max-w-md mb-3 md:mb-8 parallax-blur stagger-2">
           Your friendly AI-powered stock market companion is almost here 
         </p>
 
         {/* Features with parallax */}
-        <div className="grid grid-cols-2 gap-2 md:gap-4 max-w-md mb-6 md:mb-10 parallax-up stagger-3">
-          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+        <div className="grid grid-cols-2 gap-1.5 md:gap-4 max-w-md mb-4 md:mb-10 parallax-up stagger-3">
+          <div className="flex items-center gap-1.5 text-[10px] md:text-sm text-muted-foreground">
             <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             <span>Real-time tracking</span>
           </div>
-          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-[10px] md:text-sm text-muted-foreground">
             <Bot className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             <span>AI chatbot assistant</span>
           </div>
-          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-[10px] md:text-sm text-muted-foreground">
             <ChartLine className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             <span>Analyst predictions</span>
           </div>
-          <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-[10px] md:text-sm text-muted-foreground">
             <Sparkles className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             <span>Budget planner</span>
           </div>
@@ -121,10 +121,10 @@ const Landing = () => {
           </div>}
 
         {/* Waitlist Count */}
-        {waitlistCount !== null && waitlistCount > 0 && <div className="text-center mt-4 md:mt-6 parallax-up">
-            <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-card/30 backdrop-blur-sm rounded-full border border-border/30">
+        {waitlistCount !== null && waitlistCount > 0 && <div className="text-center mt-3 md:mt-6 parallax-up">
+            <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1 md:py-2 bg-card/30 backdrop-blur-sm rounded-full border border-border/30">
               <Users className="h-3 w-3 md:h-4 md:w-4 text-primary" />
-              <span className="text-xs md:text-sm text-muted-foreground">
+              <span className="text-[10px] md:text-sm text-muted-foreground">
                 <span className="font-semibold text-foreground">{waitlistCount.toLocaleString()}</span> people on the waitlist
               </span>
             </div>
@@ -132,7 +132,7 @@ const Landing = () => {
       </main>
 
       {/* Footer with parallax */}
-      <footer className="py-3 md:py-6 text-center relative z-10 parallax-up stagger-5">
+      <footer className="py-2 md:py-6 text-center relative z-10 parallax-up stagger-5">
         <p className="text-xs text-muted-foreground">
           © 2025 Stock Bestie by{' '}
           <a href="https://www.hanahjuly.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
