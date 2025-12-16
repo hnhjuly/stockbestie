@@ -7,19 +7,50 @@ import ThoughtBubble from './ThoughtBubble';
 
 const ROBOT_MODEL_URL = 'https://wsfdnwxsdmizxuurorpe.supabase.co/storage/v1/object/public/assets/base_basic_shaded.glb';
 
-// Preload the model
+// Preload the model immediately
 useGLTF.preload(ROBOT_MODEL_URL);
 
 interface RobotModelProps {
   mousePosition: { x: number; y: number };
+  onLoaded: () => void;
 }
 
-function RobotModel({ mousePosition }: RobotModelProps) {
+function RobotModel({ mousePosition, onLoaded }: RobotModelProps) {
   const { scene } = useGLTF(ROBOT_MODEL_URL);
   const modelRef = useRef<THREE.Group>(null);
+  const scaleRef = useRef(0);
+  const velocityRef = useRef(0);
+  const hasLoadedRef = useRef(false);
   
-  useFrame(() => {
+  // Spring physics for bounce effect
+  const springStiffness = 180;
+  const springDamping = 12;
+  const targetScale = 1;
+  
+  useFrame((_, delta) => {
     if (!modelRef.current) return;
+    
+    // Notify parent that model is loaded (once)
+    if (!hasLoadedRef.current) {
+      hasLoadedRef.current = true;
+      onLoaded();
+    }
+    
+    // Spring animation for scale (bounce in)
+    if (scaleRef.current < 0.999) {
+      const displacement = targetScale - scaleRef.current;
+      const springForce = displacement * springStiffness;
+      const dampingForce = velocityRef.current * springDamping;
+      const acceleration = springForce - dampingForce;
+      
+      velocityRef.current += acceleration * delta;
+      scaleRef.current += velocityRef.current * delta;
+      
+      // Clamp to prevent overshoot issues
+      scaleRef.current = Math.min(scaleRef.current, 1.15);
+      
+      modelRef.current.scale.setScalar(Math.max(0, scaleRef.current));
+    }
     
     // More sensitive rotation - head/eyes looking toward cursor
     const targetRotationY = mousePosition.x * 0.4;
@@ -41,7 +72,7 @@ function RobotModel({ mousePosition }: RobotModelProps) {
     <primitive 
       ref={modelRef}
       object={scene} 
-      scale={1} 
+      scale={0} 
       position={[0, -1.2, 0]} 
     />
   );
@@ -53,6 +84,7 @@ interface InteractiveRobotProps {
 
 const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isLoaded, setIsLoaded] = useState(false);
   
   // When looking at form, override mouse position to look left and down (toward form)
   useEffect(() => {
@@ -101,15 +133,16 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
     <div
       className="fixed right-[2%] md:right-[8%] top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float"
     >
-      {/* Thought Bubble */}
-      <ThoughtBubble />
+      {/* Thought Bubble - only show after model loads */}
+      {isLoaded && <ThoughtBubble />}
       
       {/* Subtle shadow */}
       <div 
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-4 rounded-full opacity-20"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-4 rounded-full opacity-20 transition-opacity duration-500"
         style={{
           background: 'radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%)',
           filter: 'blur(4px)',
+          opacity: isLoaded ? 0.2 : 0,
         }}
       />
       
@@ -123,7 +156,7 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
         <Canvas camera={{ position: [0, 0, 4], fov: 45 }}>
           <ambientLight intensity={0.9} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
-          <RobotModel mousePosition={mousePosition} />
+          <RobotModel mousePosition={mousePosition} onLoaded={() => setIsLoaded(true)} />
         </Canvas>
       </Suspense>
     </div>
