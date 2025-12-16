@@ -4,6 +4,7 @@ import { useGLTF } from '@react-three/drei';
 import { Loader2 } from 'lucide-react';
 import * as THREE from 'three';
 import ThoughtBubble from './ThoughtBubble';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const ROBOT_MODEL_URL = 'https://wsfdnwxsdmizxuurorpe.supabase.co/storage/v1/object/public/assets/base_basic_shaded.glb';
 
@@ -13,14 +14,33 @@ useGLTF.preload(ROBOT_MODEL_URL);
 interface RobotModelProps {
   mousePosition: { x: number; y: number };
   onLoaded: () => void;
+  isMobile: boolean;
+  isBlinking: boolean;
+  isWinking: boolean;
 }
 
-function RobotModel({ mousePosition, onLoaded }: RobotModelProps) {
+function RobotModel({ mousePosition, onLoaded, isMobile, isBlinking, isWinking }: RobotModelProps) {
   const { scene } = useGLTF(ROBOT_MODEL_URL);
   const modelRef = useRef<THREE.Group>(null);
   const scaleRef = useRef(0);
   const velocityRef = useRef(0);
   const hasLoadedRef = useRef(false);
+  const floatTimeRef = useRef(0);
+  const eyeMeshesRef = useRef<THREE.Mesh[]>([]);
+  
+  // Find eye meshes on load
+  useEffect(() => {
+    const eyes: THREE.Mesh[] = [];
+    scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        const name = child.name.toLowerCase();
+        if (name.includes('eye') || name.includes('screen') || name.includes('display')) {
+          eyes.push(child);
+        }
+      }
+    });
+    eyeMeshesRef.current = eyes;
+  }, [scene]);
   
   // Spring physics for bounce effect
   const springStiffness = 180;
@@ -52,19 +72,38 @@ function RobotModel({ mousePosition, onLoaded }: RobotModelProps) {
       modelRef.current.scale.setScalar(Math.max(0, scaleRef.current));
     }
     
-    // More sensitive rotation - head/eyes looking toward cursor
-    const targetRotationY = mousePosition.x * 0.4;
-    const targetRotationX = mousePosition.y * 0.2;
+    // Mobile-only floating animation
+    if (isMobile && scaleRef.current >= 0.999) {
+      floatTimeRef.current += delta;
+      const floatY = Math.sin(floatTimeRef.current * 1.5) * 0.08;
+      modelRef.current.position.y = -1.2 + floatY;
+    }
+    
+    // Eye blinking/winking effect - scale eyes
+    eyeMeshesRef.current.forEach((eye, index) => {
+      if (isBlinking) {
+        eye.scale.y = THREE.MathUtils.lerp(eye.scale.y, 0.1, 0.3);
+      } else if (isWinking && index === 0) {
+        eye.scale.y = THREE.MathUtils.lerp(eye.scale.y, 0.1, 0.3);
+      } else {
+        eye.scale.y = THREE.MathUtils.lerp(eye.scale.y, 1, 0.2);
+      }
+    });
+    
+    // More sensitive rotation - head/eyes looking toward cursor (higher sensitivity on mobile)
+    const sensitivity = isMobile ? 0.6 : 0.4;
+    const targetRotationY = mousePosition.x * sensitivity;
+    const targetRotationX = mousePosition.y * (sensitivity * 0.5);
     
     modelRef.current.rotation.y = THREE.MathUtils.lerp(
       modelRef.current.rotation.y,
       targetRotationY,
-      0.06
+      isMobile ? 0.1 : 0.06
     );
     modelRef.current.rotation.x = THREE.MathUtils.lerp(
       modelRef.current.rotation.x,
       targetRotationX,
-      0.06
+      isMobile ? 0.1 : 0.06
     );
   });
   
@@ -86,6 +125,10 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
+  const [driftOffset, setDriftOffset] = useState(0);
+  const [isBlinking, setIsBlinking] = useState(false);
+  const [isWinking, setIsWinking] = useState(false);
+  const isMobile = useIsMobile();
   
   // When looking at form, override mouse position to look left and down (toward form)
   useEffect(() => {
@@ -93,6 +136,47 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
       setMousePosition({ x: -0.8, y: 0.3 });
     }
   }, [isLookingAtForm]);
+  
+  // Mobile-only: Auto-blinking every 3-4 seconds
+  useEffect(() => {
+    if (!isMobile) return;
+    
+    const blink = () => {
+      setIsBlinking(true);
+      setTimeout(() => setIsBlinking(false), 150);
+    };
+    
+    const interval = setInterval(() => {
+      blink();
+    }, 3000 + Math.random() * 1000);
+    
+    return () => clearInterval(interval);
+  }, [isMobile]);
+  
+  // Mobile-only: Random sideways drift every 5-8 seconds
+  useEffect(() => {
+    if (!isMobile) return;
+    
+    const drift = () => {
+      const newOffset = (Math.random() - 0.5) * 30; // -15 to 15 pixels
+      setDriftOffset(newOffset);
+    };
+    
+    const interval = setInterval(() => {
+      drift();
+    }, 5000 + Math.random() * 3000);
+    
+    return () => clearInterval(interval);
+  }, [isMobile]);
+  
+  // Handle winking on interaction (mobile only)
+  const handleInteraction = () => {
+    if (isMobile) {
+      setIsWinking(true);
+      setTimeout(() => setIsWinking(false), 200);
+    }
+    setIsInteracting(prev => !prev);
+  };
   
   // Mouse/touch tracking for look direction
   useEffect(() => {
@@ -132,12 +216,21 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   
   return (
     <div
-      className="fixed right-[2%] md:right-[8%] top-[52%] md:top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float cursor-pointer"
-      onMouseEnter={() => setIsInteracting(true)}
-      onMouseLeave={() => setIsInteracting(false)}
-      onTouchStart={() => setIsInteracting(true)}
+      className="fixed right-[2%] md:right-[8%] top-[52%] md:top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 md:logo-float cursor-pointer transition-transform duration-1000 ease-in-out"
+      style={{
+        transform: isMobile ? `translateY(-50%) translateX(${driftOffset}px)` : undefined,
+      }}
+      onMouseEnter={() => !isMobile && setIsInteracting(true)}
+      onMouseLeave={() => !isMobile && setIsInteracting(false)}
+      onTouchStart={() => {
+        if (isMobile) {
+          setIsWinking(true);
+          setTimeout(() => setIsWinking(false), 200);
+        }
+        setIsInteracting(true);
+      }}
       onTouchEnd={() => setIsInteracting(false)}
-      onClick={() => setIsInteracting(prev => !prev)}
+      onClick={handleInteraction}
     >
       {/* Thought Bubble - only show on interaction */}
       {isLoaded && <ThoughtBubble isVisible={isInteracting} />}
@@ -162,7 +255,13 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
         <Canvas camera={{ position: [0, 0, 4], fov: 45 }}>
           <ambientLight intensity={0.9} />
           <directionalLight position={[5, 5, 5]} intensity={1} />
-          <RobotModel mousePosition={mousePosition} onLoaded={() => setIsLoaded(true)} />
+          <RobotModel 
+            mousePosition={mousePosition} 
+            onLoaded={() => setIsLoaded(true)} 
+            isMobile={isMobile}
+            isBlinking={isBlinking}
+            isWinking={isWinking}
+          />
         </Canvas>
       </Suspense>
     </div>
