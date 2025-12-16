@@ -192,8 +192,12 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
     if (isMobile) {
       setIsWinking(true);
       setTimeout(() => setIsWinking(false), 200);
+      // Mobile: toggle since there's no hover
+      setIsInteracting(prev => !prev);
+    } else {
+      // Desktop: always show on click (hover handles show/hide)
+      setIsInteracting(true);
     }
-    setIsInteracting(prev => !prev);
   };
   
   // Mouse/touch tracking for look direction
