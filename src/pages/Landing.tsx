@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { Sparkles, TrendingUp, Bot, ChartLine } from 'lucide-react';
-import stockBestieIcon from '@/assets/stockbestie_icon.png';
+import AnimatedSprite from '@/components/AnimatedSprite';
 const Landing = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,13 +51,9 @@ const Landing = () => {
       </div>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative z-10">
-        {/* Floating Mascot */}
-        <div className="mb-8 animate-fade-in">
-          <img 
-            src={stockBestieIcon} 
-            alt="Stock Bestie mascot" 
-            className="w-48 h-48 md:w-64 md:h-64 object-contain logo-float"
-          />
+        {/* Animated Mascot */}
+        <div className="mb-8 animate-fade-in logo-float">
+          <AnimatedSprite className="w-48 h-48 md:w-64 md:h-64" />
         </div>
 
         {/* Title */}
