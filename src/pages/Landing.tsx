@@ -11,6 +11,7 @@ const Landing = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,8 +53,8 @@ const Landing = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
       </div>
 
-      {/* Interactive 3D Robot - follows cursor and wanders */}
-      <InteractiveRobot />
+      {/* Interactive 3D Robot - looks at form when user is typing */}
+      <InteractiveRobot isLookingAtForm={isInputFocused} />
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative z-10">
         {/* SB Logo at top center with parallax */}
@@ -103,6 +104,8 @@ const Landing = () => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
                 className="flex-1 h-12 text-base bg-card/50 backdrop-blur-sm border-border/50"
                 disabled={isSubmitting}
               />
