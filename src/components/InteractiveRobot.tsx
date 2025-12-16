@@ -85,6 +85,7 @@ interface InteractiveRobotProps {
 const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
   
   // When looking at form, override mouse position to look left and down (toward form)
   useEffect(() => {
@@ -131,10 +132,15 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   
   return (
     <div
-      className="fixed right-[2%] md:right-[8%] top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float"
+      className="fixed right-[2%] md:right-[8%] top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float cursor-pointer"
+      onMouseEnter={() => setIsInteracting(true)}
+      onMouseLeave={() => setIsInteracting(false)}
+      onTouchStart={() => setIsInteracting(true)}
+      onTouchEnd={() => setIsInteracting(false)}
+      onClick={() => setIsInteracting(prev => !prev)}
     >
-      {/* Thought Bubble - only show after model loads */}
-      {isLoaded && <ThoughtBubble />}
+      {/* Thought Bubble - only show on interaction */}
+      {isLoaded && <ThoughtBubble isVisible={isInteracting} />}
       
       {/* Subtle shadow */}
       <div 

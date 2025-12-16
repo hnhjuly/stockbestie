@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 const thoughts = [
   "Hmm, have you checked NVDA today?",
@@ -33,41 +33,22 @@ const thoughts = [
   "Let's make smart moves together!"
 ];
 
-const ThoughtBubble = () => {
-  const [currentThought, setCurrentThought] = useState('');
-  const [isVisible, setIsVisible] = useState(false);
-  const isVisibleRef = useRef(false);
+interface ThoughtBubbleProps {
+  isVisible: boolean;
+}
 
+const ThoughtBubble = ({ isVisible }: ThoughtBubbleProps) => {
+  const [currentThought, setCurrentThought] = useState(() => 
+    thoughts[Math.floor(Math.random() * thoughts.length)]
+  );
+
+  // Change thought each time bubble becomes visible
   useEffect(() => {
-    const showThought = () => {
-      const randomThought = thoughts[Math.floor(Math.random() * thoughts.length)];
-      setCurrentThought(randomThought);
-      setIsVisible(true);
-      isVisibleRef.current = true;
+    if (isVisible) {
+      setCurrentThought(thoughts[Math.floor(Math.random() * thoughts.length)]);
+    }
+  }, [isVisible]);
 
-      // Hide after 4-6 seconds
-      const hideDelay = 4000 + Math.random() * 2000;
-      setTimeout(() => {
-        setIsVisible(false);
-        isVisibleRef.current = false;
-      }, hideDelay);
-    };
-
-    // Show first thought after 2 seconds
-    const initialTimeout = setTimeout(showThought, 2000);
-
-    // Then show thoughts at random intervals (8-14 seconds)
-    const interval = setInterval(() => {
-      if (!isVisibleRef.current) {
-        showThought();
-      }
-    }, 8000);
-
-    return () => {
-      clearTimeout(initialTimeout);
-      clearInterval(interval);
-    };
-  }, []);
 
   return (
     <div
