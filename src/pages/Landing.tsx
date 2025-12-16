@@ -80,7 +80,7 @@ const Landing = () => {
         </p>
 
         {/* Features with parallax */}
-        <div className="grid grid-cols-2 gap-1.5 md:gap-4 max-w-md mb-4 md:mb-10 parallax-up stagger-3">
+        <div className="grid grid-cols-2 gap-1.5 md:gap-4 max-w-md mb-8 md:mb-10 parallax-up stagger-3">
           <div className="flex items-center gap-1.5 text-[10px] md:text-sm text-muted-foreground">
             <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             <span>Real-time tracking</span>
