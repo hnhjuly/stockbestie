@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { Loader2 } from 'lucide-react';
 import * as THREE from 'three';
+import ThoughtBubble from './ThoughtBubble';
 
 const ROBOT_MODEL_URL = 'https://wsfdnwxsdmizxuurorpe.supabase.co/storage/v1/object/public/assets/base_basic_shaded.glb';
 
@@ -100,6 +101,9 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
     <div
       className="fixed right-[2%] md:right-[8%] top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float"
     >
+      {/* Thought Bubble */}
+      <ThoughtBubble />
+      
       {/* Subtle shadow */}
       <div 
         className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-4 rounded-full opacity-20"
