@@ -12,12 +12,14 @@ const Landing = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
-
   useEffect(() => {
     const fetchWaitlistCount = async () => {
-      const { count } = await supabase
-        .from('waitlist')
-        .select('*', { count: 'exact', head: true });
+      const {
+        count
+      } = await supabase.from('waitlist').select('*', {
+        count: 'exact',
+        head: true
+      });
       setWaitlistCount(count);
     };
     fetchWaitlistCount();
@@ -114,7 +116,7 @@ const Landing = () => {
               Be the first to know when we launch. No spam, promise! 
             </p>
           </form> : <div className="text-center parallax-scale bg-card/50 backdrop-blur-sm p-8 rounded-2xl border border-border/50">
-            <div className="text-5xl mb-4">🎉</div>
+            
             <h2 className="text-xl font-semibold mb-2">You're on the list!</h2>
             <p className="text-muted-foreground">
               We'll let you know as soon as Stock Bestie is ready for you.
@@ -123,16 +125,14 @@ const Landing = () => {
       </main>
 
       {/* Waitlist Count */}
-      {waitlistCount !== null && waitlistCount > 0 && (
-        <div className="text-center relative z-10 mb-4 parallax-up">
+      {waitlistCount !== null && waitlistCount > 0 && <div className="text-center relative z-10 mb-4 parallax-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-card/30 backdrop-blur-sm rounded-full border border-border/30">
             <Users className="h-4 w-4 text-primary" />
             <span className="text-sm text-muted-foreground">
               <span className="font-semibold text-foreground">{waitlistCount.toLocaleString()}</span> people on the waitlist
             </span>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Footer with parallax */}
       <footer className="py-6 text-center relative z-10 parallax-up stagger-5">
