@@ -84,7 +84,7 @@ const InteractiveRobot = () => {
   
   return (
     <div
-      className="fixed bottom-4 right-4 w-40 h-48 md:w-52 md:h-60 z-20 logo-float"
+      className="fixed right-2 md:right-8 top-1/2 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float"
     >
       {/* Subtle shadow */}
       <div 
