@@ -86,28 +86,6 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [hasAnimatedDown, setHasAnimatedDown] = useState(false);
-  
-  // Check if mobile on mount
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-  
-  // Animate down on mobile after model loads
-  useEffect(() => {
-    if (isLoaded && isMobile && !hasAnimatedDown) {
-      const timer = setTimeout(() => {
-        setHasAnimatedDown(true);
-      }, 500); // Small delay before animation starts
-      return () => clearTimeout(timer);
-    }
-  }, [isLoaded, isMobile, hasAnimatedDown]);
   
   // When looking at form, override mouse position to look left and down (toward form)
   useEffect(() => {
@@ -152,19 +130,9 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
     };
   }, [isLookingAtForm]);
   
-  // Mobile: animate from top-1/3 to bottom position
-  // Desktop/tablet: stay at top-1/3
-  const mobilePositionClass = hasAnimatedDown 
-    ? 'bottom-8 top-auto translate-y-0' 
-    : 'top-1/3 -translate-y-1/2';
-  
   return (
     <div
-      className={`fixed z-20 cursor-pointer transition-all duration-1000 ease-out
-        ${isMobile 
-          ? `left-1/2 -translate-x-1/2 w-24 h-28 ${mobilePositionClass}` 
-          : 'right-[8%] top-1/3 -translate-y-1/2 w-48 h-56 logo-float'
-        }`}
+      className="fixed right-[2%] md:right-[8%] top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float cursor-pointer"
       onMouseEnter={() => setIsInteracting(true)}
       onMouseLeave={() => setIsInteracting(false)}
       onTouchStart={() => setIsInteracting(true)}
