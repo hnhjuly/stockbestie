@@ -22,7 +22,7 @@ export const StockDetail = ({ stock, open, onClose }: StockDetailProps) => {
   };
 
   const DetailRow = ({ label, value }: { label: string; value: string | number }) => (
-    <div className="flex justify-between items-center py-3 border-b border-border last:border-0">
+    <div className="flex justify-between items-center py-3 px-4 border-b border-border last:border-0">
       <span className="text-muted-foreground">{label}</span>
       <span className="font-semibold">{value}</span>
     </div>
