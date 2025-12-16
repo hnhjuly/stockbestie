@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +13,22 @@ import { BottomNav } from '@/components/BottomNav';
 import { Link } from 'react-router-dom';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 
+// Import custom icons
+import techIcon from '@/assets/icons/tech.png';
+import healthcareIcon from '@/assets/icons/healthcare.png';
+import financeIcon from '@/assets/icons/finance.png';
+import energyIcon from '@/assets/icons/energy.png';
+import consumerIcon from '@/assets/icons/consumer.png';
+import industrialIcon from '@/assets/icons/industrial.png';
+import realestateIcon from '@/assets/icons/realestate.png';
+import communicationIcon from '@/assets/icons/communication.png';
+import chillIcon from '@/assets/icons/chill.png';
+import okayIcon from '@/assets/icons/okay.png';
+import braveIcon from '@/assets/icons/brave.png';
+import stocksIcon from '@/assets/icons/stocks.png';
+import etfsIcon from '@/assets/icons/etfs.png';
+import bothIcon from '@/assets/icons/both.png';
+
 const currencies = [
   { value: 'USD', label: '$ USD', symbol: '$' },
   { value: 'EUR', label: '€ EUR', symbol: '€' },
@@ -23,20 +38,26 @@ const currencies = [
 ];
 
 const categories = [
-  { id: 'tech', label: 'Tech', emoji: '💻' },
-  { id: 'healthcare', label: 'Healthcare', emoji: '🏥' },
-  { id: 'finance', label: 'Finance', emoji: '🏦' },
-  { id: 'energy', label: 'Energy', emoji: '⚡' },
-  { id: 'consumer', label: 'Consumer', emoji: '🛒' },
-  { id: 'industrial', label: 'Industrial', emoji: '🏭' },
-  { id: 'realestate', label: 'Real Estate', emoji: '🏠' },
-  { id: 'communication', label: 'Communication', emoji: '📱' },
+  { id: 'tech', label: 'Tech', icon: techIcon },
+  { id: 'healthcare', label: 'Healthcare', icon: healthcareIcon },
+  { id: 'finance', label: 'Finance', icon: financeIcon },
+  { id: 'energy', label: 'Energy', icon: energyIcon },
+  { id: 'consumer', label: 'Consumer', icon: consumerIcon },
+  { id: 'industrial', label: 'Industrial', icon: industrialIcon },
+  { id: 'realestate', label: 'Real Estate', icon: realestateIcon },
+  { id: 'communication', label: 'Communication', icon: communicationIcon },
 ];
 
 const riskLevels = [
-  { value: 0, label: 'Chill', emoji: '🧘', description: 'Low risk, stable returns' },
-  { value: 50, label: 'Okay', emoji: '😎', description: 'Balanced approach' },
-  { value: 100, label: 'Brave', emoji: '🔥', description: 'High risk, high reward' },
+  { value: 0, label: 'Chill', icon: chillIcon, description: 'Low risk, stable returns' },
+  { value: 50, label: 'Okay', icon: okayIcon, description: 'Balanced approach' },
+  { value: 100, label: 'Brave', icon: braveIcon, description: 'High risk, high reward' },
+];
+
+const assetTypes = [
+  { value: 'stocks', label: 'Stocks', icon: stocksIcon },
+  { value: 'etfs', label: 'ETFs', icon: etfsIcon },
+  { value: 'both', label: 'Both', icon: bothIcon },
 ];
 
 interface AllocationResult {
@@ -194,15 +215,12 @@ export const BudgetPlanner = () => {
               onValueChange={(value) => value && setAssetType(value)}
               className="justify-start flex-wrap"
             >
-              <ToggleGroupItem value="stocks" className="px-4 py-2 rounded-full">
-                📈 Stocks
-              </ToggleGroupItem>
-              <ToggleGroupItem value="etfs" className="px-4 py-2 rounded-full">
-                📊 ETFs
-              </ToggleGroupItem>
-              <ToggleGroupItem value="both" className="px-4 py-2 rounded-full">
-                🎯 Both
-              </ToggleGroupItem>
+              {assetTypes.map(asset => (
+                <ToggleGroupItem key={asset.value} value={asset.value} className="px-4 py-2 rounded-full flex items-center gap-2">
+                  <img src={asset.icon} alt={asset.label} className="w-5 h-5 object-contain" />
+                  {asset.label}
+                </ToggleGroupItem>
+              ))}
             </ToggleGroup>
           </CardContent>
         </Card>
@@ -219,10 +237,11 @@ export const BudgetPlanner = () => {
                 <Badge
                   key={cat.id}
                   variant={selectedCategories.includes(cat.id) ? "default" : "outline"}
-                  className="cursor-pointer px-3 py-2 text-sm transition-all hover:scale-105"
+                  className="cursor-pointer px-3 py-2 text-sm transition-all hover:scale-105 flex items-center gap-2"
                   onClick={() => handleCategoryToggle(cat.id)}
                 >
-                  {cat.emoji} {cat.label}
+                  <img src={cat.icon} alt={cat.label} className="w-4 h-4 object-contain" />
+                  {cat.label}
                 </Badge>
               ))}
             </div>
@@ -237,9 +256,18 @@ export const BudgetPlanner = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between text-sm text-muted-foreground mb-2">
-              <span>🧘 Chill</span>
-              <span>😎 Okay</span>
-              <span>🔥 Brave</span>
+              <span className="flex items-center gap-1">
+                <img src={chillIcon} alt="Chill" className="w-5 h-5 object-contain" />
+                Chill
+              </span>
+              <span className="flex items-center gap-1">
+                <img src={okayIcon} alt="Okay" className="w-5 h-5 object-contain" />
+                Okay
+              </span>
+              <span className="flex items-center gap-1">
+                <img src={braveIcon} alt="Brave" className="w-5 h-5 object-contain" />
+                Brave
+              </span>
             </div>
             <Slider
               value={riskLevel}
@@ -249,7 +277,7 @@ export const BudgetPlanner = () => {
               className="py-2"
             />
             <div className="text-center p-4 bg-accent/50 rounded-lg">
-              <span className="text-3xl">{currentRisk.emoji}</span>
+              <img src={currentRisk.icon} alt={currentRisk.label} className="w-12 h-12 object-contain mx-auto" />
               <p className="font-semibold mt-1">{currentRisk.label}</p>
               <p className="text-sm text-muted-foreground">{currentRisk.description}</p>
             </div>
