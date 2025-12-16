@@ -20,19 +20,19 @@ function RobotModel({ mousePosition }: RobotModelProps) {
   useFrame(() => {
     if (!modelRef.current) return;
     
-    // Subtle rotation - head/eyes looking toward cursor
-    const targetRotationY = mousePosition.x * 0.25;
-    const targetRotationX = mousePosition.y * 0.12;
+    // More sensitive rotation - head/eyes looking toward cursor
+    const targetRotationY = mousePosition.x * 0.4;
+    const targetRotationX = mousePosition.y * 0.2;
     
     modelRef.current.rotation.y = THREE.MathUtils.lerp(
       modelRef.current.rotation.y,
       targetRotationY,
-      0.04
+      0.06
     );
     modelRef.current.rotation.x = THREE.MathUtils.lerp(
       modelRef.current.rotation.x,
       targetRotationX,
-      0.04
+      0.06
     );
   });
   
@@ -46,22 +46,36 @@ function RobotModel({ mousePosition }: RobotModelProps) {
   );
 }
 
-const InteractiveRobot = () => {
+interface InteractiveRobotProps {
+  isLookingAtForm?: boolean;
+}
+
+const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   
-  // Mouse/touch tracking for look direction only
+  // When looking at form, override mouse position to look left and down (toward form)
+  useEffect(() => {
+    if (isLookingAtForm) {
+      setMousePosition({ x: -0.8, y: 0.3 });
+    }
+  }, [isLookingAtForm]);
+  
+  // Mouse/touch tracking for look direction
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      if (isLookingAtForm) return; // Don't track mouse when looking at form
+      
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
       
-      // Calculate relative position for rotation
       const relativeX = (e.clientX / windowWidth - 0.5) * 2;
       const relativeY = (e.clientY / windowHeight - 0.5) * 2;
       setMousePosition({ x: relativeX, y: relativeY });
     };
     
     const handleTouchMove = (e: TouchEvent) => {
+      if (isLookingAtForm) return;
+      
       if (e.touches.length > 0) {
         const touch = e.touches[0];
         const windowWidth = window.innerWidth;
@@ -80,7 +94,7 @@ const InteractiveRobot = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchmove', handleTouchMove);
     };
-  }, []);
+  }, [isLookingAtForm]);
   
   return (
     <div
