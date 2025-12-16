@@ -119,17 +119,17 @@ const Landing = () => {
               We'll let you know as soon as Stock Bestie is ready for you.
             </p>
           </div>}
-      </main>
 
-      {/* Waitlist Count */}
-      {waitlistCount !== null && waitlistCount > 0 && <div className="text-center relative z-10 mb-2 md:mb-4 parallax-up">
-          <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-card/30 backdrop-blur-sm rounded-full border border-border/30">
-            <Users className="h-3 w-3 md:h-4 md:w-4 text-primary" />
-            <span className="text-xs md:text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">{waitlistCount.toLocaleString()}</span> people on the waitlist
-            </span>
-          </div>
-        </div>}
+        {/* Waitlist Count */}
+        {waitlistCount !== null && waitlistCount > 0 && <div className="text-center mt-4 md:mt-6 parallax-up">
+            <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-card/30 backdrop-blur-sm rounded-full border border-border/30">
+              <Users className="h-3 w-3 md:h-4 md:w-4 text-primary" />
+              <span className="text-xs md:text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{waitlistCount.toLocaleString()}</span> people on the waitlist
+              </span>
+            </div>
+          </div>}
+      </main>
 
       {/* Footer with parallax */}
       <footer className="py-3 md:py-6 text-center relative z-10 parallax-up stagger-5">
