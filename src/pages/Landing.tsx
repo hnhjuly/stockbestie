@@ -1,11 +1,18 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { Sparkles, TrendingUp, Bot, ChartLine } from 'lucide-react';
+import { Canvas } from '@react-three/fiber';
+import { OrbitControls, useGLTF } from '@react-three/drei';
 
+const ROBOT_MODEL_URL = 'https://wsfdnwxsdmizxuurorpe.supabase.co/storage/v1/object/public/assets/base_basic_shaded.glb';
+
+function RobotModel() {
+  const { scene } = useGLTF(ROBOT_MODEL_URL);
+  return <primitive object={scene} scale={1.5} position={[0, -1, 0]} />;
+}
 const Landing = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,16 +59,21 @@ const Landing = () => {
       </div>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative z-10">
-        {/* Logo & Mascot */}
-        <div className="mb-8 animate-fade-in">
-          <div className="relative">
-            <img 
-              src={stockBestieLogo} 
-              alt="Stock Bestie" 
-              className="w-32 h-32 md:w-40 md:h-40 object-contain logo-float drop-shadow-2xl"
+        {/* 3D Robot Mascot */}
+        <div className="mb-8 animate-fade-in w-48 h-48 md:w-64 md:h-64">
+          <Canvas camera={{ position: [0, 0, 4], fov: 50 }}>
+            <ambientLight intensity={0.6} />
+            <directionalLight position={[5, 5, 5]} intensity={1} />
+            <Suspense fallback={null}>
+              <RobotModel />
+            </Suspense>
+            <OrbitControls 
+              enableZoom={false} 
+              enablePan={false}
+              autoRotate
+              autoRotateSpeed={2}
             />
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-20 h-4 bg-primary/20 rounded-full blur-md" />
-          </div>
+          </Canvas>
         </div>
 
         {/* Title */}
