@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const thoughts = [
   "Hmm, have you checked NVDA today?",
@@ -36,29 +36,32 @@ const thoughts = [
 const ThoughtBubble = () => {
   const [currentThought, setCurrentThought] = useState('');
   const [isVisible, setIsVisible] = useState(false);
+  const isVisibleRef = useRef(false);
 
   useEffect(() => {
     const showThought = () => {
       const randomThought = thoughts[Math.floor(Math.random() * thoughts.length)];
       setCurrentThought(randomThought);
       setIsVisible(true);
+      isVisibleRef.current = true;
 
       // Hide after 4-6 seconds
       const hideDelay = 4000 + Math.random() * 2000;
       setTimeout(() => {
         setIsVisible(false);
+        isVisibleRef.current = false;
       }, hideDelay);
     };
 
     // Show first thought after 2 seconds
     const initialTimeout = setTimeout(showThought, 2000);
 
-    // Then show thoughts at random intervals (6-12 seconds)
+    // Then show thoughts at random intervals (8-14 seconds)
     const interval = setInterval(() => {
-      if (!isVisible) {
+      if (!isVisibleRef.current) {
         showThought();
       }
-    }, 6000 + Math.random() * 6000);
+    }, 8000);
 
     return () => {
       clearTimeout(initialTimeout);
@@ -79,7 +82,7 @@ const ThoughtBubble = () => {
     >
       {/* Main blob container */}
       <div className="relative">
-        {/* SVG Blob Shape */}
+        {/* SVG Blob Shape with morphing animation */}
         <svg
           viewBox="0 0 200 100"
           className="w-[180px] md:w-[220px] h-auto"
@@ -97,40 +100,50 @@ const ThoughtBubble = () => {
               <stop offset="0%" stopColor="rgba(255,255,255,0.4)" />
               <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
             </linearGradient>
-            <filter id="blur">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="0.5" />
-            </filter>
           </defs>
           
-          {/* Organic blob path */}
+          {/* Organic blob path with morph animation */}
           <path
-            d="M20,50 
-               Q10,25 40,15 
-               Q70,5 100,10 
-               Q140,5 165,20 
-               Q190,35 185,55 
-               Q190,75 160,85 
-               Q130,95 100,90 
-               Q60,95 35,85 
-               Q10,75 20,50 Z"
             fill="url(#blobGradient)"
             stroke="url(#blobStroke)"
             strokeWidth="1"
-            style={{
-              backdropFilter: 'blur(12px)',
-            }}
-          />
+          >
+            <animate
+              attributeName="d"
+              dur="4s"
+              repeatCount="indefinite"
+              values="
+                M20,50 Q10,25 40,15 Q70,5 100,10 Q140,5 165,20 Q190,35 185,55 Q190,75 160,85 Q130,95 100,90 Q60,95 35,85 Q10,75 20,50 Z;
+                M18,52 Q8,28 42,12 Q72,3 98,12 Q138,3 168,22 Q192,38 183,58 Q188,78 158,87 Q128,97 98,92 Q58,97 33,87 Q8,78 18,52 Z;
+                M22,48 Q12,22 38,18 Q68,8 102,8 Q142,8 162,18 Q188,32 187,52 Q192,72 162,83 Q132,93 102,88 Q62,93 37,83 Q12,72 22,48 Z;
+                M20,50 Q10,25 40,15 Q70,5 100,10 Q140,5 165,20 Q190,35 185,55 Q190,75 160,85 Q130,95 100,90 Q60,95 35,85 Q10,75 20,50 Z
+              "
+              calcMode="spline"
+              keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+            />
+          </path>
           
-          {/* Inner highlight */}
+          {/* Inner highlight with morph */}
           <path
-            d="M30,45 
-               Q25,30 50,22 
-               Q75,15 95,18"
             fill="none"
             stroke="rgba(255,255,255,0.3)"
             strokeWidth="2"
             strokeLinecap="round"
-          />
+          >
+            <animate
+              attributeName="d"
+              dur="4s"
+              repeatCount="indefinite"
+              values="
+                M30,45 Q25,30 50,22 Q75,15 95,18;
+                M28,47 Q23,32 52,20 Q77,13 93,20;
+                M32,43 Q27,28 48,24 Q73,17 97,16;
+                M30,45 Q25,30 50,22 Q75,15 95,18
+              "
+              calcMode="spline"
+              keySplines="0.4 0 0.2 1; 0.4 0 0.2 1; 0.4 0 0.2 1"
+            />
+          </path>
         </svg>
 
         {/* Text overlay */}
@@ -143,22 +156,25 @@ const ThoughtBubble = () => {
           </span>
         </div>
 
-        {/* Floating connector dots */}
+        {/* Floating connector dots with pulse */}
         <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1">
           <div 
-            className="w-3 h-3 rounded-full"
+            className="w-3 h-3 rounded-full animate-pulse"
             style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.1) 100%)',
               border: '1px solid rgba(255,255,255,0.3)',
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              animationDuration: '2s',
             }}
           />
           <div 
-            className="w-2 h-2 rounded-full"
+            className="w-2 h-2 rounded-full animate-pulse"
             style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.08) 100%)',
               border: '1px solid rgba(255,255,255,0.25)',
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              animationDuration: '2s',
+              animationDelay: '0.3s',
             }}
           />
         </div>
