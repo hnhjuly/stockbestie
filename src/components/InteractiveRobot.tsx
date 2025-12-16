@@ -235,7 +235,7 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   return (
     <div
       ref={containerRef}
-      className="fixed right-[2%] md:right-[5%] lg:right-[22%] top-[58%] md:top-[52%] lg:top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 lg:logo-float cursor-pointer transition-transform duration-1000 ease-in-out"
+      className="fixed right-[2%] md:right-[5%] lg:right-[22%] top-[58%] md:top-[52%] lg:top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 md:logo-float cursor-pointer transition-transform duration-1000 ease-in-out"
       style={{
         transform: isMobile ? `translateY(-50%) translateX(${driftOffset}px)` : undefined,
       }}
