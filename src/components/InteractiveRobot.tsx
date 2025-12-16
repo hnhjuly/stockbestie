@@ -119,15 +119,17 @@ function RobotModel({ mousePosition, onLoaded, isMobile, isBlinking, isWinking }
 
 interface InteractiveRobotProps {
   isLookingAtForm?: boolean;
+  targetPosition?: { x: number; y: number } | null;
 }
 
-const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) => {
+const InteractiveRobot = ({ isLookingAtForm = false, targetPosition = null }: InteractiveRobotProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInteracting, setIsInteracting] = useState(false);
   const [driftOffset, setDriftOffset] = useState(0);
   const [isBlinking, setIsBlinking] = useState(false);
   const [isWinking, setIsWinking] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState({ x: 92, y: 52 }); // Default position (right: 8%, top: 52%)
   const isMobile = useIsMobile();
   
   // When looking at form, override mouse position to look left and down (toward form)
@@ -153,9 +155,9 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
     return () => clearInterval(interval);
   }, [isMobile]);
   
-  // Mobile-only: Random sideways drift every 5-8 seconds
+  // Mobile-only: Random sideways drift every 5-8 seconds (only when not following target)
   useEffect(() => {
-    if (!isMobile) return;
+    if (!isMobile || targetPosition) return;
     
     const drift = () => {
       const newOffset = (Math.random() - 0.5) * 30; // -15 to 15 pixels
@@ -167,7 +169,21 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
     }, 5000 + Math.random() * 3000);
     
     return () => clearInterval(interval);
-  }, [isMobile]);
+  }, [isMobile, targetPosition]);
+
+  // Mobile-only: Animate to target position when user taps
+  useEffect(() => {
+    if (!isMobile || !targetPosition) return;
+    
+    // Reset drift when following target
+    setDriftOffset(0);
+    
+    // Clamp position to keep mascot on screen (with padding)
+    const clampedX = Math.max(15, Math.min(85, targetPosition.x));
+    const clampedY = Math.max(15, Math.min(75, targetPosition.y));
+    
+    setCurrentPosition({ x: clampedX, y: clampedY });
+  }, [isMobile, targetPosition]);
   
   // Handle winking on interaction (mobile only)
   const handleInteraction = () => {
@@ -214,12 +230,29 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
     };
   }, [isLookingAtForm]);
   
+  // Dynamic positioning for mobile tap-to-move
+  const getMascotStyle = () => {
+    if (isMobile && targetPosition) {
+      return {
+        left: `${currentPosition.x}%`,
+        top: `${currentPosition.y}%`,
+        right: 'auto',
+        transform: 'translate(-50%, -50%)',
+      };
+    }
+    return {
+      transform: isMobile ? `translateY(-50%) translateX(${driftOffset}px)` : undefined,
+    };
+  };
+
   return (
     <div
-      className="fixed right-[2%] md:right-[8%] top-[52%] md:top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 md:logo-float cursor-pointer transition-transform duration-1000 ease-in-out"
-      style={{
-        transform: isMobile ? `translateY(-50%) translateX(${driftOffset}px)` : undefined,
-      }}
+      className={`fixed z-20 cursor-pointer transition-all duration-1000 ease-out ${
+        isMobile && targetPosition 
+          ? 'w-36 h-44' 
+          : 'right-[2%] md:right-[8%] top-[52%] md:top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 md:logo-float'
+      }`}
+      style={getMascotStyle()}
       onMouseEnter={() => !isMobile && setIsInteracting(true)}
       onMouseLeave={() => !isMobile && setIsInteracting(false)}
       onTouchStart={() => {

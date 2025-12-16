@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -6,12 +6,48 @@ import { supabase } from '@/integrations/supabase/client';
 import { Sparkles, TrendingUp, Bot, ChartLine, Loader2, Users } from 'lucide-react';
 import sbLogo from '@/assets/sb-logo.png';
 import InteractiveRobot from '@/components/InteractiveRobot';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 const Landing = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+  const [mascotTargetPosition, setMascotTargetPosition] = useState<{ x: number; y: number } | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const isMobile = useIsMobile();
+
+  // Handle tap to move mascot (mobile only)
+  const handlePageTap = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isMobile) return;
+    
+    // Get tap coordinates
+    const clientX = 'touches' in e ? e.touches[0]?.clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0]?.clientY : e.clientY;
+    
+    if (clientX === undefined || clientY === undefined) return;
+    
+    // Check if tap is on the form area - exclude it
+    if (formRef.current) {
+      const formRect = formRef.current.getBoundingClientRect();
+      const padding = 20; // Extra padding around form
+      if (
+        clientX >= formRect.left - padding &&
+        clientX <= formRect.right + padding &&
+        clientY >= formRect.top - padding &&
+        clientY <= formRect.bottom + padding
+      ) {
+        return; // Don't move mascot if tapping on form
+      }
+    }
+    
+    // Convert to percentage of viewport
+    const xPercent = (clientX / window.innerWidth) * 100;
+    const yPercent = (clientY / window.innerHeight) * 100;
+    
+    setMascotTargetPosition({ x: xPercent, y: yPercent });
+  };
   useEffect(() => {
     const fetchWaitlistCount = async () => {
       const { data, error } = await supabase.rpc('get_waitlist_count');
@@ -51,7 +87,11 @@ const Landing = () => {
       setIsSubmitting(false);
     }
   };
-  return <div className="h-[100dvh] bg-gradient-to-br from-background via-background to-primary/5 flex flex-col overflow-hidden">
+  return <div 
+      className="h-[100dvh] bg-gradient-to-br from-background via-background to-primary/5 flex flex-col overflow-hidden"
+      onTouchStart={handlePageTap}
+      onClick={handlePageTap}
+    >
       {/* Floating shapes background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
@@ -62,7 +102,7 @@ const Landing = () => {
       </div>
 
       {/* Interactive 3D Robot - looks at form when user is typing */}
-      <InteractiveRobot isLookingAtForm={isInputFocused} />
+      <InteractiveRobot isLookingAtForm={isInputFocused} targetPosition={mascotTargetPosition} />
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-2 md:py-12 relative z-10">
         {/* SB Logo at top center with parallax */}
@@ -100,7 +140,7 @@ const Landing = () => {
         </div>
 
         {/* Waitlist Form with parallax */}
-        {!isSubmitted ? <form onSubmit={handleSubmit} className="w-full max-w-md parallax-up stagger-4">
+        {!isSubmitted ? <form ref={formRef} onSubmit={handleSubmit} className="w-full max-w-md parallax-up stagger-4" onClick={(e) => e.stopPropagation()} onTouchStart={(e) => e.stopPropagation()}>
             <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
               <Input type="email" placeholder="Enter your email" value={email} onChange={e => setEmail(e.target.value)} onFocus={() => setIsInputFocused(true)} onBlur={() => setIsInputFocused(false)} className="flex-1 h-10 md:h-12 text-sm md:text-base bg-card/50 backdrop-blur-sm border-border/50" disabled={isSubmitting} />
               <Button type="submit" size="lg" className="h-10 md:h-12 px-6 md:px-8 liquid-glass text-foreground font-semibold rounded-xl text-sm md:text-base" disabled={isSubmitting}>
