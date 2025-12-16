@@ -131,7 +131,7 @@ export const BudgetPlanner = () => {
       <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center gap-3">
-            <Link to="/" className="p-2 hover:bg-accent rounded-full transition-colors">
+            <Link to="/app" className="p-2 hover:bg-accent rounded-full transition-colors">
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <div className="p-1 flex-shrink-0">
