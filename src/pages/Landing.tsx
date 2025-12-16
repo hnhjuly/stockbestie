@@ -6,13 +6,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { Sparkles, TrendingUp, Bot, ChartLine, Loader2 } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
+import stockBestieLogo from '@/assets/stockbestie_icon.png';
 
 const ROBOT_MODEL_URL = 'https://wsfdnwxsdmizxuurorpe.supabase.co/storage/v1/object/public/assets/base_basic_shaded.glb';
 
+// Preload the model for faster loading
+useGLTF.preload(ROBOT_MODEL_URL);
+
 function RobotModel() {
   const { scene } = useGLTF(ROBOT_MODEL_URL);
-  return <primitive object={scene} scale={1.5} position={[0, -1, 0]} />;
+  return <primitive object={scene} scale={1.2} position={[0, -0.8, 0]} />;
 }
+
 const Landing = () => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,22 +63,30 @@ const Landing = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
       </div>
 
+      {/* Fixed 3D Robot - Bottom Right, hovering steadily */}
+      <div className="fixed bottom-4 right-4 w-32 h-32 md:w-48 md:h-48 z-20 logo-float">
+        <Suspense fallback={<div className="w-full h-full flex items-center justify-center"><Loader2 className="w-6 h-6 text-primary animate-spin" /></div>}>
+          <Canvas camera={{ position: [0, 0, 3], fov: 50 }}>
+            <ambientLight intensity={0.8} />
+            <directionalLight position={[5, 5, 5]} intensity={1.2} />
+            <RobotModel />
+            <OrbitControls 
+              enableZoom={false} 
+              enablePan={false}
+              enableRotate={false}
+            />
+          </Canvas>
+        </Suspense>
+      </div>
+
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative z-10">
-        {/* 3D Robot Mascot */}
-        <div className="mb-8 animate-fade-in w-48 h-48 md:w-64 md:h-64">
-          <Suspense fallback={<div className="w-full h-full flex items-center justify-center"><Loader2 className="w-8 h-8 text-primary animate-spin" /></div>}>
-            <Canvas camera={{ position: [0, 0, 4], fov: 50 }}>
-              <ambientLight intensity={0.6} />
-              <directionalLight position={[5, 5, 5]} intensity={1} />
-              <RobotModel />
-              <OrbitControls 
-                enableZoom={false} 
-                enablePan={false}
-                autoRotate
-                autoRotateSpeed={2}
-              />
-            </Canvas>
-          </Suspense>
+        {/* Logo at top center */}
+        <div className="mb-6 animate-fade-in">
+          <img 
+            src={stockBestieLogo} 
+            alt="Stock Bestie mascot" 
+            className="w-32 h-32 md:w-40 md:h-40 object-contain"
+          />
         </div>
 
         {/* Title */}
