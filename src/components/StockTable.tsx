@@ -62,10 +62,10 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
     <>
       {/* Mobile & Tablet Card View */}
       <div className="lg:hidden space-y-3">
-        {sortedStocks.map((stock) => (
+        {sortedStocks.map((stock, index) => (
           <div
             key={stock.ticker}
-            className="rounded-lg border bg-card p-4 cursor-pointer hover:bg-accent/50 transition-colors touch-manipulation"
+            className={`rounded-lg border bg-card p-4 cursor-pointer hover:bg-accent/50 hover-lift touch-manipulation opacity-0 animate-fade-in-up stagger-${Math.min(index + 1, 10)}`}
             onClick={() => onStockClick(stock)}
           >
             <div className="flex items-start justify-between mb-3">
@@ -191,10 +191,10 @@ export const StockTable = ({ stocks, onStockClick }: StockTableProps) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedStocks.map((stock) => (
+            {sortedStocks.map((stock, index) => (
               <TableRow
                 key={stock.ticker}
-                className="cursor-pointer hover:bg-accent/50 transition-colors"
+                className={`cursor-pointer hover:bg-accent/50 transition-all duration-200 hover:shadow-sm opacity-0 animate-fade-in stagger-${Math.min(index + 1, 10)}`}
                 onClick={() => onStockClick(stock)}
               >
                 <TableCell className="font-semibold">{stock.ticker}</TableCell>
