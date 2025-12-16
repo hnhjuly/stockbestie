@@ -67,7 +67,7 @@ const Landing = () => {
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-2 md:py-12 relative z-10">
         {/* SB Logo at top center with parallax */}
         <div className="mb-2 md:mb-6 parallax-scale">
-          <img src={sbLogo} alt="Stock Bestie logo" className="w-12 h-12 md:w-32 md:h-32 object-contain" />
+          <img src={sbLogo} alt="Stock Bestie logo" className="w-16 h-16 md:w-32 md:h-32 object-contain" />
         </div>
 
         {/* Title with parallax */}
