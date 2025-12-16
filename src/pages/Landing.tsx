@@ -109,7 +109,7 @@ const Landing = () => {
                   </span> : 'Join Waitlist'}
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground text-center mt-2 md:mt-3">
+            <p className="text-xs text-muted-foreground text-center mt-4 md:mt-3">
               Be the first to know when we launch. No spam, promise! 
             </p>
           </form> : <div className="text-center parallax-scale bg-card/50 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-border/50">
