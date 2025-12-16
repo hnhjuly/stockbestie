@@ -14,13 +14,10 @@ const Landing = () => {
   const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
   useEffect(() => {
     const fetchWaitlistCount = async () => {
-      const {
-        count
-      } = await supabase.from('waitlist').select('*', {
-        count: 'exact',
-        head: true
-      });
-      setWaitlistCount(count);
+      const { data, error } = await supabase.rpc('get_waitlist_count');
+      if (!error && data !== null) {
+        setWaitlistCount(data);
+      }
     };
     fetchWaitlistCount();
   }, [isSubmitted]);
