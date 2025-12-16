@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { Loader2 } from 'lucide-react';
@@ -20,19 +20,19 @@ function RobotModel({ mousePosition }: RobotModelProps) {
   useFrame(() => {
     if (!modelRef.current) return;
     
-    // Subtle rotation following mouse (limited range)
-    const targetRotationY = mousePosition.x * 0.2;
-    const targetRotationX = mousePosition.y * 0.1;
+    // Subtle rotation - head/eyes looking toward cursor
+    const targetRotationY = mousePosition.x * 0.25;
+    const targetRotationX = mousePosition.y * 0.12;
     
     modelRef.current.rotation.y = THREE.MathUtils.lerp(
       modelRef.current.rotation.y,
       targetRotationY,
-      0.03
+      0.04
     );
     modelRef.current.rotation.x = THREE.MathUtils.lerp(
       modelRef.current.rotation.x,
       targetRotationX,
-      0.03
+      0.04
     );
   });
   
@@ -47,58 +47,15 @@ function RobotModel({ mousePosition }: RobotModelProps) {
 }
 
 const InteractiveRobot = () => {
-  const [position, setPosition] = useState({ x: 75, y: 65 });
-  const [targetPosition, setTargetPosition] = useState({ x: 75, y: 65 });
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isFollowing, setIsFollowing] = useState(false);
-  const lastMouseMove = useRef(Date.now());
-  const wanderTarget = useRef({ x: 75, y: 65 });
   
-  // Smooth position interpolation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPosition(prev => ({
-        x: prev.x + (targetPosition.x - prev.x) * 0.02,
-        y: prev.y + (targetPosition.y - prev.y) * 0.02
-      }));
-    }, 16);
-    return () => clearInterval(interval);
-  }, [targetPosition]);
-  
-  // Autonomous slow wandering
-  useEffect(() => {
-    const wanderInterval = setInterval(() => {
-      if (Date.now() - lastMouseMove.current > 2000 && !isFollowing) {
-        // Pick new random target occasionally
-        if (Math.random() < 0.02) {
-          wanderTarget.current = {
-            x: 20 + Math.random() * 60,
-            y: 20 + Math.random() * 50
-          };
-        }
-        setTargetPosition(wanderTarget.current);
-      }
-    }, 100);
-    
-    return () => clearInterval(wanderInterval);
-  }, [isFollowing]);
-  
-  // Mouse/touch following
+  // Mouse/touch tracking for look direction only
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      lastMouseMove.current = Date.now();
-      setIsFollowing(true);
-      
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
       
-      // Calculate target position
-      const targetX = Math.max(10, Math.min(85, (e.clientX / windowWidth) * 100));
-      const targetY = Math.max(15, Math.min(75, (e.clientY / windowHeight) * 100));
-      
-      setTargetPosition({ x: targetX, y: targetY });
-      
-      // Mouse position for rotation
+      // Calculate relative position for rotation
       const relativeX = (e.clientX / windowWidth - 0.5) * 2;
       const relativeY = (e.clientY / windowHeight - 0.5) * 2;
       setMousePosition({ x: relativeX, y: relativeY });
@@ -107,16 +64,8 @@ const InteractiveRobot = () => {
     const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         const touch = e.touches[0];
-        lastMouseMove.current = Date.now();
-        setIsFollowing(true);
-        
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
-        
-        const targetX = Math.max(10, Math.min(85, (touch.clientX / windowWidth) * 100));
-        const targetY = Math.max(15, Math.min(75, (touch.clientY / windowHeight) * 100));
-        
-        setTargetPosition({ x: targetX, y: targetY });
         
         const relativeX = (touch.clientX / windowWidth - 0.5) * 2;
         const relativeY = (touch.clientY / windowHeight - 0.5) * 2;
@@ -124,30 +73,28 @@ const InteractiveRobot = () => {
       }
     };
     
-    const handleMouseLeave = () => {
-      setIsFollowing(false);
-    };
-    
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    document.addEventListener('mouseleave', handleMouseLeave);
     
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, []);
   
   return (
     <div
-      className="fixed w-40 h-48 md:w-52 md:h-60 z-20"
-      style={{
-        left: `${position.x}%`,
-        top: `${position.y}%`,
-        transform: 'translate(-50%, -50%)',
-      }}
+      className="fixed bottom-4 right-4 w-40 h-48 md:w-52 md:h-60 z-20 logo-float"
     >
+      {/* Subtle shadow */}
+      <div 
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-4 rounded-full opacity-20"
+        style={{
+          background: 'radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%)',
+          filter: 'blur(4px)',
+        }}
+      />
+      
       <Suspense 
         fallback={
           <div className="w-full h-full flex items-center justify-center">
