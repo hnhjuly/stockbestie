@@ -211,7 +211,7 @@ const Index = () => {
               {tickers.map((ticker, index) => (
                 <div
                   key={ticker}
-                  className={`flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium touch-manipulation ticker-badge opacity-0 animate-scale-in stagger-${Math.min(index + 1, 10)}`}
+                  className={`flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium touch-manipulation ticker-badge animate-scale-in stagger-${Math.min(index + 1, 10)}`}
                 >
                   {ticker}
                   <button
