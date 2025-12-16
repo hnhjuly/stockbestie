@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Stock } from '@/types/stock';
 import { StockTable } from '@/components/StockTable';
 import { StockDetail } from '@/components/StockDetail';
@@ -13,6 +13,8 @@ import { getDeviceId } from '@/lib/deviceId';
 import { RobotChatbot } from '@/components/RobotChatbot';
 import { PWAInstallButton } from '@/components/PWAInstallButton';
 import { BottomNav } from '@/components/BottomNav';
+import { usePullToRefresh } from '@/hooks/usePullToRefresh';
+import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
@@ -149,7 +151,18 @@ const Index = () => {
 
     return () => clearInterval(interval);
   }, [tickers]);
+
+  // Pull-to-refresh handler for PWA only
+  const handlePullRefresh = useCallback(async () => {
+    await loadStocks(true, false);
+  }, [tickers]);
+
+  const { isPWA, pullDistance, isRefreshing: isPullRefreshing, threshold } = usePullToRefresh(handlePullRefresh);
+
   return <div className="min-h-screen bg-background pb-20">
+      {/* Pull to Refresh Indicator - PWA only */}
+      {isPWA && <PullToRefreshIndicator pullDistance={pullDistance} isRefreshing={isPullRefreshing} threshold={threshold} />}
+      
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4">
