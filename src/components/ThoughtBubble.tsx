@@ -148,10 +148,9 @@ const ThoughtBubble = () => {
 
         {/* Text overlay */}
         <div 
-          className="absolute inset-0 flex items-center justify-center px-6 py-4"
-          style={{ paddingBottom: '12px' }}
+          className="absolute inset-0 flex items-center justify-center px-8 md:px-10"
         >
-          <span className="text-[10px] md:text-xs text-white/95 text-center leading-snug font-light">
+          <span className="text-[10px] md:text-xs text-white/95 text-center leading-relaxed font-light">
             {currentThought}
           </span>
         </div>
