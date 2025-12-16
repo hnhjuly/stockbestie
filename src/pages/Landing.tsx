@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Sparkles, TrendingUp, Bot, ChartLine, Loader2 } from 'lucide-react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useGLTF } from '@react-three/drei';
-import stockBestieLogo from '@/assets/stockbestie_icon.png';
+import sbLogo from '@/assets/sb-logo.png';
 
 const ROBOT_MODEL_URL = 'https://wsfdnwxsdmizxuurorpe.supabase.co/storage/v1/object/public/assets/base_basic_shaded.glb';
 
@@ -55,7 +55,7 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 flex flex-col overflow-hidden">
       {/* Floating shapes background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
@@ -80,26 +80,26 @@ const Landing = () => {
       </div>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative z-10">
-        {/* Logo at top center */}
-        <div className="mb-6 animate-fade-in">
+        {/* SB Logo at top center with parallax */}
+        <div className="mb-6 parallax-scale">
           <img 
-            src={stockBestieLogo} 
-            alt="Stock Bestie mascot" 
-            className="w-32 h-32 md:w-40 md:h-40 object-contain"
+            src={sbLogo} 
+            alt="Stock Bestie logo" 
+            className="w-24 h-24 md:w-32 md:h-32 object-contain"
           />
         </div>
 
-        {/* Title */}
-        <h1 className="text-4xl md:text-6xl font-bold text-center mb-4 animate-fade-in stagger-1">
-          Stock <span className="text-primary">Bestie</span>
+        {/* Title with parallax */}
+        <h1 className="text-4xl md:text-6xl font-bold text-center mb-4 parallax-up stagger-1">
+          Stock <span className="text-muted-foreground/70">Bestie</span>
         </h1>
 
-        <p className="text-lg md:text-xl text-muted-foreground text-center max-w-md mb-8 animate-fade-in stagger-2">
+        <p className="text-lg md:text-xl text-muted-foreground text-center max-w-md mb-8 parallax-blur stagger-2">
           Your friendly AI-powered stock market companion is almost here! 📈✨
         </p>
 
-        {/* Features */}
-        <div className="grid grid-cols-2 gap-4 max-w-md mb-10 animate-fade-in stagger-3">
+        {/* Features with parallax */}
+        <div className="grid grid-cols-2 gap-4 max-w-md mb-10 parallax-up stagger-3">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <TrendingUp className="h-4 w-4 text-primary" />
             <span>Real-time tracking</span>
@@ -118,9 +118,9 @@ const Landing = () => {
           </div>
         </div>
 
-        {/* Waitlist Form */}
+        {/* Waitlist Form with parallax */}
         {!isSubmitted ? (
-          <form onSubmit={handleSubmit} className="w-full max-w-md animate-fade-in stagger-4">
+          <form onSubmit={handleSubmit} className="w-full max-w-md parallax-up stagger-4">
             <div className="flex flex-col sm:flex-row gap-3">
               <Input
                 type="email"
@@ -133,12 +133,12 @@ const Landing = () => {
               <Button 
                 type="submit" 
                 size="lg" 
-                className="h-12 px-8 hover-glow"
+                className="h-12 px-8 liquid-glass text-foreground font-semibold rounded-xl"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <span className="flex items-center gap-2">
-                    <span className="animate-spin">⏳</span> Joining...
+                    <Loader2 className="w-4 h-4 animate-spin" /> Joining...
                   </span>
                 ) : (
                   'Join Waitlist'
@@ -150,7 +150,7 @@ const Landing = () => {
             </p>
           </form>
         ) : (
-          <div className="text-center animate-fade-in bg-card/50 backdrop-blur-sm p-8 rounded-2xl border border-border/50">
+          <div className="text-center parallax-scale bg-card/50 backdrop-blur-sm p-8 rounded-2xl border border-border/50">
             <div className="text-5xl mb-4">🎉</div>
             <h2 className="text-xl font-semibold mb-2">You're on the list!</h2>
             <p className="text-muted-foreground">
@@ -160,8 +160,8 @@ const Landing = () => {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="py-6 text-center relative z-10">
+      {/* Footer with parallax */}
+      <footer className="py-6 text-center relative z-10 parallax-up stagger-5">
         <p className="text-xs text-muted-foreground">
           © 2025 Stock Bestie by{' '}
           <a 
