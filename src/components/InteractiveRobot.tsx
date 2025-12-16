@@ -129,6 +129,24 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   const [isBlinking, setIsBlinking] = useState(false);
   const [isWinking, setIsWinking] = useState(false);
   const isMobile = useIsMobile();
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Dismiss thought bubble when clicking outside the mascot
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsInteracting(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
   
   // When looking at form, override mouse position to look left and down (toward form)
   useEffect(() => {
@@ -216,6 +234,7 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   
   return (
     <div
+      ref={containerRef}
       className="fixed right-[2%] md:right-[8%] top-[54%] md:top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 md:logo-float cursor-pointer transition-transform duration-1000 ease-in-out"
       style={{
         transform: isMobile ? `translateY(-50%) translateX(${driftOffset}px)` : undefined,
