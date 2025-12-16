@@ -92,13 +92,13 @@ const ThoughtBubble = () => {
         >
           <defs>
             <linearGradient id="blobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(30,30,40,0.85)" />
-              <stop offset="50%" stopColor="rgba(40,40,55,0.75)" />
-              <stop offset="100%" stopColor="rgba(35,35,50,0.8)" />
+              <stop offset="0%" stopColor="rgba(30,30,40,0.65)" />
+              <stop offset="50%" stopColor="rgba(40,40,55,0.55)" />
+              <stop offset="100%" stopColor="rgba(35,35,50,0.6)" />
             </linearGradient>
             <linearGradient id="blobStroke" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="rgba(255,255,255,0.3)" />
-              <stop offset="100%" stopColor="rgba(255,255,255,0.1)" />
+              <stop offset="0%" stopColor="rgba(255,255,255,0.25)" />
+              <stop offset="100%" stopColor="rgba(255,255,255,0.08)" />
             </linearGradient>
           </defs>
           
