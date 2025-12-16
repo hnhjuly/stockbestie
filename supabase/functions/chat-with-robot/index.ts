@@ -91,7 +91,7 @@ serve(async (req) => {
     // Create Supabase client for chat limits
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    // Check and enforce daily chat limit (20 chats per day)
+    // Check and enforce daily chat limit (5 chats per day)
     if (deviceId) {
       const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
       
@@ -118,7 +118,7 @@ serve(async (req) => {
           }
 
           // Check if limit reached
-          if (currentCount >= 20) {
+          if (currentCount >= 5) {
             return new Response(
               JSON.stringify({ 
                 limitReached: true,

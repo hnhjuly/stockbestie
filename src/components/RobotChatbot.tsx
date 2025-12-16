@@ -167,7 +167,7 @@ export const RobotChatbot = () => {
               }
               return newMessages;
             });
-            toast.error('Daily chat limit reached (20/day)');
+            toast.error('Daily chat limit reached (5/day)');
           } else {
             toast.error('Too many requests. Please wait a moment and try again.');
             setMessages(prev => prev.filter(m => m.content !== ''));
