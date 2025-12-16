@@ -171,7 +171,11 @@ const Index = () => {
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
               <div className="p-1 md:p-2 flex-shrink-0">
-                <img src={stockBestieLogo} alt="Stock Bestie Logo" className="h-10 w-10 md:h-12 md:w-12 object-contain" />
+                <img 
+                  src={stockBestieLogo} 
+                  alt="Stock Bestie Logo" 
+                  className="h-10 w-10 md:h-12 md:w-12 object-contain logo-float" 
+                />
               </div>
               <div className="min-w-0">
                 <h1 className="text-lg md:text-2xl font-bold truncate">Stock Bestie</h1>
@@ -182,7 +186,7 @@ const Index = () => {
               onClick={() => loadStocks(true, false)}
               disabled={isRefreshing}
               variant="outline"
-              className="gap-2 flex-shrink-0"
+              className="gap-2 flex-shrink-0 hover-glow"
               size="sm"
             >
               <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
@@ -204,14 +208,14 @@ const Index = () => {
           
           {tickers.length > 0 && (
             <div className="flex flex-wrap gap-2">
-              {tickers.map((ticker) => (
+              {tickers.map((ticker, index) => (
                 <div
                   key={ticker}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium touch-manipulation"
+                  className={`flex items-center gap-1 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-sm font-medium touch-manipulation ticker-badge opacity-0 animate-scale-in stagger-${Math.min(index + 1, 10)}`}
                 >
                   {ticker}
                   <button
-                    onClick={() => removeTicker(ticker)}
+                    onClick={(e) => { e.stopPropagation(); removeTicker(ticker); }}
                     className="hover:bg-primary/20 rounded-full p-1 transition-colors"
                     aria-label={`Remove ${ticker}`}
                   >
