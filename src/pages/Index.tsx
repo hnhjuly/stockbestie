@@ -12,6 +12,8 @@ import { TickerSearch } from '@/components/TickerSearch';
 import { getDeviceId } from '@/lib/deviceId';
 import { RobotChatbot } from '@/components/RobotChatbot';
 import { PWAInstallButton } from '@/components/PWAInstallButton';
+import { BottomNav } from '@/components/BottomNav';
+
 const Index = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
@@ -147,7 +149,7 @@ const Index = () => {
 
     return () => clearInterval(interval);
   }, [tickers]);
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
         <div className="container mx-auto px-4 py-3 md:py-4">
@@ -233,6 +235,9 @@ const Index = () => {
 
       {/* Robot Chatbot */}
       <RobotChatbot />
+
+      {/* Bottom Navigation */}
+      <BottomNav />
     </div>;
 };
 export default Index;

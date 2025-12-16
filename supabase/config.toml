@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.chat-with-robot]
 verify_jwt = false
+
+[functions.analyze-budget]
+verify_jwt = false
