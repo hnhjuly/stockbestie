@@ -241,14 +241,6 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
       }}
       onMouseEnter={() => !isMobile && setIsInteracting(true)}
       onMouseLeave={() => !isMobile && setIsInteracting(false)}
-      onTouchStart={() => {
-        if (isMobile) {
-          setIsWinking(true);
-          setTimeout(() => setIsWinking(false), 200);
-        }
-        setIsInteracting(true);
-      }}
-      onTouchEnd={() => setIsInteracting(false)}
       onClick={handleInteraction}
     >
       {/* Thought Bubble - only show on interaction */}
