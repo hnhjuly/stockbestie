@@ -132,9 +132,7 @@ const InteractiveRobot = ({ isLookingAtForm = false }: InteractiveRobotProps) =>
   
   return (
     <div
-      className="fixed z-20 cursor-pointer
-        bottom-12 left-1/2 -translate-x-1/2 w-20 h-24 animate-sway
-        md:bottom-auto md:left-auto md:translate-x-0 md:right-[8%] md:top-1/3 md:-translate-y-1/2 md:w-48 md:h-56 md:animate-none logo-float"
+      className="fixed right-[2%] md:right-[8%] top-1/3 -translate-y-1/2 w-36 h-44 md:w-48 md:h-56 z-20 logo-float cursor-pointer"
       onMouseEnter={() => setIsInteracting(true)}
       onMouseLeave={() => setIsInteracting(false)}
       onTouchStart={() => setIsInteracting(true)}
