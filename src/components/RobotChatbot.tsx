@@ -63,8 +63,8 @@ function RobotModel() {
     <primitive 
       ref={meshRef} 
       object={scene} 
-      scale={3.5}
-      position={[0, 0, 0]}
+      scale={2.2}
+      position={[0, -1.2, 0]}
     />
   );
 }
@@ -81,7 +81,7 @@ function GlowingShadow() {
   });
 
   return (
-    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} scale={[1.0, 0.6, 1]}>
+    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.5, 0]} scale={[1.0, 0.6, 1]}>
       <circleGeometry args={[1.0, 32]} />
       <meshBasicMaterial 
         color="#3b82f6" 
@@ -248,7 +248,7 @@ export const RobotChatbot = () => {
       >
         <Canvas 
           key={canvasKey}
-          camera={{ position: [0, 0, 5], fov: 50 }}
+          camera={{ position: [0, 0.5, 6], fov: 50 }}
           gl={{ preserveDrawingBuffer: true }}
           onCreated={({ gl }) => {
             gl.domElement.addEventListener('webglcontextrestored', () => {
