@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Send, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import robotModel from '@/assets/bestibotcute.glb';
+import robotModel from '@/assets/Mascot_FINAL.glb';
 import { getDeviceId } from '@/lib/deviceId';
 
 interface Message {
