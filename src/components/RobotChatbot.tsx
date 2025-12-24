@@ -21,8 +21,8 @@ function RobotModel() {
 
   // NOTE: useFrame was previously overwriting the Y position each tick,
   // which made the base position ineffective and caused the model to be clipped.
-  const baseY = -2.2;
-  const floatAmp = 0.14;
+  const baseY = -1.6;
+  const floatAmp = 0.12;
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
@@ -68,7 +68,7 @@ function RobotModel() {
     <primitive
       ref={meshRef}
       object={scene}
-      scale={2.4}
+      scale={2.0}
       position={[0, baseY, 0]}
     />
   );
