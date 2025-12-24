@@ -253,7 +253,7 @@ export const RobotChatbot = () => {
     <div className="fixed right-4 z-[60] bottom-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:bottom-12 md:right-8">
       {/* 3D Robot */}
       <div
-        className="relative w-44 h-44 md:w-48 md:h-48 cursor-pointer"
+        className="relative w-48 h-48 md:w-56 md:h-56 cursor-pointer"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => setIsChatOpen(true)}
@@ -275,7 +275,7 @@ export const RobotChatbot = () => {
           <pointLight position={[0, 5, 0]} intensity={3.0} color="#ffffff" />
           <pointLight position={[3, 0, 3]} intensity={2.0} color="#e0f0ff" />
           <pointLight position={[-3, 0, -3]} intensity={2.0} color="#ffffff" />
-          <group scale={isMobile ? 1.08 : 1}>
+          <group scale={isMobile ? 1.0 : 1.15}>
             <RobotModel />
             <GlowingShadow />
           </group>
