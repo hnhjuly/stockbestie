@@ -250,7 +250,7 @@ export const RobotChatbot = () => {
   };
 
   return (
-    <div className="fixed right-0 z-[60] bottom-[calc(4rem+0.25rem+env(safe-area-inset-bottom))] md:bottom-12 md:right-8">
+    <div className="fixed -right-6 z-[60] bottom-[calc(4rem+env(safe-area-inset-bottom))] md:bottom-12 md:right-8">
       {/* 3D Robot */}
       <div
         className="relative w-52 h-52 md:w-64 md:h-64 cursor-pointer"
