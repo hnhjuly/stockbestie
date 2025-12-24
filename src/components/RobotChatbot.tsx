@@ -63,8 +63,8 @@ function RobotModel() {
     <primitive 
       ref={meshRef} 
       object={scene} 
-      scale={2.2}
-      position={[0, -1.2, 0]}
+      scale={1.8}
+      position={[0, -1.8, 0]}
     />
   );
 }
@@ -248,7 +248,7 @@ export const RobotChatbot = () => {
       >
         <Canvas 
           key={canvasKey}
-          camera={{ position: [0, 0.5, 6], fov: 50 }}
+          camera={{ position: [0, 1, 8], fov: 50 }}
           gl={{ preserveDrawingBuffer: true }}
           onCreated={({ gl }) => {
             gl.domElement.addEventListener('webglcontextrestored', () => {
