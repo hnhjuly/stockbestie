@@ -86,7 +86,7 @@ function GlowingShadow() {
   });
 
   return (
-    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.2, 0]} scale={[1.0, 0.6, 1]}>
+    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.0, 0]} scale={[0.8, 0.5, 0.8]}>
       <circleGeometry args={[1.0, 32]} />
       <meshBasicMaterial 
         color="#3b82f6" 
