@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import robotModel from '@/assets/Mascot_FINAL.glb';
 import { getDeviceId } from '@/lib/deviceId';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -86,11 +87,16 @@ function GlowingShadow() {
   });
 
   return (
-    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.0, 0]} scale={[0.8, 0.5, 0.8]}>
+    <mesh
+      ref={meshRef}
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, -1.85, 0]}
+      scale={[0.78, 0.48, 0.78]}
+    >
       <circleGeometry args={[1.0, 32]} />
-      <meshBasicMaterial 
-        color="#3b82f6" 
-        transparent 
+      <meshBasicMaterial
+        color="hsl(var(--primary))"
+        transparent
         opacity={0.35}
         depthWrite={false}
       />
@@ -106,6 +112,7 @@ export const RobotChatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [canvasKey, setCanvasKey] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -243,10 +250,10 @@ export const RobotChatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 md:bottom-12 md:right-8 z-50">
+    <div className="fixed right-4 z-[60] bottom-[calc(4rem+1rem+env(safe-area-inset-bottom))] md:bottom-12 md:right-8">
       {/* 3D Robot */}
       <div
-        className="relative w-40 h-40 md:w-48 md:h-48 cursor-pointer"
+        className="relative w-44 h-44 md:w-48 md:h-48 cursor-pointer"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => setIsChatOpen(true)}
@@ -268,7 +275,7 @@ export const RobotChatbot = () => {
           <pointLight position={[0, 5, 0]} intensity={3.0} color="#ffffff" />
           <pointLight position={[3, 0, 3]} intensity={2.0} color="#e0f0ff" />
           <pointLight position={[-3, 0, -3]} intensity={2.0} color="#ffffff" />
-          <group scale={window.innerWidth < 768 ? 0.85 : 1}>
+          <group scale={isMobile ? 1.08 : 1}>
             <RobotModel />
             <GlowingShadow />
           </group>
