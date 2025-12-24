@@ -250,10 +250,10 @@ export const RobotChatbot = () => {
   };
 
   return (
-    <div className="fixed right-1 z-[60] bottom-[calc(4rem+env(safe-area-inset-bottom))] md:bottom-12 md:right-8">
+    <div className="fixed right-1 z-[60] bottom-[calc(3rem+env(safe-area-inset-bottom))] md:bottom-12 md:right-8">
       {/* 3D Robot */}
       <div
-        className="relative w-44 h-44 sm:w-52 sm:h-52 md:w-64 md:h-64 cursor-pointer"
+        className="relative w-52 h-52 md:w-64 md:h-64 cursor-pointer"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => setIsChatOpen(true)}
