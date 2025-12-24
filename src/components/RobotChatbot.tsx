@@ -19,6 +19,11 @@ function RobotModel() {
   const meshRef = useRef<any>();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
+  // NOTE: useFrame was previously overwriting the Y position each tick,
+  // which made the base position ineffective and caused the model to be clipped.
+  const baseY = -2.2;
+  const floatAmp = 0.14;
+
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       // Convert mouse position to normalized coordinates (-1 to 1)
@@ -46,25 +51,25 @@ function RobotModel() {
   }, []);
 
   useFrame((state) => {
-    if (meshRef.current) {
-      // Floating animation
-      meshRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.2;
-      
-      // Eye tracking - rotate head to follow cursor
-      const targetRotationY = mousePosition.x * 0.3;
-      const targetRotationX = mousePosition.y * 0.2;
-      
-      meshRef.current.rotation.y += (targetRotationY - meshRef.current.rotation.y) * 0.1;
-      meshRef.current.rotation.x += (targetRotationX - meshRef.current.rotation.x) * 0.1;
-    }
+    if (!meshRef.current) return;
+
+    // Floating animation around a stable base position
+    meshRef.current.position.y = baseY + Math.sin(state.clock.elapsedTime * 0.8) * floatAmp;
+
+    // Eye tracking - rotate head to follow cursor
+    const targetRotationY = mousePosition.x * 0.3;
+    const targetRotationX = mousePosition.y * 0.2;
+
+    meshRef.current.rotation.y += (targetRotationY - meshRef.current.rotation.y) * 0.1;
+    meshRef.current.rotation.x += (targetRotationX - meshRef.current.rotation.x) * 0.1;
   });
 
   return (
-    <primitive 
-      ref={meshRef} 
-      object={scene} 
-      scale={1.8}
-      position={[0, -1.8, 0]}
+    <primitive
+      ref={meshRef}
+      object={scene}
+      scale={2.4}
+      position={[0, baseY, 0]}
     />
   );
 }
@@ -81,7 +86,7 @@ function GlowingShadow() {
   });
 
   return (
-    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.5, 0]} scale={[1.0, 0.6, 1]}>
+    <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -3.2, 0]} scale={[1.0, 0.6, 1]}>
       <circleGeometry args={[1.0, 32]} />
       <meshBasicMaterial 
         color="#3b82f6" 
@@ -248,7 +253,7 @@ export const RobotChatbot = () => {
       >
         <Canvas 
           key={canvasKey}
-          camera={{ position: [0, 1, 8], fov: 50 }}
+          camera={{ position: [0, 1.1, 9], fov: 50 }}
           gl={{ preserveDrawingBuffer: true }}
           onCreated={({ gl }) => {
             gl.domElement.addEventListener('webglcontextrestored', () => {
