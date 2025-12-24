@@ -250,10 +250,10 @@ export const RobotChatbot = () => {
   };
 
   return (
-    <div className="fixed -right-6 z-[60] bottom-[calc(4rem+env(safe-area-inset-bottom))] md:bottom-12 md:right-8">
+    <div className="fixed right-1 z-[60] bottom-[calc(4rem+env(safe-area-inset-bottom))] md:bottom-12 md:right-8">
       {/* 3D Robot */}
       <div
-        className="relative w-52 h-52 md:w-64 md:h-64 cursor-pointer"
+        className="relative w-44 h-44 sm:w-52 sm:h-52 md:w-64 md:h-64 cursor-pointer"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => setIsChatOpen(true)}
@@ -296,7 +296,7 @@ export const RobotChatbot = () => {
 
       {/* Chat Window - Glass morphism */}
       {isChatOpen && (
-        <div className="absolute bottom-full right-0 mb-4 w-[85vw] max-w-[320px] md:w-80 backdrop-blur-xl bg-background/80 border border-primary/30 rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.37)] animate-scale-in overflow-hidden">
+        <div className="absolute bottom-full right-0 mb-3 w-[80vw] max-w-[300px] md:w-80 backdrop-blur-xl bg-background/80 border border-primary/30 rounded-2xl shadow-[0_8px_32px_0_rgba(59,130,246,0.37)] animate-scale-in overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-primary/10 backdrop-blur-xl border-b border-primary/20">
             <div className="flex items-center gap-2">
@@ -314,7 +314,7 @@ export const RobotChatbot = () => {
           </div>
 
           {/* Messages */}
-          <div className="h-64 md:h-80 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-background/50">
+          <div className="h-56 md:h-80 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 bg-background/50">
             {messages.length === 0 && (
               <div className="text-center text-muted-foreground py-6">
                 <p className="text-sm">Hi! I'm Stock Bestie.</p>
@@ -352,7 +352,7 @@ export const RobotChatbot = () => {
           </div>
 
           {/* Input */}
-          <div className="border-t border-primary/20 p-4 bg-primary/5 backdrop-blur-xl">
+          <div className="border-t border-primary/20 p-3 md:p-4 bg-primary/5 backdrop-blur-xl">
             <div className="flex gap-2">
               <Input
                 value={input}
