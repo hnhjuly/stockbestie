@@ -5,11 +5,10 @@ import { Loader2 } from 'lucide-react';
 import * as THREE from 'three';
 import ThoughtBubble from './ThoughtBubble';
 import { useIsMobile } from '@/hooks/use-mobile';
-
-const ROBOT_MODEL_URL = 'https://wsfdnwxsdmizxuurorpe.supabase.co/storage/v1/object/public/assets/base_basic_shaded.glb';
+import mascotModel from '@/assets/Mascot_FINAL.glb';
 
 // Preload the model immediately
-useGLTF.preload(ROBOT_MODEL_URL);
+useGLTF.preload(mascotModel);
 
 interface RobotModelProps {
   mousePosition: { x: number; y: number };
@@ -20,7 +19,7 @@ interface RobotModelProps {
 }
 
 function RobotModel({ mousePosition, onLoaded, isMobile, isBlinking, isWinking }: RobotModelProps) {
-  const { scene } = useGLTF(ROBOT_MODEL_URL);
+  const { scene } = useGLTF(mascotModel);
   const modelRef = useRef<THREE.Group>(null);
   const scaleRef = useRef(0);
   const velocityRef = useRef(0);
