@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import BudgetPlanner from "./pages/BudgetPlanner";
+import Academy from "./pages/Academy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/app" element={<Index />} />
           <Route path="/budget" element={<BudgetPlanner />} />
+          <Route path="/academy" element={<Academy />} />
           <Route path="/auth" element={<Navigate to="/" replace />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
