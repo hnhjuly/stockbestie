@@ -86,6 +86,33 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       rate_limits: {
         Row: {
           count: number
@@ -133,6 +160,7 @@ export type Database = {
           added_at: string
           analyst_label: string | null
           analyst_rating: string | null
+          auth_user_id: string | null
           change_percent: number | null
           company: string | null
           high52: number | null
@@ -150,6 +178,7 @@ export type Database = {
           added_at?: string
           analyst_label?: string | null
           analyst_rating?: string | null
+          auth_user_id?: string | null
           change_percent?: number | null
           company?: string | null
           high52?: number | null
@@ -167,6 +196,7 @@ export type Database = {
           added_at?: string
           analyst_label?: string | null
           analyst_rating?: string | null
+          auth_user_id?: string | null
           change_percent?: number | null
           company?: string | null
           high52?: number | null
