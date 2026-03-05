@@ -40,6 +40,7 @@ export type Database = {
       }
       chat_limits: {
         Row: {
+          auth_user_id: string | null
           chat_count: number
           created_at: string
           device_id: string
@@ -48,6 +49,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auth_user_id?: string | null
           chat_count?: number
           created_at?: string
           device_id: string
@@ -56,6 +58,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auth_user_id?: string | null
           chat_count?: number
           created_at?: string
           device_id?: string
