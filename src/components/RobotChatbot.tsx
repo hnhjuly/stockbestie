@@ -7,7 +7,7 @@ import { Send, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import robotModel from '@/assets/Mascot_FINAL.glb';
-import { getDeviceId } from '@/lib/deviceId';
+import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface Message {
@@ -113,6 +113,7 @@ export const RobotChatbot = () => {
   const [canvasKey, setCanvasKey] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const { user } = useAuth();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -149,7 +150,7 @@ export const RobotChatbot = () => {
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
     try {
-      const deviceId = getDeviceId();
+      const userId = user?.id || 'anonymous';
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-with-robot`,
         {
@@ -160,7 +161,7 @@ export const RobotChatbot = () => {
           },
           body: JSON.stringify({ 
             messages: [...messages, userMessage],
-            deviceId 
+            deviceId: userId 
           }),
         }
       );

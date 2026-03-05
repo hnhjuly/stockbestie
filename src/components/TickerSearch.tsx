@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { getDeviceId } from '@/lib/deviceId';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface SearchResult {
   symbol: string;
@@ -18,6 +18,7 @@ interface TickerSearchProps {
 }
 
 export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchProps) => {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -89,10 +90,10 @@ export const TickerSearch = ({ existingTickers, onTickerAdded }: TickerSearchPro
     }
 
     try {
-      const deviceId = getDeviceId();
+      if (!user) return;
       const { error } = await supabase
         .from('tickers')
-        .insert({ ticker: tickerToAdd, user_id: deviceId });
+        .insert({ ticker: tickerToAdd, auth_user_id: user.id });
       
       if (error) throw error;
       
