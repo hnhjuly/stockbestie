@@ -306,49 +306,82 @@ export const BudgetPlanner = () => {
         </Button>
 
         {/* Results */}
+        <AnimatePresence>
         {result && (
-          <Card className="animate-fade-in border-primary/50 shadow-lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+          <Card className="border-primary/40 shadow-xl shadow-primary/5">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                Your Allocation
-              </CardTitle>
-              <CardDescription>{result.summary}</CardDescription>
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
+                <CardTitle className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  Your Allocation
+                </CardTitle>
+                <CardDescription>{result.summary}</CardDescription>
+              </motion.div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               {result.allocations.map((allocation, index) => (
-                <div
+                <motion.div
                   key={allocation.ticker}
-                  className={`p-4 bg-accent/30 rounded-lg space-y-2 animate-fade-in stagger-${index + 1}`}
+                  initial={{ opacity: 0, y: 15, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{
+                    delay: 0.3 + index * 0.1,
+                    duration: 0.45,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  whileHover={{ scale: 1.015, transition: { duration: 0.2 } }}
+                  className="p-4 rounded-xl space-y-2 border border-primary/10 bg-gradient-to-br from-primary/[0.06] to-accent/40 shadow-sm hover:shadow-md hover:border-primary/20 transition-shadow"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant={allocation.type === 'etf' ? 'secondary' : 'default'}>
+                      <Badge variant={allocation.type === 'etf' ? 'secondary' : 'default'} className="shadow-sm">
                         {allocation.ticker}
                       </Badge>
-                      <span className="font-medium">{allocation.name}</span>
+                      <span className="font-medium text-foreground">{allocation.name}</span>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-primary">{allocation.percentage}%</p>
+                      <p className="font-bold text-primary text-lg">{allocation.percentage}%</p>
                       <p className="text-sm text-muted-foreground">
                         {selectedCurrency?.symbol}{allocation.amount.toLocaleString()}
                       </p>
                     </div>
                   </div>
-                  <p className="text-sm text-muted-foreground">{allocation.reasoning}</p>
-                </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{allocation.reasoning}</p>
+                </motion.div>
               ))}
 
-              <div className="p-4 bg-orange-100 border border-orange-300 rounded-lg dark:bg-orange-950 dark:border-orange-800">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + (result.allocations.length) * 0.1 + 0.1, duration: 0.4 }}
+                className="p-4 bg-orange-100 border border-orange-300 rounded-xl dark:bg-orange-950 dark:border-orange-800"
+              >
                 <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">{result.riskNote}</p>
-              </div>
+              </motion.div>
 
-              <Button variant="outline" onClick={resetForm} className="w-full">
-                Start Over
-              </Button>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 + (result.allocations.length) * 0.1 + 0.25, duration: 0.3 }}
+              >
+                <Button variant="outline" onClick={resetForm} className="w-full">
+                  Start Over
+                </Button>
+              </motion.div>
             </CardContent>
           </Card>
+          </motion.div>
         )}
+        </AnimatePresence>
 
         {/* Disclaimer */}
         <p className="text-xs text-muted-foreground text-center px-4">
