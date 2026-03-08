@@ -66,8 +66,8 @@ const Onboarding = () => {
             <div className="space-y-3">
               {/* Market Indices */}
               <div className="flex gap-2 text-xs">
-                <span className="font-medium">S&P500 5,782 <span className="text-green-500">+0.43%</span></span>
-                <span className="font-medium">NASDAQ 18,241 <span className="text-green-500">+0.61%</span></span>
+                <span className="font-medium">S&P500 5,782 <span className="text-success">+0.43%</span></span>
+                <span className="font-medium">NASDAQ 18,241 <span className="text-success">+0.61%</span></span>
               </div>
               
               {/* Portfolio Section */}
