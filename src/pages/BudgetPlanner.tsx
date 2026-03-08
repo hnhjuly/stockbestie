@@ -22,15 +22,15 @@ const currencies = [
   { value: 'PHP', label: '₱ PHP', symbol: '₱' },
 ];
 
-const categories = [
-  { id: 'tech', label: 'Tech', icon: techIcon },
-  { id: 'healthcare', label: 'Healthcare', icon: healthcareIcon },
-  { id: 'finance', label: 'Finance', icon: financeIcon },
-  { id: 'energy', label: 'Energy', icon: energyIcon },
-  { id: 'consumer', label: 'Consumer', icon: consumerIcon },
-  { id: 'industrial', label: 'Industrial', icon: industrialIcon },
-  { id: 'realestate', label: 'Real Estate', icon: realestateIcon },
-  { id: 'communication', label: 'Communication', icon: communicationIcon },
+const categories: { id: string; label: string; icon: LucideIcon }[] = [
+  { id: 'tech', label: 'Tech', icon: Cpu },
+  { id: 'healthcare', label: 'Healthcare', icon: HeartPulse },
+  { id: 'finance', label: 'Finance', icon: Landmark },
+  { id: 'energy', label: 'Energy', icon: Zap },
+  { id: 'consumer', label: 'Consumer', icon: ShoppingCart },
+  { id: 'industrial', label: 'Industrial', icon: Factory },
+  { id: 'realestate', label: 'Real Estate', icon: Building2 },
+  { id: 'communication', label: 'Communication', icon: Radio },
 ];
 
 const riskLevels = [
