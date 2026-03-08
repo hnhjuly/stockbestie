@@ -7,7 +7,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, TrendingUp, PiggyBank, RefreshCw, ArrowLeft } from 'lucide-react';
+import { Sparkles, TrendingUp, PiggyBank, RefreshCw, ArrowLeft, Shield, Scale, Flame } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { BottomNav } from '@/components/BottomNav';
@@ -50,9 +50,9 @@ const categories = [
 ];
 
 const riskLevels = [
-  { value: 0, label: 'Chill', icon: chillIcon, description: 'Low risk, stable returns' },
-  { value: 50, label: 'Okay', icon: okayIcon, description: 'Balanced approach' },
-  { value: 100, label: 'Brave', icon: braveIcon, description: 'High risk, high reward' },
+  { value: 0, label: 'Chill', icon: Shield, description: 'Low risk, stable returns' },
+  { value: 50, label: 'Okay', icon: Scale, description: 'Balanced approach' },
+  { value: 100, label: 'Brave', icon: Flame, description: 'High risk, high reward' },
 ];
 
 const assetTypes = [
@@ -250,38 +250,109 @@ export const BudgetPlanner = () => {
         </Card>
 
         {/* Risk Level */}
-        <Card className="animate-fade-in stagger-3">
+        <Card className="animate-fade-in stagger-3 overflow-hidden">
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Risk Vibe</CardTitle>
             <CardDescription>How adventurous are you feeling?</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between text-sm text-muted-foreground mb-2">
-              <span className="flex items-center gap-1">
-                <img src={chillIcon} alt="Chill" className="w-5 h-5 object-contain" />
-                Chill
-              </span>
-              <span className="flex items-center gap-1">
-                <img src={okayIcon} alt="Okay" className="w-5 h-5 object-contain" />
-                Okay
-              </span>
-              <span className="flex items-center gap-1">
-                <img src={braveIcon} alt="Brave" className="w-5 h-5 object-contain" />
-                Brave
-              </span>
+          <CardContent className="space-y-6">
+            {/* Custom Liquid Glass Slider */}
+            <div className="relative px-1">
+              <div className="flex justify-between text-xs font-semibold text-muted-foreground mb-4 px-1">
+                <span className="flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5" />
+                  Chill
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Scale className="w-3.5 h-3.5" />
+                  Okay
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5" />
+                  Brave
+                </span>
+              </div>
+
+              {/* Glassmorphism slider track */}
+              <div className="relative h-3 w-full rounded-full overflow-hidden liquid-glass-track">
+                <motion.div
+                  className="absolute inset-y-0 left-0 rounded-full"
+                  style={{
+                    background: `linear-gradient(90deg, hsl(var(--primary) / 0.4), hsl(var(--primary) / 0.8))`,
+                  }}
+                  animate={{ width: `${riskLevel[0]}%` }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                />
+                {/* Glass shine overlay */}
+                <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none rounded-full" />
+              </div>
+
+              <Slider
+                value={riskLevel}
+                onValueChange={setRiskLevel}
+                max={100}
+                step={1}
+                className="absolute inset-x-1 top-[2.35rem] opacity-0 h-3 cursor-pointer"
+              />
             </div>
-            <Slider
-              value={riskLevel}
-              onValueChange={setRiskLevel}
-              max={100}
-              step={1}
-              className="py-2"
-            />
-            <div className="text-center p-4 bg-accent/50 rounded-lg">
-              <img src={currentRisk.icon} alt={currentRisk.label} className="w-12 h-12 object-contain mx-auto" />
-              <p className="font-semibold mt-1">{currentRisk.label}</p>
-              <p className="text-sm text-muted-foreground">{currentRisk.description}</p>
-            </div>
+
+            {/* Active risk display */}
+            <motion.div
+              layout
+              className="relative rounded-2xl p-5 overflow-hidden"
+              style={{
+                background: `linear-gradient(135deg, hsl(var(--primary) / 0.06), hsl(var(--accent) / 0.5))`,
+              }}
+            >
+              {/* Liquid glass backdrop */}
+              <div className="absolute inset-0 backdrop-blur-xl border border-primary/10 rounded-2xl" />
+              <motion.div
+                className="absolute inset-0 rounded-2xl opacity-30"
+                animate={{
+                  background: [
+                    `radial-gradient(circle at 30% 50%, hsl(var(--primary) / 0.15) 0%, transparent 60%)`,
+                    `radial-gradient(circle at 70% 50%, hsl(var(--primary) / 0.15) 0%, transparent 60%)`,
+                    `radial-gradient(circle at 30% 50%, hsl(var(--primary) / 0.15) 0%, transparent 60%)`,
+                  ],
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              />
+
+              <div className="relative flex items-center gap-4">
+                <motion.div
+                  key={currentRisk.label}
+                  initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
+                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center border border-primary/20 shadow-lg"
+                  style={{
+                    background: `linear-gradient(135deg, hsl(var(--primary) / 0.15), hsl(var(--primary) / 0.05))`,
+                    boxShadow: `0 8px 24px hsl(var(--primary) / 0.15), inset 0 1px 0 rgba(255,255,255,0.2)`,
+                  }}
+                >
+                  <currentRisk.icon className="w-7 h-7 text-primary" />
+                </motion.div>
+                <div>
+                  <motion.p
+                    key={`label-${currentRisk.label}`}
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="font-bold text-lg text-foreground"
+                  >
+                    {currentRisk.label}
+                  </motion.p>
+                  <motion.p
+                    key={`desc-${currentRisk.label}`}
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.05 }}
+                    className="text-sm text-muted-foreground"
+                  >
+                    {currentRisk.description}
+                  </motion.p>
+                </div>
+              </div>
+            </motion.div>
           </CardContent>
         </Card>
 
