@@ -225,7 +225,7 @@ export const BudgetPlanner = () => {
                   className="cursor-pointer px-3 py-2 text-sm transition-all hover:scale-105 flex items-center gap-2"
                   onClick={() => handleCategoryToggle(cat.id)}
                 >
-                  <img src={cat.icon} alt={cat.label} className="w-4 h-4 object-contain" />
+                  <cat.icon className="w-4 h-4" />
                   {cat.label}
                 </Badge>
               ))}
