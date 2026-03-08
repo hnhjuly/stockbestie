@@ -77,7 +77,7 @@ const Onboarding = () => {
                   <span className="text-3xl font-black tracking-tight">$12,847</span>
                   <span className="text-muted-foreground text-sm">.32</span>
                 </div>
-                <p className="text-sm text-green-500 font-semibold mt-2">▲ +$342.18 today (+2.73%)</p>
+                <p className="text-sm text-success font-semibold mt-2">▲ +$342.18 today (+2.73%)</p>
               </div>
               
               {/* XP & Rank Section */}
