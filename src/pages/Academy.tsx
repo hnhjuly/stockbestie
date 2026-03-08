@@ -119,7 +119,7 @@ const Academy: React.FC = () => {
                     </Link>
                     <div className="min-w-0">
                       <h1 className="text-lg md:text-2xl font-bold truncate">Bestie Academy</h1>
-                      <p className="text-xs md:text-sm text-muted-foreground truncate">Learn stocks the fun way! 🎓</p>
+                      <p className="text-xs md:text-sm text-muted-foreground truncate flex items-center gap-1">Learn stocks the fun way! <Icon icon="fxemoji:graduationcap" className="w-4 h-4 inline-block" /></p>
                     </div>
                   </div>
                 </div>
