@@ -39,10 +39,10 @@ const riskLevels = [
   { value: 100, label: 'Brave', icon: Flame, description: 'High risk, high reward' },
 ];
 
-const assetTypes = [
-  { value: 'stocks', label: 'Stocks', icon: stocksIcon },
-  { value: 'etfs', label: 'ETFs', icon: etfsIcon },
-  { value: 'both', label: 'Both', icon: bothIcon },
+const assetTypes: { value: string; label: string; icon: LucideIcon }[] = [
+  { value: 'stocks', label: 'Stocks', icon: BarChart3 },
+  { value: 'etfs', label: 'ETFs', icon: Layers },
+  { value: 'both', label: 'Both', icon: Blend },
 ];
 
 interface AllocationResult {
