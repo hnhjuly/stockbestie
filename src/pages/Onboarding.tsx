@@ -47,17 +47,67 @@ const Onboarding = () => {
             <button onClick={() => setModalOpen(true)} className="px-5 py-3 bg-background text-foreground border-[1.5px] border-border rounded-xl text-sm font-semibold hover:border-primary hover:text-primary transition-all">I have an account</button>
           </div>
         </div>
-        <div className="shrink-0 relative">
-          <img src={mascotBusiness} alt="StockBestie mascot" className="w-56 md:w-72 object-contain" />
-          {/* Floating badges */}
-          <div className="absolute top-3 -right-12 md:-right-16 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s' }}>
-            <div className="w-[7px] h-[7px] rounded-full bg-green-500" /> +10 XP earned!
+        <div className="flex-1 relative">
+          {/* Dashboard Card */}
+          <div className="bg-card border border-border rounded-2xl p-5 md:p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-lg bg-foreground text-background flex items-center justify-center font-bold text-sm">$$</div>
+                <div>
+                  <h3 className="font-bold text-sm">Good morning 👋</h3>
+                  <p className="text-xs text-muted-foreground">Monday, March 09, 2026</p>
+                </div>
+              </div>
+              <div className="bg-muted rounded-full px-2.5 py-1 text-[11px] font-semibold flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-success" /> +10 XP
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              {/* Market Indices */}
+              <div className="flex gap-2 text-xs">
+                <span className="font-medium">S&P500 5,782 <span className="text-success">+0.43%</span></span>
+                <span className="font-medium">NASDAQ 18,241 <span className="text-success">+0.61%</span></span>
+              </div>
+              
+              {/* Portfolio Section */}
+              <div className="bg-muted rounded-xl p-4 border border-border">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Portfolio Value</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black tracking-tight">$12,847</span>
+                  <span className="text-muted-foreground text-sm">.32</span>
+                </div>
+                <p className="text-sm text-success font-semibold mt-2">▲ +$342.18 today (+2.73%)</p>
+              </div>
+              
+              {/* XP & Rank Section */}
+              <div className="bg-muted rounded-xl p-4 border border-border">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">XP & Rank</p>
+                <p className="text-2xl font-black text-warning mb-1">4,210 XP</p>
+                <p className="text-sm font-semibold">⭐ Rank #38 · Bull Tier</p>
+              </div>
+              
+              {/* Stats Grid */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-muted rounded-lg p-3 text-center border border-border">
+                  <p className="text-lg font-black">🔥7</p>
+                  <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider mt-1">Streak</p>
+                </div>
+                <div className="bg-muted rounded-lg p-3 text-center border border-border">
+                  <p className="text-lg font-black">🎓3</p>
+                  <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider mt-1">Lessons</p>
+                </div>
+                <div className="bg-muted rounded-lg p-3 text-center border border-border">
+                  <p className="text-lg font-black">#38</p>
+                  <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider mt-1">Rank</p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="absolute bottom-20 -right-12 md:-right-14 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s', animationDelay: '0.8s' }}>
-            <div className="w-[7px] h-[7px] rounded-full bg-amber-500" /> 🔥 7-day streak
-          </div>
-          <div className="absolute bottom-10 -left-12 md:-left-14 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s', animationDelay: '1.3s' }}>
-            <div className="w-[7px] h-[7px] rounded-full bg-primary" /> Rank #38 · Bull Tier
+          
+          {/* Mascot Overlapping */}
+          <div className="absolute -top-16 -right-12 md:-top-20 md:-right-16 w-56 md:w-72">
+            <img src={mascotBusiness} alt="StockBestie mascot" className="w-full h-auto object-contain" />
           </div>
         </div>
       </section>
