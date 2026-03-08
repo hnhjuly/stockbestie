@@ -20,6 +20,7 @@ const currencies = [
   { value: 'GBP', label: '£ GBP', symbol: '£' },
   { value: 'JPY', label: '¥ JPY', symbol: '¥' },
   { value: 'PHP', label: '₱ PHP', symbol: '₱' },
+  { value: 'SAR', label: '﷼ SAR', symbol: '﷼' },
 ];
 
 const categories: { id: string; label: string; icon: LucideIcon }[] = [
