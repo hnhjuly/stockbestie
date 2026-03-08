@@ -50,9 +50,9 @@ const categories = [
 ];
 
 const riskLevels = [
-  { value: 0, label: 'Chill', icon: chillIcon, description: 'Low risk, stable returns' },
-  { value: 50, label: 'Okay', icon: okayIcon, description: 'Balanced approach' },
-  { value: 100, label: 'Brave', icon: braveIcon, description: 'High risk, high reward' },
+  { value: 0, label: 'Chill', icon: Shield, description: 'Low risk, stable returns' },
+  { value: 50, label: 'Okay', icon: Scale, description: 'Balanced approach' },
+  { value: 100, label: 'Brave', icon: Flame, description: 'High risk, high reward' },
 ];
 
 const assetTypes = [
