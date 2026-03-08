@@ -59,7 +59,7 @@ const Onboarding = () => {
                 </div>
               </div>
               <div className="bg-muted rounded-full px-2.5 py-1 text-[11px] font-semibold flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500" /> +10 XP
+                <div className="w-1.5 h-1.5 rounded-full bg-success" /> +10 XP
               </div>
             </div>
             
