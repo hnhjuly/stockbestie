@@ -202,7 +202,7 @@ export const BudgetPlanner = () => {
             >
               {assetTypes.map(asset => (
                 <ToggleGroupItem key={asset.value} value={asset.value} className="px-4 py-2 rounded-full flex items-center gap-2">
-                  <img src={asset.icon} alt={asset.label} className="w-5 h-5 object-contain" />
+                  <asset.icon className="w-5 h-5" />
                   {asset.label}
                 </ToggleGroupItem>
               ))}
