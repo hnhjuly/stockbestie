@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Index from "./pages/Index";
+import Dashboard from "./pages/Dashboard";
 import BudgetPlanner from "./pages/BudgetPlanner";
 import Academy from "./pages/Academy";
 import Glossary from "./pages/Glossary";
