@@ -9,6 +9,7 @@ import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import BudgetPlanner from "./pages/BudgetPlanner";
 import Academy from "./pages/Academy";
+import Glossary from "./pages/Glossary";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/budget" element={<ProtectedRoute><BudgetPlanner /></ProtectedRoute>} />
             <Route path="/academy" element={<ProtectedRoute><Academy /></ProtectedRoute>} />
+            <Route path="/glossary" element={<ProtectedRoute><Glossary /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
