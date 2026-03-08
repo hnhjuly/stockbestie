@@ -7,28 +7,12 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, TrendingUp, PiggyBank, RefreshCw, ArrowLeft, Shield, Scale, Flame } from 'lucide-react';
+import { Sparkles, TrendingUp, PiggyBank, RefreshCw, ArrowLeft, Shield, Scale, Flame, Cpu, HeartPulse, Landmark, Zap, ShoppingCart, Factory, Building2, Radio, BarChart3, Layers, Blend, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { BottomNav } from '@/components/BottomNav';
 import { Link } from 'react-router-dom';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
-
-// Import custom icons
-import techIcon from '@/assets/icons/tech.png';
-import healthcareIcon from '@/assets/icons/healthcare.png';
-import financeIcon from '@/assets/icons/finance.png';
-import energyIcon from '@/assets/icons/energy.png';
-import consumerIcon from '@/assets/icons/consumer.png';
-import industrialIcon from '@/assets/icons/industrial.png';
-import realestateIcon from '@/assets/icons/realestate.png';
-import communicationIcon from '@/assets/icons/communication.png';
-import chillIcon from '@/assets/icons/chill.png';
-import okayIcon from '@/assets/icons/okay.png';
-import braveIcon from '@/assets/icons/brave.png';
-import stocksIcon from '@/assets/icons/stocks.png';
-import etfsIcon from '@/assets/icons/etfs.png';
-import bothIcon from '@/assets/icons/both.png';
 
 const currencies = [
   { value: 'USD', label: '$ USD', symbol: '$' },
