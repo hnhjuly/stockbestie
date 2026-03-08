@@ -6,6 +6,7 @@ import { BottomNav } from '@/components/BottomNav';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { Icon } from '@iconify/react';
 
 const Academy: React.FC = () => {
   const [viewState, setViewState] = useState<'map' | 'lesson' | 'pro'>('map');
