@@ -7,28 +7,12 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Sparkles, TrendingUp, PiggyBank, RefreshCw, ArrowLeft, Shield, Scale, Flame } from 'lucide-react';
+import { Sparkles, TrendingUp, PiggyBank, RefreshCw, ArrowLeft, Shield, Scale, Flame, Cpu, HeartPulse, Landmark, Zap, ShoppingCart, Factory, Building2, Radio, BarChart3, Layers, Blend, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { BottomNav } from '@/components/BottomNav';
 import { Link } from 'react-router-dom';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
-
-// Import custom icons
-import techIcon from '@/assets/icons/tech.png';
-import healthcareIcon from '@/assets/icons/healthcare.png';
-import financeIcon from '@/assets/icons/finance.png';
-import energyIcon from '@/assets/icons/energy.png';
-import consumerIcon from '@/assets/icons/consumer.png';
-import industrialIcon from '@/assets/icons/industrial.png';
-import realestateIcon from '@/assets/icons/realestate.png';
-import communicationIcon from '@/assets/icons/communication.png';
-import chillIcon from '@/assets/icons/chill.png';
-import okayIcon from '@/assets/icons/okay.png';
-import braveIcon from '@/assets/icons/brave.png';
-import stocksIcon from '@/assets/icons/stocks.png';
-import etfsIcon from '@/assets/icons/etfs.png';
-import bothIcon from '@/assets/icons/both.png';
 
 const currencies = [
   { value: 'USD', label: '$ USD', symbol: '$' },
@@ -38,15 +22,15 @@ const currencies = [
   { value: 'PHP', label: '₱ PHP', symbol: '₱' },
 ];
 
-const categories = [
-  { id: 'tech', label: 'Tech', icon: techIcon },
-  { id: 'healthcare', label: 'Healthcare', icon: healthcareIcon },
-  { id: 'finance', label: 'Finance', icon: financeIcon },
-  { id: 'energy', label: 'Energy', icon: energyIcon },
-  { id: 'consumer', label: 'Consumer', icon: consumerIcon },
-  { id: 'industrial', label: 'Industrial', icon: industrialIcon },
-  { id: 'realestate', label: 'Real Estate', icon: realestateIcon },
-  { id: 'communication', label: 'Communication', icon: communicationIcon },
+const categories: { id: string; label: string; icon: LucideIcon }[] = [
+  { id: 'tech', label: 'Tech', icon: Cpu },
+  { id: 'healthcare', label: 'Healthcare', icon: HeartPulse },
+  { id: 'finance', label: 'Finance', icon: Landmark },
+  { id: 'energy', label: 'Energy', icon: Zap },
+  { id: 'consumer', label: 'Consumer', icon: ShoppingCart },
+  { id: 'industrial', label: 'Industrial', icon: Factory },
+  { id: 'realestate', label: 'Real Estate', icon: Building2 },
+  { id: 'communication', label: 'Communication', icon: Radio },
 ];
 
 const riskLevels = [
@@ -55,10 +39,10 @@ const riskLevels = [
   { value: 100, label: 'Brave', icon: Flame, description: 'High risk, high reward' },
 ];
 
-const assetTypes = [
-  { value: 'stocks', label: 'Stocks', icon: stocksIcon },
-  { value: 'etfs', label: 'ETFs', icon: etfsIcon },
-  { value: 'both', label: 'Both', icon: bothIcon },
+const assetTypes: { value: string; label: string; icon: LucideIcon }[] = [
+  { value: 'stocks', label: 'Stocks', icon: BarChart3 },
+  { value: 'etfs', label: 'ETFs', icon: Layers },
+  { value: 'both', label: 'Both', icon: Blend },
 ];
 
 interface AllocationResult {
@@ -218,7 +202,7 @@ export const BudgetPlanner = () => {
             >
               {assetTypes.map(asset => (
                 <ToggleGroupItem key={asset.value} value={asset.value} className="px-4 py-2 rounded-full flex items-center gap-2">
-                  <img src={asset.icon} alt={asset.label} className="w-5 h-5 object-contain" />
+                  <asset.icon className="w-5 h-5" />
                   {asset.label}
                 </ToggleGroupItem>
               ))}
@@ -241,7 +225,7 @@ export const BudgetPlanner = () => {
                   className="cursor-pointer px-3 py-2 text-sm transition-all hover:scale-105 flex items-center gap-2"
                   onClick={() => handleCategoryToggle(cat.id)}
                 >
-                  <img src={cat.icon} alt={cat.label} className="w-4 h-4 object-contain" />
+                  <cat.icon className="w-4 h-4" />
                   {cat.label}
                 </Badge>
               ))}
