@@ -109,13 +109,13 @@ const Onboarding = () => {
           <div className="absolute -top-16 -right-12 md:-top-20 md:-right-16 w-56 md:w-72">
             <img src={mascotBusiness} alt="StockBestie mascot" className="w-full h-auto object-contain" />
             {/* Floating badges */}
-            <div className="absolute top-3 -right-12 md:-right-16 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s' }}>
+            <div className="absolute -top-8 -right-6 md:-top-10 md:-right-8 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s' }}>
               <div className="w-[7px] h-[7px] rounded-full bg-success" /> +10 XP earned!
             </div>
-            <div className="absolute bottom-20 -right-12 md:-right-14 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s', animationDelay: '0.8s' }}>
+            <div className="absolute -bottom-8 -right-6 md:-bottom-10 md:-right-8 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s', animationDelay: '0.8s' }}>
               <div className="w-[7px] h-[7px] rounded-full bg-warning" /> 🔥 7-day streak
             </div>
-            <div className="absolute bottom-10 -left-12 md:-left-14 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s', animationDelay: '1.3s' }}>
+            <div className="absolute top-1/2 -left-6 md:-left-8 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s', animationDelay: '1.3s', transform: 'translateY(-50%)' }}>
               <div className="w-[7px] h-[7px] rounded-full bg-primary" /> Rank #38 · Bull Tier
             </div>
           </div>
