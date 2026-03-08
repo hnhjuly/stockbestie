@@ -338,8 +338,8 @@ export const BudgetPlanner = () => {
                 </div>
               ))}
 
-              <div className="p-4 bg-warning/10 border border-warning/30 rounded-lg">
-                <p className="text-sm text-warning-foreground">{result.riskNote}</p>
+              <div className="p-4 bg-orange-100 border border-orange-300 rounded-lg dark:bg-orange-950 dark:border-orange-800">
+                <p className="text-sm text-orange-800 dark:text-orange-200 font-medium">{result.riskNote}</p>
               </div>
 
               <Button variant="outline" onClick={resetForm} className="w-full">
