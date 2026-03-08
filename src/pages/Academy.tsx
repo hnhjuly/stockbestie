@@ -171,7 +171,7 @@ const Academy: React.FC = () => {
                                 : 'bg-card border-primary/20 text-foreground shadow-xl'
                           }`}
                         >
-                          {isCompleted ? '⭐' : level}
+                          {isCompleted ? <Icon icon="fxemoji:glowingstar" className="w-8 h-8 md:w-12 md:h-12" /> : level}
                           {!isCompleted && !isLocked && (
                             <div className="absolute -inset-2 border-2 border-dashed border-primary/60 rounded-3xl md:rounded-[3.5rem] animate-[spin_10s_linear_infinite]" />
                           )}
