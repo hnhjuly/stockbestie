@@ -251,8 +251,8 @@ const Academy: React.FC = () => {
                       exit={{ opacity: 0, y: -10 }}
                       className="text-center space-y-8 md:space-y-12 py-6 md:py-10"
                     >
-                      <div className="w-20 h-20 md:w-24 md:h-24 bg-primary/10 text-primary rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-center text-3xl md:text-4xl mx-auto shadow-sm">
-                        📖
+                      <div className="w-20 h-20 md:w-24 md:h-24 bg-primary/10 text-primary rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-center mx-auto shadow-sm">
+                         <Icon icon="fxemoji:books" className="w-10 h-10 md:w-12 md:h-12" />
                       </div>
                       <div className="space-y-4 md:space-y-6">
                         <div className="flex flex-col items-center gap-2">
