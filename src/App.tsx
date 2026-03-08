@@ -9,6 +9,7 @@ import Landing from "./pages/Landing";
 import Index from "./pages/Index";
 import BudgetPlanner from "./pages/BudgetPlanner";
 import Academy from "./pages/Academy";
+import Glossary from "./pages/Glossary";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
