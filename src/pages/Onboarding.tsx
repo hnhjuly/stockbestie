@@ -83,7 +83,7 @@ const Onboarding = () => {
               {/* XP & Rank Section */}
               <div className="bg-muted rounded-xl p-4 border border-border">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">XP & Rank</p>
-                <p className="text-2xl font-black text-amber-500 mb-1">4,210 XP</p>
+                <p className="text-2xl font-black text-warning mb-1">4,210 XP</p>
                 <p className="text-sm font-semibold">⭐ Rank #38 · Bull Tier</p>
               </div>
               
