@@ -59,8 +59,16 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
+      const isPreviewDomain =
+        window.location.hostname.includes('lovableproject.com') ||
+        window.location.hostname.includes('id-preview--');
+
+      const redirectUri = isPreviewDomain
+        ? 'https://stockbestie.lovable.app/auth'
+        : `${window.location.origin}/auth`;
+
       const { error } = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: window.location.origin,
+        redirect_uri: redirectUri,
       });
       if (error) throw error;
     } catch (error: any) {
