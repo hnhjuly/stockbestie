@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { Sparkles, TrendingUp, Bot, ChartLine, Loader2, Users } from 'lucide-react';
+import { Sparkles, TrendingUp, Bot, ChartLine, Loader2 } from 'lucide-react';
 import sbLogo from '@/assets/sb-logo.png';
 import InteractiveRobot from '@/components/InteractiveRobot';
 const Landing = () => {
