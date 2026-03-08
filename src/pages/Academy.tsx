@@ -384,9 +384,9 @@ const Academy: React.FC = () => {
             className="fixed inset-0 z-[200] bg-background/90 backdrop-blur-xl flex items-center justify-center p-6"
           >
             <div className="bg-card rounded-3xl md:rounded-[3.5rem] max-w-xl w-full p-8 md:p-16 text-center space-y-6 md:space-y-8 shadow-2xl border border-border overflow-y-auto max-h-screen">
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-primary/10 rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-center text-4xl md:text-5xl mx-auto mb-4">
-                💎
-              </div>
+              <div className="w-20 h-20 md:w-24 md:h-24 bg-primary/10 rounded-[2rem] md:rounded-[2.5rem] flex items-center justify-center mx-auto mb-4">
+                 <Icon icon="fxemoji:crystalball" className="w-12 h-12 md:w-14 md:h-14" />
+               </div>
               <h2 className="text-2xl md:text-4xl font-black text-foreground tracking-tight">Access Restricted</h2>
               <p className="text-muted-foreground font-medium leading-relaxed">
                 You've completed your trial session. To unlock all 90+ situational modules and track your portfolio mastery, upgrade to StockBestie Pro.

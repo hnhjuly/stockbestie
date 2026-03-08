@@ -3,6 +3,7 @@ import { glossaryTerms } from '@/data/glossaryTerms';
 import { BottomNav } from '@/components/BottomNav';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import {
   Accordion,
@@ -40,7 +41,9 @@ const Glossary = () => {
             </div>
             <div>
               <h1 className="text-lg md:text-2xl font-bold">Glossary</h1>
-              <p className="text-xs md:text-sm text-muted-foreground">Stock market terms made simple 📈</p>
+              <p className="text-xs md:text-sm text-muted-foreground flex items-center gap-1">
+                Stock market terms made simple <Icon icon="fxemoji:chartupwardstrend" className="inline-block w-4 h-4" />
+              </p>
             </div>
           </div>
         </div>
@@ -68,7 +71,10 @@ const Glossary = () => {
                   {grouped[letter].map((term) => (
                     <AccordionItem key={term.term} value={term.term} className="border rounded-lg px-1 bg-card">
                       <AccordionTrigger className="text-sm font-semibold hover:no-underline">
-                        {term.emoji ? `${term.emoji} ` : ''}{term.term}
+                        <span className="flex items-center gap-2">
+                          {term.fxIcon && <Icon icon={term.fxIcon} className="w-5 h-5 flex-shrink-0" />}
+                          {term.term}
+                        </span>
                       </AccordionTrigger>
                       <AccordionContent className="text-sm text-muted-foreground">
                         {term.definition}
@@ -81,8 +87,10 @@ const Glossary = () => {
           </div>
         )}
 
-        <p className="text-center text-xs text-muted-foreground mt-10">
-          💡 The best investors keep learning every day. Keep it up — your future self will thank you! 🚀
+        <p className="text-center text-xs text-muted-foreground mt-10 flex items-center justify-center gap-1">
+          <Icon icon="fxemoji:electriclightbulb" className="w-4 h-4" />
+          The best investors keep learning every day. Keep it up — your future self will thank you!
+          <Icon icon="fxemoji:rocket" className="w-4 h-4" />
         </p>
       </main>
 

@@ -152,8 +152,8 @@ const Index = () => {
               </div>
               <div className="min-w-0">
                 <h1 className="text-lg md:text-2xl font-bold truncate">Stock Bestie</h1>
-                <p className="text-xs md:text-sm text-muted-foreground truncate">
-                  Hey {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0]} 👋
+                <p className="text-xs md:text-sm text-muted-foreground truncate flex items-center gap-1">
+                  Hey {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0]} <Icon icon="fxemoji:wavinghand" className="w-4 h-4 inline-block" />
                 </p>
               </div>
             </div>
