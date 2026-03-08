@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Icon } from '@iconify/react';
 import { Stock } from '@/types/stock';
 import { StockTable } from '@/components/StockTable';
 import { StockDetail } from '@/components/StockDetail';
