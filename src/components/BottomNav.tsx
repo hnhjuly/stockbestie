@@ -1,9 +1,10 @@
-import { Home, PiggyBank, GraduationCap, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Home, PiggyBank, GraduationCap, BookOpen } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { icon: Home, label: 'Home', path: '/app' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+  { icon: Home, label: 'Stocks', path: '/app' },
   { icon: GraduationCap, label: 'Academy', path: '/academy' },
   { icon: BookOpen, label: 'Glossary', path: '/glossary' },
   { icon: PiggyBank, label: 'Budget', path: '/budget' },
