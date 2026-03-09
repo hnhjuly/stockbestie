@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { X, ChevronLeft } from 'lucide-react';
+import { X, ChevronLeft, Flame, Star, BookOpen, Zap, CheckCircle, DollarSign, Building2, Landmark, Dices, Home, Heart, TrendingUp, GraduationCap, Trophy, BarChart3, Sparkles, Gamepad2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface OnboardingModalProps {
@@ -15,10 +15,10 @@ const STEPS = [
     h: 'Why do you want to learn?',
     sub: "We'll personalise your path.",
     choices: [
-      { ic: '🏠', t: 'Buy a home someday', d: 'Big life goals' },
-      { ic: '🧘', t: 'Less financial stress', d: 'Understand your money' },
-      { ic: '📈', t: 'Grow my wealth', d: 'Make money work for you' },
-      { ic: '🎓', t: 'Just learn the basics', d: 'Know what everyone else knows' },
+      { icon: <Home className="w-4 h-4 text-primary" />, t: 'Buy a home someday', d: 'Big life goals' },
+      { icon: <Heart className="w-4 h-4 text-success" />, t: 'Less financial stress', d: 'Understand your money' },
+      { icon: <TrendingUp className="w-4 h-4 text-warning" />, t: 'Grow my wealth', d: 'Make money work for you' },
+      { icon: <GraduationCap className="w-4 h-4 text-primary" />, t: 'Just learn the basics', d: 'Know what everyone else knows' },
     ]
   },
   {
@@ -26,10 +26,10 @@ const STEPS = [
     h: 'How much do you know about investing?',
     sub: 'Be honest — no judgment.',
     choices: [
-      { ic: '🐣', t: 'Total beginner', d: 'What even is a stock?' },
-      { ic: '🌿', t: 'Know a little', d: 'Fuzzy on the details' },
-      { ic: '🌳', t: 'Getting comfortable', d: 'Invested a bit before' },
-      { ic: '🦅', t: 'Pretty confident', d: 'Looking to sharpen my edge' },
+      { icon: <Sparkles className="w-4 h-4 text-success" />, t: 'Total beginner', d: 'What even is a stock?' },
+      { icon: <Zap className="w-4 h-4 text-warning" />, t: 'Know a little', d: 'Fuzzy on the details' },
+      { icon: <BarChart3 className="w-4 h-4 text-primary" />, t: 'Getting comfortable', d: 'Invested a bit before' },
+      { icon: <Trophy className="w-4 h-4 text-warning" />, t: 'Pretty confident', d: 'Looking to sharpen my edge' },
     ]
   },
   { id: 'plan', type: 'plan' },
@@ -105,16 +105,16 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
       return (
         <>
           <div className="flex-1 overflow-y-auto p-4 text-center">
-            <div className="text-5xl mb-2 animate-bounce">🎉</div>
-            <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-300 rounded-full px-3 py-1 text-xs font-bold text-amber-800 font-mono mb-3">
-              ⭐ +10 XP unlocked!
+            <div className="mb-2 flex justify-center"><Sparkles className="w-12 h-12 text-primary animate-bounce" /></div>
+            <div className="inline-flex items-center gap-1.5 bg-warning/10 border border-warning/30 rounded-full px-3 py-1 text-xs font-bold text-warning font-mono mb-3">
+              <Star className="w-3 h-3" /> +10 XP unlocked!
             </div>
             <h2 className="text-lg font-extrabold tracking-tight text-primary mb-1.5">You're in!</h2>
             <p className="text-sm text-muted-foreground mb-3">Welcome to StockBestie. Your streak starts now.</p>
             <div className="flex gap-1.5 mb-3">
-              {[{ n: '1', l: 'Day Streak' }, { n: '10', l: 'XP Earned' }, { n: '1', l: 'Lesson Done' }].map(s => (
+              {[{ n: '1', l: 'Day Streak', icon: <Flame className="w-4 h-4 text-destructive" /> }, { n: '10', l: 'XP Earned', icon: <Zap className="w-4 h-4 text-warning" /> }, { n: '1', l: 'Lesson Done', icon: <BookOpen className="w-4 h-4 text-primary" /> }].map(s => (
                 <div key={s.l} className="flex-1 p-2 bg-muted border border-border rounded-lg text-center">
-                  <div className="text-lg font-black tracking-tight">{s.n}</div>
+                  <div className="text-lg font-black tracking-tight flex items-center justify-center gap-1">{s.icon}{s.n}</div>
                   <div className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wider font-mono mt-0.5">{s.l}</div>
                 </div>
               ))}
@@ -138,12 +138,18 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
         return (
           <>
             <div className="flex-1 overflow-y-auto p-4 text-center">
-              <div className="text-6xl mb-1 animate-bounce">🤖</div>
+              <div className="mb-1 flex justify-center"><Sparkles className="w-14 h-14 text-primary animate-bounce" /></div>
               <h2 className="text-[19px] font-extrabold tracking-tight mt-1 mb-1.5">Meet your money bestie.</h2>
               <p className="text-sm text-muted-foreground mb-3 leading-relaxed">The fun way to finally understand stocks, investing & wealth — in just 5 minutes a day.</p>
               <div className="flex flex-col gap-1.5 text-left">
-                {['🎮 Gamified lessons that feel like a game', '🔥 Daily streaks that build real habits', '🏆 XP, rank tiers & leaderboards'].map(t => (
-                  <div key={t} className="flex items-center gap-2 bg-muted border border-border rounded-lg px-3 py-2 text-xs font-medium">{t}</div>
+                {[
+                  { icon: <Gamepad2 className="w-4 h-4 text-primary" />, t: 'Gamified lessons that feel like a game' },
+                  { icon: <Flame className="w-4 h-4 text-destructive" />, t: 'Daily streaks that build real habits' },
+                  { icon: <Trophy className="w-4 h-4 text-warning" />, t: 'XP, rank tiers & leaderboards' },
+                ].map(item => (
+                  <div key={item.t} className="flex items-center gap-2 bg-muted border border-border rounded-lg px-3 py-2 text-xs font-medium">
+                    {item.icon} {item.t}
+                  </div>
                 ))}
               </div>
             </div>
@@ -165,10 +171,10 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
               <p className="text-sm text-muted-foreground mb-3">You can always change this later.</p>
               <div className="flex gap-1.5 justify-center">
                 {[
-                  { v: 5, ic: '🔥', l: 'Casual' },
-                  { v: 10, ic: '🔥🔥', l: 'Regular' },
-                  { v: 15, ic: '🔥🔥🔥', l: 'Serious' },
-                  { v: 20, ic: '⚡⚡', l: 'Intense' },
+                  { v: 5, icon: <Flame className="w-4 h-4 text-destructive" />, l: 'Casual' },
+                  { v: 10, icon: <><Flame className="w-4 h-4 text-destructive" /><Flame className="w-4 h-4 text-destructive" /></>, l: 'Regular' },
+                  { v: 15, icon: <><Flame className="w-4 h-4 text-destructive" /><Flame className="w-4 h-4 text-destructive" /><Flame className="w-4 h-4 text-destructive" /></>, l: 'Serious' },
+                  { v: 20, icon: <><Zap className="w-4 h-4 text-warning" /><Zap className="w-4 h-4 text-warning" /></>, l: 'Intense' },
                 ].map(g => (
                   <button
                     key={g.v}
@@ -178,7 +184,7 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
                       answers.goal === g.v ? "border-primary bg-primary/5" : "border-border bg-background hover:border-primary"
                     )}
                   >
-                    <span className="text-base">{g.ic}</span>
+                    <span className="flex items-center">{g.icon}</span>
                     <span className="text-[9.5px] font-bold text-primary font-mono">{g.v} XP</span>
                     <span className="text-[8.5px] text-muted-foreground">{g.l}</span>
                   </button>
@@ -212,7 +218,7 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
                       selectedChoice === String(i) ? "border-primary bg-primary/5" : "border-border bg-background hover:border-primary hover:bg-primary/5"
                     )}
                   >
-                    <span className="text-base w-5 text-center shrink-0">{c.ic}</span>
+                    <span className="w-5 text-center shrink-0">{c.icon}</span>
                     <span>
                       <div className="text-[12.5px] font-semibold">{c.t}</div>
                       <div className="text-[10.5px] text-muted-foreground mt-0.5">{c.d}</div>
@@ -232,7 +238,7 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
         return (
           <>
             <div className="flex-1 overflow-y-auto p-4 text-center">
-              <div className="text-5xl mb-1 animate-bounce">✅</div>
+              <div className="mb-1 flex justify-center"><CheckCircle className="w-12 h-12 text-success animate-bounce" /></div>
               <h2 className="text-lg font-extrabold tracking-tight mb-1.5">You're all set!</h2>
               <p className="text-sm text-muted-foreground mb-3">Here's your personalised learning plan.</p>
               <div className="flex flex-col gap-1.5">
@@ -243,7 +249,7 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
                   'First lesson: What is a Stock?',
                 ].map((t, i) => (
                   <div key={i} className="flex items-center gap-2 px-2.5 py-2 bg-muted border border-border rounded-lg" style={{ animationDelay: `${i * 0.07}s` }}>
-                    <div className="w-5 h-5 rounded-md bg-primary flex items-center justify-center text-[9px] text-primary-foreground font-bold shrink-0">✓</div>
+                    <div className="w-5 h-5 rounded-md bg-primary flex items-center justify-center shrink-0"><CheckCircle className="w-3 h-3 text-primary-foreground" /></div>
                     <span className="text-[11.5px] font-medium" dangerouslySetInnerHTML={{ __html: t.replace(/^(.*?:)/, '<span class="text-muted-foreground">$1</span>') }} />
                   </div>
                 ))}
@@ -260,38 +266,38 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
           <>
             <div className="flex-1 overflow-y-auto p-4">
               <div className="inline-flex items-center gap-1.5 bg-primary/5 border border-primary/30 rounded-lg px-2.5 py-1 text-[9px] font-bold text-primary font-mono uppercase tracking-wider mb-3">
-                ⚡ Phase 01 Preview
+                <Zap className="w-3 h-3" /> Phase 01 Preview
               </div>
               <h2 className="text-base font-extrabold tracking-tight text-left mb-3">
                 What does it mean to own a <span className="text-primary">stock</span>?
               </h2>
               <div className="flex flex-col gap-1.5">
                 {[
-                  { ic: '💵', t: "You're lending money to a company", correct: false },
-                  { ic: '🏢', t: 'You own a small piece of a company', correct: true },
-                  { ic: '🏦', t: "You're opening a savings account", correct: false },
-                  { ic: '🎰', t: "You're betting on the stock price", correct: false },
+                  { icon: <DollarSign className="w-4 h-4 text-success" />, t: "You're lending money to a company", correct: false },
+                  { icon: <Building2 className="w-4 h-4 text-primary" />, t: 'You own a small piece of a company', correct: true },
+                  { icon: <Landmark className="w-4 h-4 text-muted-foreground" />, t: "You're opening a savings account", correct: false },
+                  { icon: <Dices className="w-4 h-4 text-warning" />, t: "You're betting on the stock price", correct: false },
                 ].map((q, i) => (
                   <button
                     key={i}
                     onClick={() => handleQuizAnswer(i, q.correct)}
                     className={cn(
                       "flex items-center gap-2.5 px-3 py-2.5 border-[1.5px] rounded-xl text-left transition-all",
-                      quizDone && q.correct ? "border-green-500 bg-green-50" :
+                      quizDone && q.correct ? "border-success bg-success/5" :
                       quizDone && selectedChoice === String(i) && !q.correct ? "border-destructive bg-destructive/5 animate-shake" :
                       "border-border bg-background hover:border-primary hover:bg-primary/5",
                       quizDone && "pointer-events-none"
                     )}
                   >
-                    <span className="text-base w-5 text-center shrink-0">{q.ic}</span>
+                    <span className="w-5 text-center shrink-0">{q.icon}</span>
                     <span className="text-[12.5px] font-semibold">{q.t}</span>
                   </button>
                 ))}
               </div>
               {quizDone && (
-                <div className={cn("rounded-xl p-3 mt-2", quizCorrect ? "bg-green-50 border border-green-300" : "bg-destructive/5 border border-destructive/30")}>
-                  <div className={cn("text-xs font-bold mb-0.5", quizCorrect ? "text-green-600" : "text-destructive")}>
-                    {quizCorrect ? '🎉 Correct!' : "Not quite — that's why we're here!"}
+                <div className={cn("rounded-xl p-3 mt-2", quizCorrect ? "bg-success/5 border border-success/30" : "bg-destructive/5 border border-destructive/30")}>
+                  <div className={cn("text-xs font-bold mb-0.5 flex items-center gap-1", quizCorrect ? "text-success" : "text-destructive")}>
+                    {quizCorrect ? <><Sparkles className="w-3.5 h-3.5" /> Correct!</> : "Not quite — that's why we're here!"}
                   </div>
                   <div className="text-[11px] text-muted-foreground">
                     {quizCorrect
@@ -313,23 +319,30 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
         return (
           <>
             <div className="flex-1 overflow-y-auto p-4 text-center">
-              <div className="text-5xl mb-1 animate-bounce">🎉</div>
-              <div className="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-300 rounded-full px-3 py-1 text-xs font-bold text-amber-800 font-mono mb-3">
-                ⭐ +10 XP — first lesson done!
+              <div className="mb-1 flex justify-center"><Sparkles className="w-12 h-12 text-primary animate-bounce" /></div>
+              <div className="inline-flex items-center gap-1.5 bg-warning/10 border border-warning/30 rounded-full px-3 py-1 text-xs font-bold text-warning font-mono mb-3">
+                <Star className="w-3 h-3" /> +10 XP — first lesson done!
               </div>
               <h2 className="text-lg font-extrabold tracking-tight mb-1.5">You just learned something real.</h2>
               <p className="text-sm text-muted-foreground mb-3">Here's what's waiting inside the app:</p>
               <div className="flex gap-1.5 mb-3">
-                {[{ n: '50+', l: 'Lessons' }, { n: '🔥', l: 'Streaks' }, { n: '🏆', l: 'Rankings' }].map(s => (
+                {[{ n: '50+', l: 'Lessons', icon: <BookOpen className="w-4 h-4 text-primary" /> }, { n: '', l: 'Streaks', icon: <Flame className="w-5 h-5 text-destructive" /> }, { n: '', l: 'Rankings', icon: <Trophy className="w-5 h-5 text-warning" /> }].map(s => (
                   <div key={s.l} className="flex-1 p-2 bg-muted border border-border rounded-lg text-center">
-                    <div className="text-lg font-black tracking-tight">{s.n}</div>
+                    <div className="text-lg font-black tracking-tight flex items-center justify-center gap-0.5">{s.icon}{s.n}</div>
                     <div className="text-[8px] font-semibold text-muted-foreground uppercase tracking-wider font-mono mt-0.5">{s.l}</div>
                   </div>
                 ))}
               </div>
               <div className="flex flex-col gap-1.5 text-left">
-                {['📈 Stocks & ETFs explained simply', '📊 Real examples from real companies', '⭐ Daily challenges & XP rewards', '📖 Glossary of 100+ finance terms'].map((t, i) => (
-                  <div key={i} className="flex items-center gap-2 bg-muted border border-border rounded-lg px-3 py-2 text-xs font-medium">{t}</div>
+                {[
+                  { icon: <TrendingUp className="w-4 h-4 text-primary" />, t: 'Stocks & ETFs explained simply' },
+                  { icon: <BarChart3 className="w-4 h-4 text-primary" />, t: 'Real examples from real companies' },
+                  { icon: <Star className="w-4 h-4 text-warning" />, t: 'Daily challenges & XP rewards' },
+                  { icon: <BookOpen className="w-4 h-4 text-primary" />, t: 'Glossary of 100+ finance terms' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-muted border border-border rounded-lg px-3 py-2 text-xs font-medium">
+                    {item.icon} {item.t}
+                  </div>
                 ))}
               </div>
             </div>
@@ -343,7 +356,7 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
         return (
           <>
             <div className="flex-1 overflow-y-auto p-4 text-center pt-2">
-              <div className="text-[42px] mb-2 animate-bounce">💚</div>
+              <div className="mb-2 flex justify-center"><Heart className="w-10 h-10 text-success animate-bounce" /></div>
               <h2 className="text-lg font-extrabold tracking-tight mb-1.5">Save your progress!</h2>
               <p className="text-sm text-muted-foreground mb-3">Create a free account to keep your XP, streak & lessons.</p>
               <button onClick={doFinish} className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 border border-border bg-background text-foreground hover:bg-muted mb-1.5">
@@ -386,7 +399,7 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
             <div className="w-[26px] h-[26px] bg-foreground rounded-[7px] flex items-center justify-center text-[10px] font-bold text-background tracking-tight">S$</div>
             <div>
               <div className="text-[13px] font-bold tracking-tight">StockBestie</div>
-              <div className="text-[10px] text-muted-foreground mt-0.5">Let's get you set up 🎓</div>
+              <div className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">Let's get you set up <GraduationCap className="w-3 h-3" /></div>
             </div>
           </div>
 
