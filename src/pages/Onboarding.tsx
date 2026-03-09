@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { Star, TrendingUp, ChartBar, DollarSign, Brain, Home, Sprout, RefreshCw, Zap, CheckCircle } from 'lucide-react';
+import { 
+  Star, TrendingUp, BarChart3, DollarSign, Brain, Home, Sprout, RefreshCw, Zap, CheckCircle,
+  Gamepad2, Puzzle, Lightbulb, Flame, Trophy, LayoutDashboard, BookOpen, LineChart, 
+  Wallet, GraduationCap, Award, Hand, Repeat, CircleCheck
+} from 'lucide-react';
 import OnboardingModal from '@/components/onboarding/OnboardingModal';
 import sbLogo from '@/assets/sb-logo.png';
 import mascotBusiness from '@/assets/mascot-business.png';
@@ -33,7 +37,7 @@ const Onboarding = () => {
       <section className="max-w-[1120px] mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-16 px-6 md:px-12 py-16 md:py-20">
         <div className="flex-1 max-w-[510px]">
           <div className="inline-flex items-center gap-2 border border-border rounded-full px-3.5 py-1 text-xs font-medium text-muted-foreground mb-5">
-            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center text-[10px] text-primary-foreground font-bold">★</div>
+            <div className="w-5 h-5 rounded-full bg-primary flex items-center justify-center text-[10px] text-primary-foreground font-bold"><Star className="w-3 h-3" /></div>
             Free to start · No credit card needed
           </div>
           <h1 className="text-4xl md:text-5xl font-black leading-[1.06] mb-4 tracking-[-2px]">
@@ -54,7 +58,7 @@ const Onboarding = () => {
               <div className="flex items-center gap-2.5">
                 <div className="w-10 h-10 rounded-lg bg-foreground text-background flex items-center justify-center font-bold text-sm">$$</div>
                 <div>
-                  <h3 className="font-bold text-sm">Good morning 👋</h3>
+                  <h3 className="font-bold text-sm flex items-center gap-1.5">Good morning <Hand className="w-4 h-4 text-warning" /></h3>
                   <p className="text-xs text-muted-foreground">Monday, March 09, 2026</p>
                 </div>
               </div>
@@ -77,24 +81,24 @@ const Onboarding = () => {
                   <span className="text-3xl font-black tracking-tight">$12,847</span>
                   <span className="text-muted-foreground text-sm">.32</span>
                 </div>
-                <p className="text-sm text-success font-semibold mt-2">▲ +$342.18 today (+2.73%)</p>
+                <p className="text-sm text-success font-semibold mt-2 flex items-center gap-1"><TrendingUp className="w-3.5 h-3.5" /> +$342.18 today (+2.73%)</p>
               </div>
               
               {/* XP & Rank Section */}
               <div className="bg-muted rounded-xl p-4 border border-border">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">XP & Rank</p>
                 <p className="text-2xl font-black text-warning mb-1">4,210 XP</p>
-                <p className="text-sm font-semibold">⭐ Rank #38 · Bull Tier</p>
+                <p className="text-sm font-semibold flex items-center gap-1"><Star className="w-3.5 h-3.5 text-warning" /> Rank #38 · Bull Tier</p>
               </div>
               
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-muted rounded-lg p-3 text-center border border-border">
-                  <p className="text-lg font-black">🔥7</p>
+                  <p className="text-lg font-black flex items-center justify-center gap-1"><Flame className="w-4 h-4 text-destructive" />7</p>
                   <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider mt-1">Streak</p>
                 </div>
                 <div className="bg-muted rounded-lg p-3 text-center border border-border">
-                  <p className="text-lg font-black">🎓3</p>
+                  <p className="text-lg font-black flex items-center justify-center gap-1"><GraduationCap className="w-4 h-4 text-primary" />3</p>
                   <p className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider mt-1">Lessons</p>
                 </div>
                 <div className="bg-muted rounded-lg p-3 text-center border border-border">
@@ -113,7 +117,7 @@ const Onboarding = () => {
               <div className="w-[7px] h-[7px] rounded-full bg-success" /> +10 XP earned!
             </div>
             <div className="absolute -bottom-8 -right-6 md:-bottom-10 md:-right-8 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s', animationDelay: '0.8s' }}>
-              <div className="w-[7px] h-[7px] rounded-full bg-warning" /> 🔥 7-day streak
+              <Flame className="w-3.5 h-3.5 text-destructive" /> 7-day streak
             </div>
             <div className="absolute top-1/2 -left-6 md:-left-8 bg-card border border-border rounded-xl shadow-md px-3 py-1.5 text-[11px] font-semibold flex items-center gap-1.5 whitespace-nowrap animate-bounce" style={{ animationDuration: '3s', animationDelay: '1.3s', transform: 'translateY(-50%)' }}>
               <div className="w-[7px] h-[7px] rounded-full bg-primary" /> Rank #38 · Bull Tier
@@ -127,12 +131,12 @@ const Onboarding = () => {
         {[
           { n: '2M+', l: 'Active Learners' },
           { n: '50+', l: 'Bite-sized Lessons' },
-          { n: '4.9★', l: 'App Store Rating' },
+          { n: '4.9', l: 'App Store Rating', icon: <Star className="w-4 h-4 text-warning inline" /> },
           { n: 'Free', l: 'Always Free to Start' },
           { n: '5 min', l: 'Per Day Is Enough' },
         ].map(s => (
           <div key={s.l} className="text-center">
-            <div className="text-2xl font-black tracking-tight">{s.n}</div>
+            <div className="text-2xl font-black tracking-tight flex items-center justify-center gap-1">{s.n}{'icon' in s && s.icon}</div>
             <div className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider font-mono mt-1">{s.l}</div>
           </div>
         ))}
@@ -148,12 +152,12 @@ const Onboarding = () => {
           <p className="text-base text-muted-foreground leading-relaxed">No textbooks. No jargon. Clear, interactive lessons built for real people with real goals.</p>
           <div className="flex flex-col gap-3.5 mt-6">
             {[
-              { ic: '🎮', t: 'Gamified lessons', d: 'Earn XP, unlock badges, level up. Each lesson feels like a mini-game.', color: 'bg-primary/5 border-primary/20' },
-              { ic: '🧩', t: 'Bite-sized format', d: '5-minute lessons that fit your commute, coffee break, or lunch.', color: 'bg-green-50 border-green-200' },
-              { ic: '💡', t: 'Real-world examples', d: 'Actual companies, real market events, everyday money decisions.', color: 'bg-amber-50 border-amber-200' },
+              { icon: <Gamepad2 className="w-[18px] h-[18px] text-primary" />, t: 'Gamified lessons', d: 'Earn XP, unlock badges, level up. Each lesson feels like a mini-game.', color: 'bg-primary/5 border-primary/20' },
+              { icon: <Puzzle className="w-[18px] h-[18px] text-success" />, t: 'Bite-sized format', d: '5-minute lessons that fit your commute, coffee break, or lunch.', color: 'bg-success/5 border-success/20' },
+              { icon: <Lightbulb className="w-[18px] h-[18px] text-warning" />, t: 'Real-world examples', d: 'Actual companies, real market events, everyday money decisions.', color: 'bg-warning/5 border-warning/20' },
             ].map(f => (
               <div key={f.t} className="flex gap-3 items-start">
-                <div className={`w-[38px] h-[38px] rounded-[9px] shrink-0 flex items-center justify-center text-base border ${f.color}`}>{f.ic}</div>
+                <div className={`w-[38px] h-[38px] rounded-[9px] shrink-0 flex items-center justify-center border ${f.color}`}>{f.icon}</div>
                 <div>
                   <div className="text-sm font-bold tracking-tight mb-0.5">{f.t}</div>
                   <div className="text-[13px] text-muted-foreground leading-relaxed">{f.d}</div>
@@ -178,12 +182,12 @@ const Onboarding = () => {
             <p className="text-base text-muted-foreground leading-relaxed">The secret isn't one big lesson — it's 5 minutes every day. StockBestie makes it addictive.</p>
             <div className="flex flex-col gap-3.5 mt-6">
               {[
-                { ic: '🔥', t: 'Daily streaks', d: "Miss a day, lose your streak. A powerful motivator — ask any Duolingo user.", color: 'bg-red-50 border-red-200' },
-                { ic: '🏆', t: 'XP & rank tiers', d: 'Bull Tier, Bear Tier — earn your way up as your knowledge grows.', color: 'bg-purple-50 border-purple-200' },
-                { ic: '📊', t: 'Portfolio dashboard', d: 'Track simulated investments alongside your real learning progress.', color: 'bg-primary/5 border-primary/20' },
+                { icon: <Flame className="w-[18px] h-[18px] text-destructive" />, t: 'Daily streaks', d: "Miss a day, lose your streak. A powerful motivator — ask any Duolingo user.", color: 'bg-destructive/5 border-destructive/20' },
+                { icon: <Trophy className="w-[18px] h-[18px] text-warning" />, t: 'XP & rank tiers', d: 'Bull Tier, Bear Tier — earn your way up as your knowledge grows.', color: 'bg-warning/5 border-warning/20' },
+                { icon: <LayoutDashboard className="w-[18px] h-[18px] text-primary" />, t: 'Portfolio dashboard', d: 'Track simulated investments alongside your real learning progress.', color: 'bg-primary/5 border-primary/20' },
               ].map(f => (
                 <div key={f.t} className="flex gap-3 items-start">
-                  <div className={`w-[38px] h-[38px] rounded-[9px] shrink-0 flex items-center justify-center text-base border ${f.color}`}>{f.ic}</div>
+                  <div className={`w-[38px] h-[38px] rounded-[9px] shrink-0 flex items-center justify-center border ${f.color}`}>{f.icon}</div>
                   <div>
                     <div className="text-sm font-bold tracking-tight mb-0.5">{f.t}</div>
                     <div className="text-[13px] text-muted-foreground leading-relaxed">{f.d}</div>
@@ -207,15 +211,15 @@ const Onboarding = () => {
       </section>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 max-w-[1120px] mx-auto px-6 md:px-12 pb-16 md:pb-[88px]">
         {[
-          { ic: '📈', t: 'Stocks & ETFs', d: 'Learn the fundamentals of owning stocks, what ETFs are, and why diversification matters.' },
-          { ic: '📊', t: 'Reading the market', d: 'Understand charts, trends, and how to make sense of what the market is telling you.' },
-          { ic: '💰', t: 'Investing basics', d: 'From index funds to compound interest — master the concepts every investor needs.' },
-          { ic: '🧠', t: 'Behavioral finance', d: 'Why do we make bad money decisions? Learn the psychology and how to overcome it.' },
-          { ic: '🏠', t: 'Real estate & loans', d: "Mortgages, rent vs buy, debt management — the stuff they never taught you in school." },
-          { ic: '🌱', t: 'Retirement planning', d: '401k, IRA, Roth — start early, build smart. We make retirement planning feel achievable.' },
+          { icon: <TrendingUp className="w-5 h-5 text-primary" />, t: 'Stocks & ETFs', d: 'Learn the fundamentals of owning stocks, what ETFs are, and why diversification matters.' },
+          { icon: <BarChart3 className="w-5 h-5 text-primary" />, t: 'Reading the market', d: 'Understand charts, trends, and how to make sense of what the market is telling you.' },
+          { icon: <DollarSign className="w-5 h-5 text-primary" />, t: 'Investing basics', d: 'From index funds to compound interest — master the concepts every investor needs.' },
+          { icon: <Brain className="w-5 h-5 text-primary" />, t: 'Behavioral finance', d: 'Why do we make bad money decisions? Learn the psychology and how to overcome it.' },
+          { icon: <Home className="w-5 h-5 text-primary" />, t: 'Real estate & loans', d: "Mortgages, rent vs buy, debt management — the stuff they never taught you in school." },
+          { icon: <Sprout className="w-5 h-5 text-primary" />, t: 'Retirement planning', d: '401k, IRA, Roth — start early, build smart. We make retirement planning feel achievable.' },
         ].map(f => (
           <div key={f.t} className="bg-card rounded-2xl border border-border p-5 transition-all hover:border-primary/40 hover:shadow-lg group">
-            <div className="w-10 h-10 rounded-[9px] bg-muted border border-border flex items-center justify-center text-lg mb-3 group-hover:bg-primary/5 group-hover:border-primary/30 transition-all">{f.ic}</div>
+            <div className="w-10 h-10 rounded-[9px] bg-muted border border-border flex items-center justify-center mb-3 group-hover:bg-primary/5 group-hover:border-primary/30 transition-all">{f.icon}</div>
             <div className="text-sm font-bold tracking-tight mb-1">{f.t}</div>
             <p className="text-[13px] text-muted-foreground leading-relaxed">{f.d}</p>
           </div>
@@ -233,12 +237,12 @@ const Onboarding = () => {
             <p className="text-base text-muted-foreground leading-relaxed">StockBestie uses the same principles behind the world's most effective education apps.</p>
             <div className="flex flex-col gap-3.5 mt-6">
               {[
-                { ic: '🔁', t: 'Spaced repetition', d: 'Concepts revisited at optimal intervals so they stick long-term.', color: 'bg-primary/5 border-primary/20' },
-                { ic: '⚡', t: 'Active recall', d: "You're tested, not just shown. Doing beats reading every time.", color: 'bg-green-50 border-green-200' },
-                { ic: '✅', t: 'Instant feedback', d: 'Know immediately if you\'re right — with a clear explanation why.', color: 'bg-amber-50 border-amber-200' },
+                { icon: <Repeat className="w-[18px] h-[18px] text-primary" />, t: 'Spaced repetition', d: 'Concepts revisited at optimal intervals so they stick long-term.', color: 'bg-primary/5 border-primary/20' },
+                { icon: <Zap className="w-[18px] h-[18px] text-success" />, t: 'Active recall', d: "You're tested, not just shown. Doing beats reading every time.", color: 'bg-success/5 border-success/20' },
+                { icon: <CircleCheck className="w-[18px] h-[18px] text-warning" />, t: 'Instant feedback', d: 'Know immediately if you\'re right — with a clear explanation why.', color: 'bg-warning/5 border-warning/20' },
               ].map(f => (
                 <div key={f.t} className="flex gap-3 items-start">
-                  <div className={`w-[38px] h-[38px] rounded-[9px] shrink-0 flex items-center justify-center text-base border ${f.color}`}>{f.ic}</div>
+                  <div className={`w-[38px] h-[38px] rounded-[9px] shrink-0 flex items-center justify-center border ${f.color}`}>{f.icon}</div>
                   <div>
                     <div className="text-sm font-bold tracking-tight mb-0.5">{f.t}</div>
                     <div className="text-[13px] text-muted-foreground leading-relaxed">{f.d}</div>
@@ -273,18 +277,20 @@ const Onboarding = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
           {[
-            { q: "I've tried finance books and YouTube but nothing stuck. StockBestie finally made it click. I opened my first brokerage account last month!", n: 'Sarah M.', m: 'Teacher · 🔥 42-day streak', color: 'bg-primary', init: 'S' },
-            { q: "The gamification is addictive in the best way. I look forward to my 5 minutes every morning. My partner thinks I'm obsessed — they're right.", n: 'James T.', m: 'Designer · 🔥 89-day streak', color: 'bg-green-500', init: 'J' },
-            { q: "I felt embarrassed not knowing what a 401k was. Now I'm maxing mine out. No shame, just progress. Thank you StockBestie.", n: 'Ana R.', m: 'Nurse · 🔥 31-day streak', color: 'bg-amber-500', init: 'A' },
+            { q: "I've tried finance books and YouTube but nothing stuck. StockBestie finally made it click. I opened my first brokerage account last month!", n: 'Sarah M.', m: 'Teacher', streak: 42, color: 'bg-primary', init: 'S' },
+            { q: "The gamification is addictive in the best way. I look forward to my 5 minutes every morning. My partner thinks I'm obsessed — they're right.", n: 'James T.', m: 'Designer', streak: 89, color: 'bg-success', init: 'J' },
+            { q: "I felt embarrassed not knowing what a 401k was. Now I'm maxing mine out. No shame, just progress. Thank you StockBestie.", n: 'Ana R.', m: 'Nurse', streak: 31, color: 'bg-warning', init: 'A' },
           ].map(t => (
             <div key={t.n} className="bg-card rounded-2xl border border-border p-5">
-              <div className="text-amber-500 text-xs tracking-wider mb-2.5">★★★★★</div>
+              <div className="flex items-center gap-0.5 mb-2.5">
+                {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 text-warning fill-warning" />)}
+              </div>
               <p className="text-[13.5px] leading-relaxed mb-4">{t.q}</p>
               <div className="flex items-center gap-2.5">
                 <div className={`w-8 h-8 rounded-[9px] ${t.color} text-primary-foreground flex items-center justify-center text-[13px] font-extrabold shrink-0`}>{t.init}</div>
                 <div>
                   <div className="text-[13px] font-bold tracking-tight">{t.n}</div>
-                  <div className="text-[11px] text-muted-foreground mt-0.5">{t.m}</div>
+                  <div className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1">{t.m} · <Flame className="w-3 h-3 text-destructive" /> {t.streak}-day streak</div>
                 </div>
               </div>
             </div>
@@ -298,14 +304,19 @@ const Onboarding = () => {
         <p className="text-sm text-muted-foreground mb-8">Consistently rated among the top finance education apps</p>
         <div className="flex justify-center gap-3.5 flex-wrap">
           {[
-            { store: 'App Store', rating: '4.9', stars: '⭐⭐⭐⭐⭐', cnt: '48,200 ratings' },
-            { store: 'Google Play', rating: '4.8', stars: '⭐⭐⭐⭐⭐', cnt: '31,500 ratings' },
-            { store: 'Product Hunt', rating: '#1', stars: '🏆 Finance', cnt: 'Product of the Day' },
+            { store: 'App Store', rating: '4.9', type: 'stars', cnt: '48,200 ratings' },
+            { store: 'Google Play', rating: '4.8', type: 'stars', cnt: '31,500 ratings' },
+            { store: 'Product Hunt', rating: '#1', type: 'trophy', cnt: 'Product of the Day' },
           ].map(r => (
             <div key={r.store} className="bg-background/5 border border-background/10 rounded-2xl px-6 py-4 min-w-[155px]">
               <div className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wider font-mono mb-1">{r.store}</div>
               <div className="text-4xl font-black text-background tracking-[-1.5px]">{r.rating}</div>
-              <div className="text-sm my-1">{r.stars}</div>
+              <div className="flex items-center justify-center gap-0.5 my-1">
+                {r.type === 'stars' 
+                  ? [...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 text-warning fill-warning" />)
+                  : <><Trophy className="w-4 h-4 text-warning" /> <span className="text-sm text-background font-semibold">Finance</span></>
+                }
+              </div>
               <div className="text-[10px] text-muted-foreground">{r.cnt}</div>
             </div>
           ))}
