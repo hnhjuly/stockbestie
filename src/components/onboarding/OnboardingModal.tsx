@@ -430,7 +430,4 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
   );
 };
 
-// Need to import Gamepad2 for use in the welcome step
-import { Gamepad2 } from 'lucide-react';
-
 export default OnboardingModal;
