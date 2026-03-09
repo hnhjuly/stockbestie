@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { X, ChevronLeft, Flame, Star, BookOpen, Zap, CheckCircle, DollarSign, Building2, Landmark, Dices, Home, Heart, TrendingUp, GraduationCap, Trophy, BarChart3, Sparkles } from 'lucide-react';
+import { X, ChevronLeft, Flame, Star, BookOpen, Zap, CheckCircle, DollarSign, Building2, Landmark, Dices, Home, Heart, TrendingUp, GraduationCap, Trophy, BarChart3, Sparkles, Gamepad2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface OnboardingModalProps {
