@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { TickerSearch } from '@/components/TickerSearch';
-
+import { useAuth } from '@/contexts/AuthContext';
 import { RobotChatbot } from '@/components/RobotChatbot';
 import { PWAInstallButton } from '@/components/PWAInstallButton';
 import { BottomNav } from '@/components/BottomNav';
@@ -18,6 +18,7 @@ import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 
 const Index = () => {
+  const { user } = useAuth();
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,11 +28,12 @@ const Index = () => {
   
 
   const loadTickersFromDB = async () => {
-    // No auth - load all tickers without user filter
+    if (!user) return [];
     try {
       const { data, error } = await supabase
         .from('tickers')
         .select('ticker')
+        .eq('auth_user_id', user.id)
         .order('added_at', { ascending: false });
       if (error) throw error;
       const tickerList = data?.map(t => t.ticker) || [];
@@ -75,12 +77,13 @@ const Index = () => {
   };
 
   const removeTicker = async (ticker: string) => {
-    
+    if (!user) return;
     try {
       const { error } = await supabase
         .from('tickers')
         .delete()
-        .eq('ticker', ticker);
+        .eq('ticker', ticker)
+        .eq('auth_user_id', user.id);
       if (error) throw error;
       await loadTickersFromDB();
       toast.success(`${ticker} removed`);
@@ -91,6 +94,7 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (!user) return;
     const initializeApp = async () => {
       const tickerList = await loadTickersFromDB();
       if (tickerList.length === 0) {
@@ -100,6 +104,7 @@ const Index = () => {
             .from('tickers')
               .insert(defaultTickers.map(ticker => ({
                 ticker,
+                auth_user_id: user.id,
               })));
           if (error) throw error;
           setTickers(defaultTickers);
@@ -113,7 +118,7 @@ const Index = () => {
       }
     };
     initializeApp();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (tickers.length > 0) {

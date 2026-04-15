@@ -1,15 +1,65 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { RefreshCw } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
-const marketIndices = [
-  { name: 'S&P 500', value: '5,782.94', change: '+0.43%', up: true },
-  { name: 'NASDAQ', value: '18,241.11', change: '+0.61%', up: true },
-  { name: 'DOW', value: '43,102.47', change: '−0.12%', up: false },
-  { name: 'BTC', value: '$83,412', change: '+1.82%', up: true },
-  { name: '10Y YIELD', value: '4.31%', change: '−0.04%', up: false },
-  { name: 'VIX', value: '18.42', change: '−2.1%', up: false },
+interface MarketIndex {
+  name: string;
+  value: string;
+  change: string;
+  up: boolean;
+}
+
+const MARKET_TICKERS = [
+  { ticker: 'SPY', name: 'S&P 500' },
+  { ticker: 'QQQ', name: 'NASDAQ' },
+  { ticker: 'DIA', name: 'DOW' },
 ];
 
 export const MarketBar = () => {
+  const [indices, setIndices] = useState<MarketIndex[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMarketData = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('fetch-stock-data', {
+          body: { tickers: MARKET_TICKERS.map(t => t.ticker), includeAnalystPrediction: false },
+        });
+
+        if (error) throw error;
+
+        const results: MarketIndex[] = (data || []).map((stock: any, i: number) => ({
+          name: MARKET_TICKERS[i]?.name || stock.ticker,
+          value: stock.price != null ? `$${Number(stock.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—',
+          change: stock.changePercent != null ? `${stock.changePercent >= 0 ? '+' : ''}${Number(stock.changePercent).toFixed(2)}%` : '—',
+          up: (stock.changePercent ?? 0) >= 0,
+        }));
+
+        setIndices(results);
+      } catch (err) {
+        console.error('MarketBar fetch error:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMarketData();
+    const interval = setInterval(fetchMarketData, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-3 px-4 bg-card border border-border rounded-xl">
+        <RefreshCw className="w-3.5 h-3.5 animate-spin text-muted-foreground mr-2" />
+        <span className="text-[11px] font-mono text-muted-foreground">Loading market data…</span>
+      </div>
+    );
+  }
+
+  if (indices.length === 0) return null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -17,7 +67,7 @@ export const MarketBar = () => {
       transition={{ delay: 0.1 }}
       className="flex gap-5 overflow-x-auto py-2.5 px-4 bg-card border border-border rounded-xl items-center scrollbar-hide"
     >
-      {marketIndices.map((idx, i) => (
+      {indices.map((idx, i) => (
         <div key={idx.name} className="flex items-center gap-2 whitespace-nowrap">
           {i > 0 && <div className="w-px h-4 bg-border flex-shrink-0 -ml-3 mr-0" />}
           <span className="text-[11px] font-mono text-muted-foreground">{idx.name}</span>
