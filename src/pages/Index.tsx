@@ -5,12 +5,12 @@ import { StockTable } from '@/components/StockTable';
 import { StockDetail } from '@/components/StockDetail';
 import { fetchStockData } from '@/lib/googleSheets';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, X, LogOut } from 'lucide-react';
+import { RefreshCw, X } from 'lucide-react';
 import { toast } from 'sonner';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { TickerSearch } from '@/components/TickerSearch';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { RobotChatbot } from '@/components/RobotChatbot';
 import { PWAInstallButton } from '@/components/PWAInstallButton';
 import { BottomNav } from '@/components/BottomNav';
@@ -24,15 +24,14 @@ const Index = () => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [tickers, setTickers] = useState<string[]>([]);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const { user, signOut } = useAuth();
+  
 
   const loadTickersFromDB = async () => {
-    if (!user) return [];
+    // No auth - load all tickers without user filter
     try {
       const { data, error } = await supabase
         .from('tickers')
         .select('ticker')
-        .eq('auth_user_id', user.id)
         .order('added_at', { ascending: false });
       if (error) throw error;
       const tickerList = data?.map(t => t.ticker) || [];
@@ -81,8 +80,7 @@ const Index = () => {
       const { error } = await supabase
         .from('tickers')
         .delete()
-        .eq('ticker', ticker)
-        .eq('auth_user_id', user.id);
+        .eq('ticker', ticker);
       if (error) throw error;
       await loadTickersFromDB();
       toast.success(`${ticker} removed`);
@@ -93,7 +91,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (!user) return;
     const initializeApp = async () => {
       const tickerList = await loadTickersFromDB();
       if (tickerList.length === 0) {
@@ -101,10 +98,9 @@ const Index = () => {
         try {
           const { error } = await supabase
             .from('tickers')
-            .insert(defaultTickers.map(ticker => ({
-              ticker,
-              auth_user_id: user.id,
-            })));
+              .insert(defaultTickers.map(ticker => ({
+                ticker,
+              })));
           if (error) throw error;
           setTickers(defaultTickers);
         } catch (error) {
@@ -153,7 +149,7 @@ const Index = () => {
               <div className="min-w-0">
                 <h1 className="text-lg md:text-2xl font-bold truncate">Stock Bestie</h1>
                 <p className="text-xs md:text-sm text-muted-foreground truncate flex items-center gap-1">
-                  Hey {user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0]} <Icon icon="fxemoji:wavinghand" className="w-4 h-4 inline-block" />
+                  Your stock companion <Icon icon="fxemoji:wavinghand" className="w-4 h-4 inline-block" />
                 </p>
               </div>
             </div>
@@ -161,9 +157,6 @@ const Index = () => {
               <Button onClick={() => loadStocks(true, false)} disabled={isRefreshing} variant="outline" className="gap-2 flex-shrink-0 hover-glow" size="sm">
                 <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                 <span className="hidden sm:inline">Refresh</span>
-              </Button>
-              <Button onClick={signOut} variant="ghost" size="sm" className="flex-shrink-0">
-                <LogOut className="h-4 w-4" />
               </Button>
             </div>
           </div>
