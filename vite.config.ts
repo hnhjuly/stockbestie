@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
+      devOptions: { enabled: false },
       includeAssets: ['icon-512x512.png'],
       manifest: {
         name: 'Stock Bestie',
@@ -38,15 +39,22 @@ export default defineConfig(({ mode }) => ({
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         navigateFallbackDenylist: [/^\/~oauth/],
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/functions\/.*/i,
+            handler: 'NetworkOnly',
+          },
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'supabase-cache',
+              networkTimeoutSeconds: 5,
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 24 hours
+                maxAgeSeconds: 60 * 5 // 5 minutes
               }
             }
           }
