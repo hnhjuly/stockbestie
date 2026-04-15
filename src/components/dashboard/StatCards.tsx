@@ -1,5 +1,8 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, BarChart3, Trophy } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface StatCardProps {
   label: string;
@@ -20,7 +23,6 @@ const StatCard = ({ label, value, valueSuffix, sub, icon, accentColor, valueColo
     transition={{ delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     className="relative bg-card border border-border rounded-2xl p-5 overflow-hidden shadow-sm hover:border-border/80 hover:shadow-md transition-all"
   >
-    {/* Top accent line */}
     <div
       className="absolute top-0 left-0 right-0 h-0.5 opacity-60"
       style={{
@@ -38,33 +40,76 @@ const StatCard = ({ label, value, valueSuffix, sub, icon, accentColor, valueColo
 );
 
 export const StatCards = () => {
+  const { user } = useAuth();
+  const [portfolioValue, setPortfolioValue] = useState<number | null>(null);
+  const [todayChange, setTodayChange] = useState<number | null>(null);
+  const [todayChangePct, setTodayChangePct] = useState<number | null>(null);
+  const [tickerCount, setTickerCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data, error } = await supabase
+        .from('tickers')
+        .select('price, change_percent')
+        .eq('auth_user_id', user.id);
+
+      if (error || !data) return;
+
+      setTickerCount(data.length);
+      const totalValue = data.reduce((sum, t) => sum + (t.price ?? 0), 0);
+      setPortfolioValue(totalValue);
+
+      if (data.length > 0) {
+        const avgChange = data.reduce((sum, t) => sum + (t.change_percent ?? 0), 0) / data.length;
+        const estimatedDayChange = totalValue * (avgChange / 100);
+        setTodayChange(estimatedDayChange);
+        setTodayChangePct(avgChange);
+      }
+    };
+    load();
+  }, [user]);
+
+  const formatDollars = (val: number) => {
+    const whole = Math.floor(Math.abs(val));
+    const cents = `.${Math.abs(val - Math.floor(val)).toFixed(2).slice(2)}`;
+    const prefix = val >= 0 ? '$' : '-$';
+    return { whole: `${prefix}${whole.toLocaleString()}`, cents };
+  };
+
+  const pv = portfolioValue != null ? formatDollars(portfolioValue) : { whole: '—', cents: '' };
+  const tc = todayChange != null ? formatDollars(todayChange) : { whole: '—', cents: '' };
+  const changeUp = (todayChangePct ?? 0) >= 0;
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
       <StatCard
         label="Portfolio Value"
-        value="$12,847"
-        valueSuffix=".32"
-        sub="▲ +$342.18 today (+2.73%)"
+        value={pv.whole}
+        valueSuffix={pv.cents}
+        sub={todayChange != null
+          ? `${changeUp ? '▲' : '▼'} ${tc.whole}${tc.cents} today (${changeUp ? '+' : ''}${todayChangePct?.toFixed(2)}%)`
+          : `${tickerCount} tickers tracked`}
         icon={<Briefcase className="w-5 h-5" />}
-        subColor="hsl(var(--success))"
+        subColor={changeUp ? 'hsl(var(--success))' : 'hsl(var(--destructive))'}
         delay={0.05}
       />
       <StatCard
         label="Today's P&L"
-        value="+$342"
-        valueSuffix=".18"
-        sub="Unrealized gain this session"
+        value={tc.whole}
+        valueSuffix={tc.cents}
+        sub="Estimated daily change"
         icon={<BarChart3 className="w-5 h-5" />}
-        accentColor="hsl(var(--destructive))"
-        valueColor="hsl(var(--success))"
+        accentColor={changeUp ? 'hsl(var(--success))' : 'hsl(var(--destructive))'}
+        valueColor={changeUp ? 'hsl(var(--success))' : 'hsl(var(--destructive))'}
         subColor="hsl(var(--muted-foreground))"
         delay={0.1}
       />
       <StatCard
-        label="XP & Rank"
-        value="4,210"
-        valueSuffix=" XP"
-        sub="★ Rank #38 · Bull Tier"
+        label="Watchlist"
+        value={String(tickerCount)}
+        valueSuffix=" tickers"
+        sub="Tracked in your portfolio"
         icon={<Trophy className="w-5 h-5" />}
         accentColor="hsl(var(--warning))"
         valueColor="hsl(var(--warning))"
