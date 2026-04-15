@@ -77,12 +77,13 @@ const Index = () => {
   };
 
   const removeTicker = async (ticker: string) => {
-    
+    if (!user) return;
     try {
       const { error } = await supabase
         .from('tickers')
         .delete()
-        .eq('ticker', ticker);
+        .eq('ticker', ticker)
+        .eq('auth_user_id', user.id);
       if (error) throw error;
       await loadTickersFromDB();
       toast.success(`${ticker} removed`);
