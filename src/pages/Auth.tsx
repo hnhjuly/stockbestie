@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { lovable } from '@/integrations/lovable/index';
@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { Loader2, Mail } from 'lucide-react';
 import sbLogo from '@/assets/sb-logo.png';
 import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -41,10 +40,10 @@ const Auth = () => {
         if (error) throw error;
         toast.success('Welcome back! 🎉');
       } else {
-        const { error } = await supabase.auth.signUp({ 
-          email, 
+        const { error } = await supabase.auth.signUp({
+          email,
           password,
-          options: { emailRedirectTo: window.location.origin }
+          options: { emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
         toast.success('Check your email to verify your account! 📧');
@@ -59,16 +58,8 @@ const Auth = () => {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      const isPreviewDomain =
-        window.location.hostname.includes('lovableproject.com') ||
-        window.location.hostname.includes('id-preview--');
-
-      const redirectUri = isPreviewDomain
-        ? 'https://stockbestie.lovable.app/auth'
-        : `${window.location.origin}/auth`;
-
       const { error } = await lovable.auth.signInWithOAuth('google', {
-        redirect_uri: redirectUri,
+        redirect_uri: window.location.origin + '/auth',
       });
       if (error) throw error;
     } catch (error: any) {
@@ -79,14 +70,12 @@ const Auth = () => {
 
   return (
     <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-primary/5 flex flex-col items-center justify-center px-4">
-      {/* Background shapes */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
 
       <div className="w-full max-w-sm relative z-10 space-y-6">
-        {/* Logo */}
         <div className="text-center space-y-2">
           <img src={sbLogo} alt="Stock Bestie" className="w-20 h-20 mx-auto" />
           <h1 className="text-2xl font-bold">Stock Bestie</h1>
@@ -95,7 +84,6 @@ const Auth = () => {
           </p>
         </div>
 
-        {/* Google Sign-In */}
         <Button
           onClick={handleGoogleSignIn}
           disabled={isGoogleLoading}
@@ -115,7 +103,6 @@ const Auth = () => {
           Continue with Google
         </Button>
 
-        {/* Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
@@ -125,37 +112,18 @@ const Auth = () => {
           </div>
         </div>
 
-        {/* Email Form */}
         <form onSubmit={handleEmailAuth} className="space-y-3">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="h-12"
-            disabled={isLoading}
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="h-12"
-            disabled={isLoading}
-          />
+          <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="h-12" disabled={isLoading} />
+          <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-12" disabled={isLoading} />
           <Button type="submit" className="w-full h-12 text-base gap-2" disabled={isLoading}>
             {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Mail className="h-5 w-5" />}
             {isLogin ? 'Sign In' : 'Sign Up'}
           </Button>
         </form>
 
-        {/* Toggle */}
         <p className="text-center text-sm text-muted-foreground">
           {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-primary font-medium hover:underline"
-          >
+          <button onClick={() => setIsLogin(!isLogin)} className="text-primary font-medium hover:underline">
             {isLogin ? 'Sign Up' : 'Sign In'}
           </button>
         </p>
