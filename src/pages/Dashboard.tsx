@@ -1,4 +1,5 @@
 
+import { useEffect, useState } from 'react';
 import { BottomNav } from '@/components/BottomNav';
 import { MarketBar } from '@/components/dashboard/MarketBar';
 import { StatCards } from '@/components/dashboard/StatCards';
@@ -10,9 +11,28 @@ import { LearningStreak } from '@/components/dashboard/LearningStreak';
 import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
-  const firstName = 'there';
+  const { user } = useAuth();
+  const [firstName, setFirstName] = useState('there');
+
+  useEffect(() => {
+    if (!user) return;
+    const loadProfile = async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('display_name')
+        .eq('id', user.id)
+        .single();
+      if (data?.display_name) {
+        setFirstName(data.display_name.split(' ')[0]);
+      }
+    };
+    loadProfile();
+  }, [user]);
+
   const now = new Date();
   const hour = now.getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
