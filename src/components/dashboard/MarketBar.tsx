@@ -29,7 +29,8 @@ export const MarketBar = () => {
 
         if (error) throw error;
 
-        const results: MarketIndex[] = (data || []).map((stock: any, i: number) => ({
+        const stocks = data?.stocks || data || [];
+        const results: MarketIndex[] = stocks.map((stock: any, i: number) => ({
           name: MARKET_TICKERS[i]?.name || stock.ticker,
           value: stock.price != null ? `$${Number(stock.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—',
           change: stock.changePercent != null ? `${stock.changePercent >= 0 ? '+' : ''}${Number(stock.changePercent).toFixed(2)}%` : '—',
