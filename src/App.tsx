@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import Onboarding from "./pages/Onboarding";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import BudgetPlanner from "./pages/BudgetPlanner";
 import Academy from "./pages/Academy";
