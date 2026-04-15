@@ -18,6 +18,7 @@ import { usePullToRefresh } from '@/hooks/usePullToRefresh';
 import { PullToRefreshIndicator } from '@/components/PullToRefreshIndicator';
 
 const Index = () => {
+  const { user } = useAuth();
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -27,11 +28,12 @@ const Index = () => {
   
 
   const loadTickersFromDB = async () => {
-    // No auth - load all tickers without user filter
+    if (!user) return [];
     try {
       const { data, error } = await supabase
         .from('tickers')
         .select('ticker')
+        .eq('auth_user_id', user.id)
         .order('added_at', { ascending: false });
       if (error) throw error;
       const tickerList = data?.map(t => t.ticker) || [];
