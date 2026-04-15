@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { supabase } from '@/integrations/supabase/client';
 import { TickerSearch } from '@/components/TickerSearch';
-
+import { useAuth } from '@/contexts/AuthContext';
 import { RobotChatbot } from '@/components/RobotChatbot';
 import { PWAInstallButton } from '@/components/PWAInstallButton';
 import { BottomNav } from '@/components/BottomNav';
