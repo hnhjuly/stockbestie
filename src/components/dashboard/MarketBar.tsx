@@ -32,9 +32,9 @@ export const MarketBar = () => {
         const stocks = data?.stocks || data || [];
         const results: MarketIndex[] = stocks.map((stock: any, i: number) => ({
           name: MARKET_TICKERS[i]?.name || stock.ticker,
-          value: stock.price != null ? `$${Number(stock.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—',
-          change: stock.changePercent != null ? `${stock.changePercent >= 0 ? '+' : ''}${Number(stock.changePercent).toFixed(2)}%` : '—',
-          up: (stock.changePercent ?? 0) >= 0,
+          value: (stock.currentPrice ?? stock.price) != null ? `$${Number(stock.currentPrice ?? stock.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—',
+          change: (stock.priceChangePercent ?? stock.changePercent) != null ? `${(stock.priceChangePercent ?? stock.changePercent) >= 0 ? '+' : ''}${Number(stock.priceChangePercent ?? stock.changePercent).toFixed(2)}%` : '—',
+          up: ((stock.priceChangePercent ?? stock.changePercent) ?? 0) >= 0,
         }));
 
         setIndices(results);
