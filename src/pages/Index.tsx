@@ -75,7 +75,7 @@ const Index = () => {
   };
 
   const removeTicker = async (ticker: string) => {
-    if (!user) return;
+    
     try {
       const { error } = await supabase
         .from('tickers')
@@ -113,7 +113,7 @@ const Index = () => {
       }
     };
     initializeApp();
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     if (tickers.length > 0) {
