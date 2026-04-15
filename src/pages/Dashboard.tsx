@@ -1,4 +1,4 @@
-import { useAuth } from '@/contexts/AuthContext';
+
 import { BottomNav } from '@/components/BottomNav';
 import { MarketBar } from '@/components/dashboard/MarketBar';
 import { StatCards } from '@/components/dashboard/StatCards';
@@ -7,13 +7,12 @@ import { AIInsights } from '@/components/dashboard/AIInsights';
 import { WatchlistCard } from '@/components/dashboard/WatchlistCard';
 import { LearningProgress } from '@/components/dashboard/LearningProgress';
 import { LearningStreak } from '@/components/dashboard/LearningStreak';
-import { LogOut, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 
 const Dashboard = () => {
-  const { user, signOut } = useAuth();
-  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'there';
+  const firstName = 'there';
   const now = new Date();
   const hour = now.getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -41,9 +40,6 @@ const Dashboard = () => {
                 <Search className="w-3 h-3" />
                 Search ticker…
               </div>
-              <Button onClick={signOut} variant="ghost" size="sm">
-                <LogOut className="h-4 w-4" />
-              </Button>
             </div>
           </div>
         </div>
