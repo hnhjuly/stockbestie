@@ -94,6 +94,7 @@ const Index = () => {
   };
 
   useEffect(() => {
+    if (!user) return;
     const initializeApp = async () => {
       const tickerList = await loadTickersFromDB();
       if (tickerList.length === 0) {
@@ -103,6 +104,7 @@ const Index = () => {
             .from('tickers')
               .insert(defaultTickers.map(ticker => ({
                 ticker,
+                auth_user_id: user.id,
               })));
           if (error) throw error;
           setTickers(defaultTickers);
@@ -116,7 +118,7 @@ const Index = () => {
       }
     };
     initializeApp();
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (tickers.length > 0) {
