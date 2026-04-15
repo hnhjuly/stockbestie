@@ -13,10 +13,12 @@ import { Button } from '@/components/ui/button';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useSyncTickerPrices } from '@/hooks/useSyncTickerPrices';
 
 const Dashboard = () => {
   const { user } = useAuth();
   const [firstName, setFirstName] = useState('there');
+  useSyncTickerPrices();
 
   useEffect(() => {
     if (!user) return;

@@ -59,6 +59,27 @@ const Index = () => {
       setStocks(data);
       setLastUpdated(new Date());
       if (showToast) toast.success('Stock data refreshed successfully');
+
+      // Sync prices back to tickers table for dashboard
+      if (user && data.length > 0) {
+        for (const stock of data) {
+          await supabase
+            .from('tickers')
+            .update({
+              price: stock.currentPrice,
+              change_percent: stock.priceChangePercent,
+              company: stock.companyName,
+              market_cap: stock.marketCapRaw,
+              volume: stock.volumeRaw,
+              pe_ratio: stock.peRatio,
+              low52: stock.low52Week,
+              high52: stock.high52Week,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('ticker', stock.ticker)
+            .eq('auth_user_id', user.id);
+        }
+      }
     } catch (error: any) {
       if (error?.message?.includes('rate limit') || error?.context?.rateLimited) {
         toast.error('Rate limit reached. Please wait 30 seconds before refreshing.');
