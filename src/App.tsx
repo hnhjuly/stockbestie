@@ -12,7 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import BudgetPlanner from "./pages/BudgetPlanner";
 import Academy from "./pages/Academy";
 import Glossary from "./pages/Glossary";
-import Auth from "./pages/Auth";
+
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,7 +27,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/auth" element={<Auth />} />
+            
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/budget" element={<ProtectedRoute><BudgetPlanner /></ProtectedRoute>} />
