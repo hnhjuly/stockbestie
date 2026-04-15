@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { X, ChevronLeft, Flame, Star, BookOpen, Zap, CheckCircle, DollarSign, Building2, Landmark, Dices, Home, Heart, TrendingUp, GraduationCap, Trophy, BarChart3, Sparkles, Gamepad2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -41,6 +42,7 @@ const STEPS = [
 type StepType = typeof STEPS[number];
 
 const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string | number>>({ goal: 10 });
   const [quizDone, setQuizDone] = useState(false);
@@ -126,7 +128,7 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
             </div>
           </div>
           <div className="p-3 pt-2 border-t border-border bg-card shrink-0">
-            <button onClick={handleClose} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold">Go to the app →</button>
+            <button onClick={() => navigate('/auth')} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold">Go to the app →</button>
             <button onClick={() => { setStep(0); setFinished(false); setQuizDone(false); setQuizCorrect(null); setSelectedChoice(null); }} className="w-full py-2.5 bg-background text-foreground border border-border rounded-xl text-sm font-semibold mt-1.5">↩ Restart demo</button>
           </div>
         </>
@@ -359,11 +361,11 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
               <div className="mb-2 flex justify-center"><Heart className="w-10 h-10 text-success animate-bounce" /></div>
               <h2 className="text-lg font-extrabold tracking-tight mb-1.5">Save your progress!</h2>
               <p className="text-sm text-muted-foreground mb-3">Create a free account to keep your XP, streak & lessons.</p>
-              <button onClick={doFinish} className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 border border-border bg-background text-foreground hover:bg-muted mb-1.5">
+              <button onClick={() => navigate('/auth')} className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 border border-border bg-background text-foreground hover:bg-muted mb-1.5">
                 <svg width="15" height="15" viewBox="0 0 48 48"><path fill="#4285F4" d="M47.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h13.2c-.6 3-2.3 5.5-4.9 7.2v6h7.9c4.6-4.3 7.3-10.6 7.3-17.2z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.9-6c-2.1 1.4-4.9 2.2-8 2.2-6.1 0-11.3-4.1-13.1-9.7H2.6v6.2C6.5 42.5 14.7 48 24 48z"/><path fill="#FBBC05" d="M10.9 28.7c-.5-1.4-.7-2.9-.7-4.7s.2-3.3.7-4.7v-6.2H2.6C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.9l8.3-6.2z"/><path fill="#EA4335" d="M24 9.5c3.4 0 6.5 1.2 8.9 3.5l6.7-6.7C35.9 2.4 30.5 0 24 0 14.7 0 6.5 5.5 2.6 13.1l8.3 6.2C12.7 13.6 17.9 9.5 24 9.5z"/></svg>
                 Continue with Google
               </button>
-              <button onClick={doFinish} className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-foreground text-background mb-1.5">
+              <button onClick={() => navigate('/auth')} className="w-full py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 bg-foreground text-background mb-1.5">
                 <svg width="13" height="16" viewBox="0 0 18 22" fill="currentColor"><path d="M14.05 11.37c-.02-2.3 1.88-3.41 1.97-3.47-1.08-1.57-2.75-1.79-3.34-1.81-1.42-.14-2.78.84-3.5.84-.72 0-1.83-.82-3.01-.8-1.54.02-2.97.9-3.76 2.28-1.6 2.78-.41 6.9 1.15 9.16.77 1.11 1.68 2.35 2.87 2.31 1.16-.05 1.59-.74 2.99-.74 1.4 0 1.79.74 3.01.72 1.24-.02 2.02-1.13 2.77-2.25.88-1.28 1.24-2.53 1.26-2.59-.03-.01-2.39-.92-2.41-3.65z"/><path d="M11.73 4.48c.64-.78 1.07-1.86.95-2.94-.92.04-2.03.61-2.69 1.38-.59.68-1.1 1.77-.96 2.82 1.02.08 2.07-.52 2.7-1.26z"/></svg>
                 Continue with Apple
               </button>
@@ -375,7 +377,7 @@ const OnboardingModal = ({ isOpen, onClose }: OnboardingModalProps) => {
               <input type="email" placeholder="Enter your email" className="w-full px-3 py-2.5 border-[1.5px] border-border rounded-lg text-sm outline-none focus:border-primary transition-colors bg-background mb-2" />
             </div>
             <div className="p-3 pt-2 border-t border-border bg-card shrink-0">
-              <button onClick={doFinish} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold">Create free account</button>
+              <button onClick={() => navigate('/auth')} className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-semibold">Create free account</button>
               <p className="text-[10px] text-muted-foreground text-center mt-2 leading-snug">
                 By continuing you agree to our <u className="cursor-pointer">Terms</u> & <u className="cursor-pointer">Privacy Policy</u>.
               </p>
