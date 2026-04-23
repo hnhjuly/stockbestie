@@ -9,6 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import robotModel from '@/assets/Mascot_FINAL.glb';
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useNavigate } from 'react-router-dom';
+import { getDeviceId } from '@/lib/deviceId';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -113,7 +115,8 @@ export const RobotChatbot = () => {
   const [canvasKey, setCanvasKey] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
+  const navigate = useNavigate();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -150,7 +153,8 @@ export const RobotChatbot = () => {
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
     try {
-      const userId = user?.id || 'anonymous';
+      const deviceId = getDeviceId();
+      const accessToken = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-with-robot`,
         {
@@ -158,15 +162,31 @@ export const RobotChatbot = () => {
           headers: {
             'Content-Type': 'application/json',
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            'Authorization': `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ 
             messages: [...messages, userMessage],
-            deviceId: userId 
+            deviceId,
           }),
         }
       );
 
       if (!response.ok) {
+        if (response.status === 401) {
+          const errorData = await response.json().catch(() => ({}));
+          const msg = errorData?.message || 'Please sign in to keep chatting 💛';
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            if (lastMessage?.role === 'assistant') lastMessage.content = msg;
+            return newMessages;
+          });
+          toast.error(msg, {
+            action: { label: 'Sign in', onClick: () => navigate('/auth') },
+          });
+          setIsLoading(false);
+          return;
+        }
         if (response.status === 429) {
           // Check if it's the daily limit
           const errorData = await response.json();
@@ -180,11 +200,17 @@ export const RobotChatbot = () => {
               }
               return newMessages;
             });
-            toast.error('Daily chat limit reached (5/day)');
+            toast.error('Daily chat limit reached (3/day)');
           } else {
             toast.error('Too many requests. Please wait a moment and try again.');
             setMessages(prev => prev.filter(m => m.content !== ''));
           }
+          setIsLoading(false);
+          return;
+        }
+        if (response.status === 402) {
+          toast.error('AI credits exhausted. Please add funds to continue.');
+          setMessages(prev => prev.filter(m => m.content !== ''));
           setIsLoading(false);
           return;
         }

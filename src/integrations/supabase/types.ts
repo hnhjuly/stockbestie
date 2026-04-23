@@ -38,6 +38,33 @@ export type Database = {
         }
         Relationships: []
       }
+      budget_limits: {
+        Row: {
+          auth_user_id: string
+          budget_count: number
+          created_at: string
+          id: string
+          last_reset_date: string
+          updated_at: string
+        }
+        Insert: {
+          auth_user_id: string
+          budget_count?: number
+          created_at?: string
+          id?: string
+          last_reset_date?: string
+          updated_at?: string
+        }
+        Update: {
+          auth_user_id?: string
+          budget_count?: number
+          created_at?: string
+          id?: string
+          last_reset_date?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       chat_limits: {
         Row: {
           auth_user_id: string | null
