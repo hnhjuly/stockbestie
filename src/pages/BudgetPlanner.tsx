@@ -11,7 +11,8 @@ import { Sparkles, TrendingUp, PiggyBank, RefreshCw, ArrowLeft, Shield, Scale, F
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { BottomNav } from '@/components/BottomNav';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 
 const currencies = [
@@ -69,6 +70,8 @@ export const BudgetPlanner = () => {
   const [riskLevel, setRiskLevel] = useState([50]);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<BudgetResult | null>(null);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const getRiskLabel = (value: number) => {
     if (value <= 33) return riskLevels[0];
@@ -88,6 +91,12 @@ export const BudgetPlanner = () => {
   };
 
   const handleAnalyze = async () => {
+    if (!user) {
+      toast.error('Please sign in to use the Budget Planner 💛', {
+        action: { label: 'Sign in', onClick: () => navigate('/auth') },
+      });
+      return;
+    }
     if (!amount || parseFloat(amount) <= 0) {
       toast.error('Please enter a valid budget amount');
       return;
@@ -111,7 +120,26 @@ export const BudgetPlanner = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Edge function returned non-2xx — try to read structured payload
+        const ctx: any = (error as any).context;
+        let payload: any = data;
+        try {
+          if (ctx && typeof ctx.json === 'function') payload = await ctx.json();
+        } catch (_e) { /* ignore */ }
+
+        if (payload?.loginRequired) {
+          toast.error(payload.error || 'Please sign in to continue 💛', {
+            action: { label: 'Sign in', onClick: () => navigate('/auth') },
+          });
+          return;
+        }
+        if (payload?.limitReached) {
+          toast.error(payload.error || "You've hit today's limit. Come back tomorrow! 💛");
+          return;
+        }
+        throw new Error(payload?.error || error.message || 'Failed to analyze budget');
+      }
 
       setResult(data);
       toast.success('Budget analysis complete!');
