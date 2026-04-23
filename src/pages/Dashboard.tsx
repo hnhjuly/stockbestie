@@ -8,17 +8,26 @@ import { AIInsights } from '@/components/dashboard/AIInsights';
 import { WatchlistCard } from '@/components/dashboard/WatchlistCard';
 import { LearningProgress } from '@/components/dashboard/LearningProgress';
 import { LearningStreak } from '@/components/dashboard/LearningStreak';
-import { Search } from 'lucide-react';
+import { Search, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useSyncTickerPrices } from '@/hooks/useSyncTickerPrices';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const Dashboard = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [firstName, setFirstName] = useState('there');
   useSyncTickerPrices();
+
+  const handleLogout = async () => {
+    await signOut();
+    toast.success('Signed out');
+    navigate('/', { replace: true });
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -62,6 +71,10 @@ const Dashboard = () => {
                 <Search className="w-3 h-3" />
                 Search ticker…
               </div>
+              <Button onClick={handleLogout} variant="outline" size="sm" className="gap-2">
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline">Log out</span>
+              </Button>
             </div>
           </div>
         </div>

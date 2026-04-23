@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Star, TrendingUp, BarChart3, DollarSign, Brain, Home, Sprout, RefreshCw, Zap, CheckCircle,
   Gamepad2, Puzzle, Lightbulb, Flame, Trophy, LayoutDashboard, BookOpen, LineChart, 
@@ -14,6 +15,7 @@ import mascotMoneybag from '@/assets/mascot-moneybag.png';
 
 const Onboarding = () => {
   const [modalOpen, setModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
@@ -27,10 +29,13 @@ const Onboarding = () => {
           <button className="px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all">Features</button>
           <button className="px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all">How it works</button>
           <button className="px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all">Pricing</button>
-          <button onClick={() => setModalOpen(true)} className="px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all">Log in</button>
-          <button onClick={() => setModalOpen(true)} className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold ml-1 hover:opacity-90 transition-opacity">Get started</button>
+          <button onClick={() => navigate('/auth')} className="px-3 py-1.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-all">Sign in</button>
+          <button onClick={() => navigate('/auth')} className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold ml-1 hover:opacity-90 transition-opacity">Sign up</button>
         </div>
-        <button onClick={() => setModalOpen(true)} className="md:hidden px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold">Get started</button>
+        <div className="md:hidden flex items-center gap-2">
+          <button onClick={() => navigate('/auth')} className="px-3 py-2 text-sm font-medium text-muted-foreground">Sign in</button>
+          <button onClick={() => navigate('/auth')} className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold">Sign up</button>
+        </div>
       </nav>
 
       {/* HERO */}

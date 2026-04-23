@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -54,6 +55,16 @@ const Landing = () => {
 
       {/* Interactive 3D Robot - looks at form when user is typing */}
       <InteractiveRobot isLookingAtForm={isInputFocused} />
+
+      {/* Top-right auth actions */}
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+        <Button asChild variant="ghost" size="sm" className="text-foreground">
+          <Link to="/auth">Sign in</Link>
+        </Button>
+        <Button asChild size="sm" className="liquid-glass text-foreground font-semibold rounded-xl">
+          <Link to="/auth">Sign up</Link>
+        </Button>
+      </div>
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 py-2 md:py-12 relative z-10">
         {/* SB Logo at top center with parallax */}
