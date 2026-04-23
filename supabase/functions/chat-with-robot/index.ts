@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 // Helper function to extract stock ticker from user message
@@ -84,89 +84,116 @@ serve(async (req) => {
       );
     }
     
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || Deno.env.get('SUPABASE_PUBLISHABLE_KEY');
 
-    // Create Supabase client for chat limits
+    // Service role client for chat limits
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 
-    // Check and enforce daily chat limit (5 chats per day)
-    if (deviceId) {
-      const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
-      
-      // Get or create chat limit record
-      const { data: limitRecord, error: limitError } = await supabase
-        .from('chat_limits')
-        .select('*')
-        .eq('device_id', deviceId)
-        .single();
-
-      if (limitError && limitError.code !== 'PGRST116') { // PGRST116 = no rows found
-        console.error('Error fetching chat limits:', limitError);
-      } else {
-        let currentCount = 0;
-        let shouldReset = false;
-
-        if (limitRecord) {
-          // Check if we need to reset (new day)
-          if (limitRecord.last_reset_date !== today) {
-            shouldReset = true;
-            currentCount = 0;
-          } else {
-            currentCount = limitRecord.chat_count;
-          }
-
-          // Check if limit reached
-          if (currentCount >= 5) {
-            return new Response(
-              JSON.stringify({ 
-                limitReached: true,
-                message: "Come back tomorrow, let's talk about Stock Market 📈" 
-              }),
-              { 
-                status: 429, 
-                headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-              }
-            );
-          }
-
-          // Update count
-          if (shouldReset) {
-            await supabase
-              .from('chat_limits')
-              .update({ 
-                chat_count: 1, 
-                last_reset_date: today 
-              })
-              .eq('device_id', deviceId);
-          } else {
-            await supabase
-              .from('chat_limits')
-              .update({ 
-                chat_count: currentCount + 1 
-              })
-              .eq('device_id', deviceId);
-          }
-        } else {
-          // Create new record
-          await supabase
-            .from('chat_limits')
-            .insert({ 
-              device_id: deviceId, 
-              chat_count: 1, 
-              last_reset_date: today 
-            });
-        }
-      }
-    }
-
-    if (!OPENAI_API_KEY) {
+    if (!LOVABLE_API_KEY) {
       return new Response(
         JSON.stringify({ error: 'Service configuration error' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // ===== AUTH + LIMIT GATING =====
+    // Try to identify the user from the Authorization header
+    const authHeader = req.headers.get('Authorization') || '';
+    let authUserId: string | null = null;
+    if (authHeader.startsWith('Bearer ')) {
+      const token = authHeader.replace('Bearer ', '');
+      // Skip if it's just the anon key (no actual user session)
+      if (SUPABASE_ANON_KEY && token !== SUPABASE_ANON_KEY) {
+        try {
+          const { data: userData } = await supabase.auth.getUser(token);
+          if (userData?.user?.id) authUserId = userData.user.id;
+        } catch (_e) { /* ignore */ }
+      }
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+
+    if (authUserId) {
+      // Logged-in user: 3 chats per day per account
+      const { data: limitRecord } = await supabase
+        .from('chat_limits')
+        .select('*')
+        .eq('auth_user_id', authUserId)
+        .maybeSingle();
+
+      let currentCount = 0;
+      if (limitRecord) {
+        if (limitRecord.last_reset_date !== today) {
+          currentCount = 0;
+        } else {
+          currentCount = limitRecord.chat_count;
+        }
+      }
+
+      if (currentCount >= 3) {
+        return new Response(
+          JSON.stringify({
+            limitReached: true,
+            message: "You've used your 3 chats for today bestie! 💛 Come back tomorrow, let's talk more Stock Market 📈"
+          }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      if (limitRecord) {
+        await supabase
+          .from('chat_limits')
+          .update({ chat_count: currentCount + 1, last_reset_date: today })
+          .eq('auth_user_id', authUserId);
+      } else {
+        // device_id is NOT NULL in schema; use auth user id as the device_id placeholder
+        await supabase
+          .from('chat_limits')
+          .insert({ auth_user_id: authUserId, device_id: `user_${authUserId}`, chat_count: 1, last_reset_date: today });
+      }
+    } else {
+      // Anonymous user: 1 free chat ever per device, then must log in
+      if (!deviceId) {
+        return new Response(
+          JSON.stringify({ loginRequired: true, message: 'Please sign in to keep chatting with Bestie 💛' }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const { data: limitRecord } = await supabase
+        .from('chat_limits')
+        .select('*')
+        .eq('device_id', deviceId)
+        .is('auth_user_id', null)
+        .maybeSingle();
+
+      const usedFree = limitRecord ? limitRecord.chat_count : 0;
+      if (usedFree >= 1) {
+        return new Response(
+          JSON.stringify({
+            loginRequired: true,
+            message: "You've used your free chat! Sign in to get 3 chats per day 💛"
+          }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      if (limitRecord) {
+        await supabase
+          .from('chat_limits')
+          .update({ chat_count: 1, last_reset_date: today })
+          .eq('device_id', deviceId)
+          .is('auth_user_id', null);
+      } else {
+        await supabase
+          .from('chat_limits')
+          .insert({ device_id: deviceId, chat_count: 1, last_reset_date: today });
+      }
+    }
+    // ===== END LIMIT GATING =====
 
     // Get the last user message
     const lastUserMessage = messages[messages.length - 1]?.content || '';
@@ -302,24 +329,34 @@ ${stockContext}`;
     ];
 
     const response = await fetch(
-      'https://api.openai.com/v1/chat/completions',
+      'https://ai.gateway.lovable.dev/v1/chat/completions',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'google/gemini-2.5-flash',
           messages: openAIMessages,
           stream: true,
-          temperature: 0.7,
-          max_tokens: 1024,
         }),
       }
     );
 
     if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: 'Rate limits exceeded, please try again in a moment.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'AI credits exhausted. Please add funds to continue.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       const errorText = await response.text();
       console.error('AI API error:', response.status, errorText);
       throw new Error(`AI API error: ${response.status}`);
