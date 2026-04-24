@@ -151,12 +151,12 @@ const Academy: React.FC = () => {
               </div>
             </header>
 
-            <div className="container mx-auto px-4 py-12 md:py-20 flex flex-col items-center">
+            <div className="container mx-auto px-4 py-8 md:py-12 flex flex-col items-center">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-center mb-12 md:mb-16"
+                className="text-center mb-8 md:mb-10"
               >
                 <div className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-[10px] font-black tracking-[0.3em] uppercase rounded-full mb-6 border border-primary/20">
                   Choose Your Mode
@@ -169,23 +169,24 @@ const Academy: React.FC = () => {
                 </p>
               </motion.div>
 
-              <div className="flex flex-col gap-6 w-full max-w-sm">
+              <div className="flex flex-row gap-4 w-full max-w-xl">
                 <motion.button
                   initial={{ opacity: 0, x: -40 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
-                  whileHover={{ scale: 1.05, y: -10 }}
+                  whileHover={{ scale: 1.03, y: -4 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => setViewState('courseMap')}
-                  className="relative w-full rounded-3xl md:rounded-[3rem] border-4 border-primary/20 bg-card shadow-xl p-8 md:p-12 flex flex-col items-center gap-4 text-center"
+                  className="relative flex-1 rounded-3xl border-2 border-primary/15 bg-card shadow-lg p-6 flex flex-col items-center gap-3 text-center overflow-hidden group"
                 >
-                  <div className="absolute -inset-2 border-2 border-dashed border-primary/60 rounded-[2.5rem] md:rounded-[3.5rem] animate-[spin_10s_linear_infinite]" />
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-2xl md:rounded-3xl flex items-center justify-center text-3xl md:text-4xl shadow-sm z-10">
+                  <span className="pointer-events-none absolute inset-0 z-0 translate-x-[-100%] animate-[shimmer_2.6s_ease-in-out_infinite] bg-[linear-gradient(105deg,transparent_40%,rgba(99,153,255,0.13)_50%,transparent_60%)] bg-[length:200%_100%]" />
+                  <span className="pointer-events-none absolute inset-0 z-0 rounded-3xl opacity-0 ring-0 ring-primary/0 transition-all duration-300 group-hover:opacity-100 group-hover:ring-[3px] group-hover:ring-primary/40 group-hover:shadow-[0_0_18px_4px_rgba(99,153,255,0.18)] group-active:ring-[4px] group-active:ring-primary/60 group-active:shadow-[0_0_24px_6px_rgba(99,153,255,0.28)]" />
+                  <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-2xl z-10 relative">
                     📖
                   </div>
                   <div className="z-10">
                     <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-1">Read First</p>
-                    <h3 className="text-xl md:text-2xl font-black text-foreground tracking-tight mb-2">Course</h3>
+                    <h3 className="text-lg font-black text-foreground tracking-tight mb-1">Course</h3>
                     <p className="text-sm text-muted-foreground font-medium leading-relaxed">
                       Calm, beginner-friendly lessons before the quiz
                     </p>
@@ -196,24 +197,31 @@ const Academy: React.FC = () => {
                   initial={{ opacity: 0, x: 40 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 }}
-                  whileHover={{ scale: 1.05, y: -10 }}
+                  whileHover={{ scale: 1.03, y: -4 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => setViewState('map')}
-                  className="relative w-full rounded-3xl md:rounded-[3rem] border-4 border-primary/20 bg-card shadow-xl p-8 md:p-12 flex flex-col items-center gap-4 text-center"
+                  className="relative flex-1 rounded-3xl border-2 border-primary/15 bg-card shadow-lg p-6 flex flex-col items-center gap-3 text-center overflow-hidden group"
                 >
-                  <div className="absolute -inset-2 border-2 border-dashed border-primary/60 rounded-[2.5rem] md:rounded-[3.5rem] animate-[spin_10s_linear_infinite]" />
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-2xl md:rounded-3xl flex items-center justify-center text-3xl md:text-4xl shadow-sm z-10">
+                  <span className="pointer-events-none absolute inset-0 z-0 translate-x-[-100%] animate-[shimmer_2.6s_ease-in-out_infinite] bg-[linear-gradient(105deg,transparent_40%,rgba(99,153,255,0.13)_50%,transparent_60%)] bg-[length:200%_100%]" />
+                  <span className="pointer-events-none absolute inset-0 z-0 rounded-3xl opacity-0 ring-0 ring-primary/0 transition-all duration-300 group-hover:opacity-100 group-hover:ring-[3px] group-hover:ring-primary/40 group-hover:shadow-[0_0_18px_4px_rgba(99,153,255,0.18)] group-active:ring-[4px] group-active:ring-primary/60 group-active:shadow-[0_0_24px_6px_rgba(99,153,255,0.28)]" />
+                  <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-2xl z-10 relative">
                     ✏️
                   </div>
                   <div className="z-10">
                     <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-1">Jump In</p>
-                    <h3 className="text-xl md:text-2xl font-black text-foreground tracking-tight mb-2">Quiz</h3>
+                    <h3 className="text-lg font-black text-foreground tracking-tight mb-1">Quiz</h3>
                     <p className="text-sm text-muted-foreground font-medium leading-relaxed">
                       Test what you know — situational, challenge-based
                     </p>
                   </div>
                 </motion.button>
               </div>
+              <style>{`
+                @keyframes shimmer {
+                  0% { transform: translateX(-100%); }
+                  100% { transform: translateX(100%); }
+                }
+              `}</style>
             </div>
           </motion.div>
         )}
