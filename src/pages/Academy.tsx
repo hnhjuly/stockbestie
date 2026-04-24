@@ -178,7 +178,7 @@ const Academy: React.FC = () => {
                         <motion.button
                           whileHover={isLocked ? {} : { scale: 1.05, y: -10 }}
                           whileTap={isLocked ? {} : { scale: 0.96 }}
-                          onClick={() => !isLocked && startLesson(lesson)}
+                          onClick={() => !isLocked && navigate(`/academy/lesson/${lesson.id}`)}
                           className={`w-20 h-20 md:w-36 md:h-36 rounded-3xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-4xl font-black relative z-10 transition-all border-4 ${
                             isCompleted
                               ? 'bg-primary border-primary/80 text-primary-foreground shadow-2xl'
