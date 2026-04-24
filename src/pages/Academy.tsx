@@ -11,7 +11,7 @@ import { Icon } from '@iconify/react';
 const Academy: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [viewState, setViewState] = useState<'map' | 'lesson' | 'pro'>('map');
+  const [viewState, setViewState] = useState<'map' | 'lesson' | 'pro' | 'selector' | 'courseMap'>('selector');
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [sessionQuestions, setSessionQuestions] = useState<LessonQuestion[]>([]);
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
@@ -83,6 +83,14 @@ const Academy: React.FC = () => {
     setShowFeedback(false);
     setIsStudyMode(true);
     setLives(3);
+  };
+
+  const startCourse = (lesson: Lesson) => {
+    if (!isPro && completedLessons.length >= 1) {
+      setViewState('pro');
+      return;
+    }
+    navigate(`/academy/lesson/${lesson.id}`);
   };
 
   const handleEvaluate = () => {
