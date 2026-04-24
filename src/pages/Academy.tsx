@@ -125,6 +125,99 @@ const Academy: React.FC = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       <AnimatePresence mode="wait">
+        {viewState === 'selector' && (
+          <motion.div
+            key="selector-view"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="w-full"
+          >
+            <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
+              <div className="container mx-auto px-4 py-3 md:py-4">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                    <Link to="/app" className="p-1 md:p-2 flex-shrink-0">
+                      <img src={stockBestieLogo} alt="Stock Bestie Logo" className="h-10 w-10 md:h-12 md:w-12 object-contain logo-float" />
+                    </Link>
+                    <div className="min-w-0">
+                      <h1 className="text-lg md:text-2xl font-bold truncate">Bestie Academy</h1>
+                      <p className="text-xs md:text-sm text-muted-foreground truncate flex items-center gap-1">
+                        Learn stocks the fun way! <Icon icon="fxemoji:graduationcap" className="w-4 h-4 inline-block" />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </header>
+
+            <div className="container mx-auto px-4 py-12 md:py-20 flex flex-col items-center">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-center mb-12 md:mb-16"
+              >
+                <div className="inline-block px-4 py-1.5 bg-primary/10 text-primary text-[10px] font-black tracking-[0.3em] uppercase rounded-full mb-6 border border-primary/20">
+                  Choose Your Mode
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black text-foreground tracking-tight leading-none mb-4">
+                  How do you want to <span className="text-primary">learn?</span>
+                </h2>
+                <p className="text-muted-foreground font-medium text-base md:text-lg max-w-md mx-auto leading-relaxed">
+                  Read the lesson first, or jump straight into the quiz. Either way, Bestie's got you.
+                </p>
+              </motion.div>
+
+              <div className="flex flex-col gap-6 w-full max-w-sm">
+                <motion.button
+                  initial={{ opacity: 0, x: -40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  whileHover={{ scale: 1.05, y: -10 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => setViewState('courseMap')}
+                  className="relative w-full rounded-3xl md:rounded-[3rem] border-4 border-primary/20 bg-card shadow-xl p-8 md:p-12 flex flex-col items-center gap-4 text-center"
+                >
+                  <div className="absolute -inset-2 border-2 border-dashed border-primary/60 rounded-[2.5rem] md:rounded-[3.5rem] animate-[spin_10s_linear_infinite]" />
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-2xl md:rounded-3xl flex items-center justify-center text-3xl md:text-4xl shadow-sm z-10">
+                    📖
+                  </div>
+                  <div className="z-10">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-1">Read First</p>
+                    <h3 className="text-xl md:text-2xl font-black text-foreground tracking-tight mb-2">Course</h3>
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                      Calm, beginner-friendly lessons before the quiz
+                    </p>
+                  </div>
+                </motion.button>
+
+                <motion.button
+                  initial={{ opacity: 0, x: 40 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  whileHover={{ scale: 1.05, y: -10 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => setViewState('map')}
+                  className="relative w-full rounded-3xl md:rounded-[3rem] border-4 border-primary/20 bg-card shadow-xl p-8 md:p-12 flex flex-col items-center gap-4 text-center"
+                >
+                  <div className="absolute -inset-2 border-2 border-dashed border-primary/60 rounded-[2.5rem] md:rounded-[3.5rem] animate-[spin_10s_linear_infinite]" />
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-2xl md:rounded-3xl flex items-center justify-center text-3xl md:text-4xl shadow-sm z-10">
+                    ✏️
+                  </div>
+                  <div className="z-10">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-1">Jump In</p>
+                    <h3 className="text-xl md:text-2xl font-black text-foreground tracking-tight mb-2">Quiz</h3>
+                    <p className="text-sm text-muted-foreground font-medium leading-relaxed">
+                      Test what you know — situational, challenge-based
+                    </p>
+                  </div>
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {viewState === 'map' && (
           <motion.div
             key="map-view"
@@ -141,6 +234,13 @@ const Academy: React.FC = () => {
                     <Link to="/app" className="p-1 md:p-2 flex-shrink-0">
                       <img src={stockBestieLogo} alt="Stock Bestie Logo" className="h-10 w-10 md:h-12 md:w-12 object-contain logo-float" />
                     </Link>
+                    <button
+                      onClick={() => setViewState('selector')}
+                      className="w-8 h-8 rounded-full border border-border flex items-center justify-center hover:bg-accent transition-colors flex-shrink-0"
+                      aria-label="Back to mode selector"
+                    >
+                      <ArrowLeft className="w-3.5 h-3.5 text-muted-foreground" />
+                    </button>
                     <div className="min-w-0">
                       <h1 className="text-lg md:text-2xl font-bold truncate">Bestie Academy</h1>
                       <p className="text-xs md:text-sm text-muted-foreground truncate flex items-center gap-1">Learn stocks the fun way! <Icon icon="fxemoji:graduationcap" className="w-4 h-4 inline-block" /></p>
@@ -186,7 +286,7 @@ const Academy: React.FC = () => {
                         <motion.button
                           whileHover={isLocked ? {} : { scale: 1.05, y: -10 }}
                           whileTap={isLocked ? {} : { scale: 0.96 }}
-                          onClick={() => !isLocked && navigate(`/academy/lesson/${lesson.id}`)}
+                          onClick={() => !isLocked && startLesson(lesson)}
                           className={`w-20 h-20 md:w-36 md:h-36 rounded-3xl md:rounded-[3rem] flex items-center justify-center text-2xl md:text-4xl font-black relative z-10 transition-all border-4 ${
                             isCompleted
                               ? 'bg-primary border-primary/80 text-primary-foreground shadow-2xl'
