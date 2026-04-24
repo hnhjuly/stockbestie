@@ -633,8 +633,8 @@ const Academy: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Bottom Navigation - only show when on map view */}
-      {viewState === 'map' && <BottomNav />}
+      {/* Bottom Navigation */}
+      {(viewState === 'map' || viewState === 'selector' || viewState === 'courseMap') && <BottomNav />}
     </div>
   );
 };
