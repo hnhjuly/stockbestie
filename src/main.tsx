@@ -21,4 +21,11 @@ if (isPreviewHost || isInIframe) {
   });
 }
 
+// Auto-reload when a new service worker version is detected (after a deploy)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    window.location.reload();
+  });
+}
+
 createRoot(document.getElementById("root")!).render(<App />);
