@@ -5,10 +5,12 @@ import { Lesson, LessonQuestion } from '@/types/academy';
 import { BottomNav } from '@/components/BottomNav';
 import stockBestieLogo from '@/assets/stock-bestie-logo.png';
 import { ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 
 const Academy: React.FC = () => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewState, setViewState] = useState<'map' | 'lesson' | 'pro'>('map');
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [sessionQuestions, setSessionQuestions] = useState<LessonQuestion[]>([]);
@@ -37,6 +39,20 @@ const Academy: React.FC = () => {
       isPro
     }));
   }, [completedLessons, isPro]);
+
+  // Handle ?startQuiz=:id from the reading page → jump straight into the quiz
+  useEffect(() => {
+    const startQuizId = searchParams.get('startQuiz');
+    if (!startQuizId) return;
+    const lesson = ACADEMY_LESSONS.find(l => l.id === Number(startQuizId));
+    if (lesson) {
+      startLesson(lesson);
+    }
+    // Clear the param so refresh doesn't retrigger
+    searchParams.delete('startQuiz');
+    setSearchParams(searchParams, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const startLesson = (lesson: Lesson) => {
     if (!isPro && completedLessons.length >= 1) {
